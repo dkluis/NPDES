@@ -1,7 +1,7 @@
 ﻿using Libraries;
 
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
-Console.WriteLine($"{applicationInfo.HomeDir} >> {applicationInfo.Drive} >> {applicationInfo.LogLevel} >> {applicationInfo.ActiveDbConn}");
+Console.WriteLine($"{applicationInfo.WorkingDir} >> {applicationInfo.Drive} >> {applicationInfo.LogLevel} >> {applicationInfo.ActiveDbConn}");
 
 using var prodDb = new MariaDb(applicationInfo);
 {

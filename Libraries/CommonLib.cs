@@ -7,20 +7,16 @@ public class AppInfo
 {
     public readonly string ActiveDbConn;
     public readonly string Application;
-    public readonly TextFileHandler CnfFile;
+    public readonly string Program;
 
-    public readonly string ConfigFileName;
-    public readonly string ConfigFullPath;
-    public readonly string ConfigPath;
-
+    public readonly string FullConfigPath;
     public readonly string Drive;
     public readonly string FileName;
     public readonly string FilePath;
-    public readonly string FullPath;
-    public readonly string HomeDir;
+    public readonly string WorkingDir;
     public readonly int LogLevel;
     
-    public readonly string Program;
+
     public readonly TextFileHandler TxtFile;
 
     public AppInfo(string application, string program, string dbConnection)
@@ -30,42 +26,31 @@ public class AppInfo
 
         EnvInfo envInfo = new();
         Drive = envInfo.Drive;
-        HomeDir = (envInfo.Os == "Windows"
-            ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
-            : Environment.GetEnvironmentVariable("HOME")) ?? string.Empty;
 
-        if (HomeDir != "")
+        var baseConfigPath = new BaseConfig().BaseConfigPath;
+        if (!File.Exists(baseConfigPath))
         {
-            HomeDir = Path.Combine(HomeDir, Application);
-        }
-        else
-        {
-            Console.WriteLine("Could not determine HomeDir");
-            Environment.Exit(666);
-        }
-
-        ConfigFileName = Application + ".cnf";
-        ConfigPath = HomeDir;
-        ConfigFullPath = Path.Combine(HomeDir, ConfigFileName);
-        if (!File.Exists(ConfigFullPath))
-        {
-            Console.WriteLine($"Log File Does not Exist {ConfigFullPath}");
+            Console.WriteLine($"Base Config File Does not Exist {baseConfigPath}");
             Environment.Exit(666);
         }
 
         ReadKeyFromFile readKeyFromFile = new();
-        LogLevel = int.Parse(readKeyFromFile.FindInArray(ConfigFullPath, "LogLevel"));
-
-        FileName = Program + ".log";
-        FilePath = Path.Combine(HomeDir, "Logs");
-        FullPath = Path.Combine(FilePath, FileName);
+        FullConfigPath = readKeyFromFile.FindInArray(baseConfigPath, "FullConfigFilePath");
+        if (!File.Exists(FullConfigPath))
+        {
+            Console.WriteLine($"Full Config File Does not Exist {FullConfigPath}");
+            Environment.Exit(666);
+        }
+        WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
+        LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
+        FileName = Program + ".log"; 
+        FilePath = Path.Combine(WorkingDir, "Logs");
 
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
-        CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
 
-        var dbProdConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
-        var dbTestConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
-        var dbAltConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
+        var dbProdConn = readKeyFromFile.FindInArray(FullConfigPath, "DbProduction");
+        var dbTestConn = readKeyFromFile.FindInArray(FullConfigPath, "DbTesting");
+        var dbAltConn = readKeyFromFile.FindInArray(FullConfigPath, "DbAlternate");
 
         switch (dbConnection)
         {
