@@ -3,6 +3,13 @@
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
 Console.WriteLine($"{applicationInfo.HomeDir} >> {applicationInfo.Drive} >> {applicationInfo.LogLevel} >> {applicationInfo.ActiveDbConn}");
 
+using var prodDb = new MariaDb(applicationInfo);
+{
+    prodDb.Open();
+    Console.WriteLine($"DB success: {prodDb.Success}");
+    prodDb.Close();
+}
+
 /*
 var userInfo = new User("dkluis", "AAA123");
 Console.WriteLine($"The user is: {userInfo.firstName} {userInfo.lastName}, has superAdmin privs: {userInfo.superAdmin}");

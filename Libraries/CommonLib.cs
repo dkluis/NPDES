@@ -13,23 +13,14 @@ public class AppInfo
     public readonly string ConfigFullPath;
     public readonly string ConfigPath;
 
-    public readonly string DbAltConn;
-    //public readonly string DbConnection;
-
-    public readonly string DbProdConn;
-    public readonly string DbTestConn;
     public readonly string Drive;
     public readonly string FileName;
     public readonly string FilePath;
     public readonly string FullPath;
     public readonly string HomeDir;
     public readonly int LogLevel;
-
-    public readonly string[] MediaExtensions;
+    
     public readonly string Program;
-    public readonly string RarbgToken;
-
-    public readonly string TvmazeToken;
     public readonly TextFileHandler TxtFile;
 
     public AppInfo(string application, string program, string dbConnection)
@@ -72,26 +63,20 @@ public class AppInfo
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
         CnfFile = new TextFileHandler(ConfigFileName, Program, ConfigPath, LogLevel);
 
-        DbProdConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
-        DbTestConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
-        DbAltConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
-
-        TvmazeToken = readKeyFromFile.FindInArray(ConfigFullPath, "TvmazeToken");
-        RarbgToken = readKeyFromFile.FindInArray(ConfigFullPath, "RarbgToken");
-
-        var me = readKeyFromFile.FindInArray(ConfigFullPath, "MediaExtensions");
-        MediaExtensions = me.Split(", ");
+        var dbProdConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbProduction");
+        var dbTestConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbTesting");
+        var dbAltConn = readKeyFromFile.FindInArray(ConfigFullPath, "DbAlternate");
 
         switch (dbConnection)
         {
             case "DbProduction":
-                ActiveDbConn = DbProdConn;
+                ActiveDbConn = dbProdConn;
                 break;
             case "DbTesting":
-                ActiveDbConn = DbTestConn;
+                ActiveDbConn = dbTestConn;
                 break;
             case "DbAlternate":
-                ActiveDbConn = DbAltConn;
+                ActiveDbConn = dbAltConn;
                 break;
             default:
                 ActiveDbConn = "";
