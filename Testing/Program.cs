@@ -1,5 +1,9 @@
 ﻿using Libraries;
 
+var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
+Console.WriteLine($"{applicationInfo.HomeDir} >> {applicationInfo.Drive} >> {applicationInfo.LogLevel} >> {applicationInfo.ActiveDbConn}");
+
+/*
 var userInfo = new User("dkluis", "AAA123");
 Console.WriteLine($"The user is: {userInfo.firstName} {userInfo.lastName}, has superAdmin privs: {userInfo.superAdmin}");
 Console.WriteLine($"His roles are {userInfo.userRoles} and special functions are {userInfo.userApps}");
@@ -26,7 +30,7 @@ foreach (var cell in excelInfo.Ws["a2:f3"])
 Console.WriteLine("Hit Enter: ");
 Console.ReadLine();
 
-
+*/
 
 
 //  **************** Comment Section for Tryout Code
