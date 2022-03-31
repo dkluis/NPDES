@@ -5,7 +5,7 @@ Console.WriteLine($"The user is: {userInfo.firstName} {userInfo.lastName}, has s
 Console.WriteLine($"His roles are {userInfo.userRoles} and special functions are {userInfo.userApps}");
 Console.WriteLine();
 
-var excelInfo = new ExcelControl("X:/BVPV/Data/Background_Files.xlsx", "Constituents");
+var excelInfo = new ExcelControl("/media/psf/BVPV/BVPV/Data/Background_Files.xlsx", "Constituents");
 //var excelInfo = new ExcelControl("X:/BVPV/Data/Background_Files.xlsx", "Cost_Centers");
 
 //Validate that this worksheet still has the right header info and that nothing has changed.
