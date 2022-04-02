@@ -1,8 +1,11 @@
 ﻿using Libraries;
 
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
-Console.WriteLine($"{applicationInfo.WorkingDir} >> {applicationInfo.Drive} >> {applicationInfo.LogLevel} >> {applicationInfo.ActiveDbConn}");
 
+var logFile = applicationInfo.TxtFile;
+
+logFile.Start();
+logFile.Write($"Running Testing app", "Main Function");
 using var prodDb = new MariaDb(applicationInfo);
 {
     prodDb.Open();
@@ -10,6 +13,8 @@ using var prodDb = new MariaDb(applicationInfo);
     prodDb.Close();
     Console.WriteLine($"DB Close success {prodDb.Success}");
 }
+
+logFile.Stop();
 
 /*
 var userInfo = new User("dkluis", "AAA123");

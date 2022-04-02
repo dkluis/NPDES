@@ -2,5 +2,5 @@ namespace Libraries;
 
 public class BaseConfig
 {
-    public string BaseConfigPath = "/home/dick/NPDES/NPDES.cnf";
+    public readonly string FullConfigPath = "/home/dick/NPDES-System/ConfigData/NPDES-Complete.cnf";
 }

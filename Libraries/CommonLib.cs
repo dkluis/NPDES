@@ -10,12 +10,10 @@ public class AppInfo
     public readonly string Program;
 
     public readonly string FullConfigPath;
-    public readonly string Drive;
     public readonly string FileName;
     public readonly string FilePath;
     public readonly string WorkingDir;
     public readonly int LogLevel;
-    
 
     public readonly TextFileHandler TxtFile;
 
@@ -24,28 +22,20 @@ public class AppInfo
         Application = application;
         Program = program;
 
-        EnvInfo envInfo = new();
-        Drive = envInfo.Drive;
-
-        var baseConfigPath = new BaseConfig().BaseConfigPath;
-        if (!File.Exists(baseConfigPath))
-        {
-            Console.WriteLine($"Base Config File Does not Exist {baseConfigPath}");
-            Environment.Exit(666);
-        }
-
         ReadKeyFromFile readKeyFromFile = new();
-        FullConfigPath = readKeyFromFile.FindInArray(baseConfigPath, "FullConfigFilePath");
+        //FullConfigPath = readKeyFromFile.FindInArray(baseConfigPath, "FullConfigFilePath");
+        FullConfigPath = new BaseConfig().FullConfigPath;
         if (!File.Exists(FullConfigPath))
         {
             Console.WriteLine($"Full Config File Does not Exist {FullConfigPath}");
             Environment.Exit(666);
         }
-        WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
-        LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
-        FileName = Program + ".log"; 
-        FilePath = Path.Combine(WorkingDir, "Logs");
 
+        WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
+
+        LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
+        FileName = Program + ".log";
+        FilePath = readKeyFromFile.FindInArray(FullConfigPath, "LogDir");
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
 
         var dbProdConn = readKeyFromFile.FindInArray(FullConfigPath, "DbProduction");
@@ -249,8 +239,7 @@ public class ReadKeyFromFile
             {
                 return "";
             }
-            else 
-            if (rec[find]?.ToString() != "")
+            else if (rec[find]?.ToString() != "")
             {
                 return rec[find]?.ToString() ?? "";
             }
@@ -273,7 +262,6 @@ public class ReadKeyFromFile
 
 public class EnvInfo
 {
-    public readonly string Drive;
     public readonly string MachineName;
     public readonly string Os;
     public readonly string UserName;
@@ -291,16 +279,15 @@ public class EnvInfo
             case PlatformID.Win32Windows:
             case PlatformID.WinCE:
                 Os = "Windows";
-                Drive = @"C:\";
                 break;
             case PlatformID.Unix:
             case PlatformID.MacOSX:
                 Os = "Linux";
-                Drive = @"/";
                 break;
+            case PlatformID.Xbox:
+            case PlatformID.Other:
             default:
                 Os = "Unknown";
-                Drive = "Unknown";
                 break;
         }
 
