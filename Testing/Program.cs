@@ -6,8 +6,9 @@ Console.WriteLine($"{applicationInfo.WorkingDir} >> {applicationInfo.Drive} >> {
 using var prodDb = new MariaDb(applicationInfo);
 {
     prodDb.Open();
-    Console.WriteLine($"DB success: {prodDb.Success}");
+    Console.WriteLine($"DB Open success: {prodDb.Success}");
     prodDb.Close();
+    Console.WriteLine($"DB Close success {prodDb.Success}");
 }
 
 /*
