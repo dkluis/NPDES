@@ -27,8 +27,6 @@ public class MariaDb : IDisposable
             {
                 _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", "", 0);
             }
-            
-            Open();
         }
 
         void IDisposable.Dispose()

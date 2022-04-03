@@ -14,6 +14,7 @@ public class AppInfo
     public readonly string FilePath;
     public readonly string WorkingDir;
     public readonly int LogLevel;
+    public readonly string SystemUserName;
 
     public readonly TextFileHandler TxtFile;
 
@@ -21,7 +22,8 @@ public class AppInfo
     {
         Application = application;
         Program = program;
-
+        SystemUserName = Environment.UserName;
+        
         ReadKeyFromFile readKeyFromFile = new();
         //FullConfigPath = readKeyFromFile.FindInArray(baseConfigPath, "FullConfigFilePath");
         FullConfigPath = new BaseConfig().FullConfigPath;
