@@ -8,7 +8,7 @@ public class User
     public readonly string UserId;
     private readonly string _encryptedPassword;
     public readonly string RoleId;
-    public readonly List<KeyValuePair<string, string>> AppAndFunctionIds;
+    public readonly Dictionary<string, string> AppAndFunctionIds;
     public readonly bool ValidUser;
     public readonly bool ValidPassword;
 
@@ -28,7 +28,7 @@ public class User
         }
 
         UserId = username;
-        AppAndFunctionIds = new List<KeyValuePair<string, string>>();
+        AppAndFunctionIds = new Dictionary<string, string>();
         while (rdr.Read())
         {
             _encryptedPassword = rdr[1].ToString() ?? string.Empty;
@@ -53,10 +53,14 @@ public class User
         while (rdr.Read())
         {
             if (rdr[2].ToString() is null || rdr[3].ToString() is null) continue;
-            AppAndFunctionIds!.Add(new KeyValuePair<string, string>
-                (rdr[2].ToString() ?? string.Empty, rdr[3].ToString() ?? string.Empty));
+            AppAndFunctionIds.Add(rdr[2].ToString()!, rdr[3].ToString()!);
         }
 
         db.Close();
+    }
+
+    public bool CanUserUseApp(string app)
+    {
+        return AppAndFunctionIds.TryGetValue(app, out app);
     }
 }
