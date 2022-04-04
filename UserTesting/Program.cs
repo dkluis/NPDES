@@ -68,7 +68,7 @@ void TestUser(string username, string passwrd)
 
 bool TestApp(string username, string passwrd, string app)
 {
-    var userInfo = new User(applicationInfo!, username, passwrd);
+    var userInfo = new User(applicationInfo, username, passwrd);
     return userInfo.CanUserUseApp(app);
 }
 

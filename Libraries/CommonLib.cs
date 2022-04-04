@@ -25,7 +25,6 @@ public class AppInfo
         SystemUserName = Environment.UserName;
         
         ReadKeyFromFile readKeyFromFile = new();
-        //FullConfigPath = readKeyFromFile.FindInArray(baseConfigPath, "FullConfigFilePath");
         FullConfigPath = new BaseConfig().FullConfigPath;
         if (!File.Exists(FullConfigPath))
         {
