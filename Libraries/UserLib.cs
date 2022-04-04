@@ -26,7 +26,6 @@ public class User
         _appInfo = appInfo;
         RoleId = new List<string>();
         AppAndFunctionIds = new Dictionary<string, string>();
-        var encryptedPassword = "";
         UserId = username;
         
         using var db = new MariaDb(_appInfo);
@@ -40,15 +39,17 @@ public class User
             return;
         }
 
+        var storedPassword = string.Empty;
+        var storedSalt = string.Empty;
         while (rdr.Read())
         {
-            encryptedPassword = rdr[1].ToString() ?? string.Empty;
-            //RoleId = rdr[2].ToString() ?? string.Empty;
+            storedPassword = rdr[1].ToString() ?? string.Empty;
+            storedSalt = rdr[2].ToString() ?? string.Empty;
         }
         db.Close();
         ValidUser = true;
-        
-        if (encryptedPassword != unencryptedPassword)
+        var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
+        if (encryptedPassword != storedPassword)
         {
             return;
         }
@@ -86,7 +87,7 @@ public class User
         return AppAndFunctionIds.TryGetValue(app!, out app);
     }
 
-    public bool AddUser(string userName, string roleId)
+    public bool AddUser(string userName, string password)
     {
         var success = false;
         if (ValidUser)
@@ -95,11 +96,13 @@ public class User
                 "UserLib-Add", 0);
             return success;
         }
-        
+
+        var mysalt = BCrypt.Net.BCrypt.GenerateSalt();
+        var encryptedpasswrd = BCrypt.Net.BCrypt.HashPassword(password, mysalt);
         using var db = new MariaDb(_appInfo);
         db.Open();
-        string sql = $"insert into Users values ('{userName}', 'Reset');";
-        var rows = db.ExecNonQuery(sql,true);
+        string sql = $"insert into Users values ('{userName}', '{encryptedpasswrd}', '{mysalt}');";
+        var rows = db.ExecNonQuery(sql);
         Console.WriteLine(rows);
         success = db.Success;
         db.Close();
