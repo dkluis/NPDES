@@ -4,16 +4,16 @@ public class User
 {
     public readonly string UserId;
     public readonly List<string> RoleId;
-    public readonly Dictionary<string, string> AppAndFunctionIds;
+    public readonly Dictionary<string, string> AppsWithFunction;
     public readonly bool ValidUser;
     public readonly bool ValidPassword;
     private readonly AppInfo _appInfo;
 
     public User(AppInfo appInfo)
     {
-        UserId = "";
+        UserId = string.Empty;
         RoleId = new List<string>();
-        AppAndFunctionIds = new Dictionary<string, string>();
+        AppsWithFunction = new Dictionary<string, string>();
         ValidPassword = false;
         ValidUser = false;
         _appInfo = appInfo;
@@ -25,7 +25,7 @@ public class User
         ValidUser = false;
         _appInfo = appInfo;
         RoleId = new List<string>();
-        AppAndFunctionIds = new Dictionary<string, string>();
+        AppsWithFunction = new Dictionary<string, string>();
         UserId = username;
         
         using var db = new MariaDb(_appInfo);
@@ -72,19 +72,26 @@ public class User
         db.Open();
         rdr = db.ExecQuery($"select * from AppsByUser where `User` = '{UserId}';");
         if (!rdr.HasRows) return;
-        
+
+        var lastApp = string.Empty;
         while (rdr.Read())
         {
-            if (rdr[3].ToString() is null || rdr[5].ToString() is null) continue;
-            AppAndFunctionIds.Add(rdr[3].ToString()!, rdr[5].ToString()!);
+            if (rdr[4].ToString() is null || rdr[6].ToString() is null) continue;
+            if (rdr[4].ToString() != lastApp)
+            {
+                lastApp = rdr[4].ToString();
+                AppsWithFunction.Add(rdr[4].ToString()!, rdr[6].ToString()!);
+            }
         }
 
         db.Close();
     }
 
-    public bool CanUserUseApp(string? app)
+    public bool CanUserUseApp(string app)
     {
-        return AppAndFunctionIds.TryGetValue(app!, out app);
+        // ReSharper disable once NotAccessedVariable
+        var result = string.Empty;
+        return AppsWithFunction.TryGetValue(app, out result);
     }
 
     public bool AddUser(string userName, string password)
@@ -97,25 +104,29 @@ public class User
             return success;
         }
 
-        var mysalt = BCrypt.Net.BCrypt.GenerateSalt();
-        var encryptedpasswrd = BCrypt.Net.BCrypt.HashPassword(password, mysalt);
+        var mySalt = BCrypt.Net.BCrypt.GenerateSalt();
+        var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(_appInfo);
         db.Open();
-        string sql = $"insert into Users values ('{userName}', '{encryptedpasswrd}', '{mysalt}');";
-        var rows = db.ExecNonQuery(sql);
-        Console.WriteLine(rows);
+        string sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
+        db.ExecNonQuery(sql, true);
         success = db.Success;
         db.Close();
         return success;
     }
 
-    public List<string> ValidateAddUser(string userName, string roleId)
+    public bool AddUserRoles(string userName, string[] userRoles)
     {
-         var errors = new List<string>();
-         using var db = new MariaDb(_appInfo);
-         db.Open();
-         var rdr = db.ExecQuery($"select * from Roles where `RoleID` = '{roleId}';");
-         if (!rdr.HasRows) errors.Add($"RoleID: '{roleId}' is not valid");
-         return errors;
+        var success = true;
+        using var db = new MariaDb(_appInfo);
+        db.Open();
+        foreach (var role in userRoles)
+        {
+            string sql = $"insert into UserRoles values ('{userName}', '{role}');";
+            db.ExecNonQuery(sql, true);
+            if (!db.Success) success = false;
+        }
+        db.Close();
+        return success;
     }
 }
