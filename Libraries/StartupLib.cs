@@ -14,7 +14,7 @@ public class BaseConfig
             case PlatformID.Win32S:
             case PlatformID.Win32Windows:
             case PlatformID.WinCE:
-                FullConfigPath = string.Empty;
+                FullConfigPath = "C:/Users/Dick/NPDES-System/ConfigData/NPDES-Complete.cnf";
                 break;
             case PlatformID.Unix:
                 FullConfigPath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
