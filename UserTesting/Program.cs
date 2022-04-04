@@ -27,10 +27,13 @@ logFile.Write($"Requested app {application} can be used is: " +
 application = "Testing12";
 logFile.Write($"Requested app {application} can be used is: " +
               $"{TestApp(userName, password, application)}");
-
+logFile.Write("###");
 TestAddUser("Dicky", "GroupAdmin", applicationInfo);
+logFile.Write("###");
 TestAddUser("Dicky", "GroupAdmin1", applicationInfo);
+logFile.Write("###");
 TestAddUser("Dicky", "GroupAdmin", applicationInfo);
+logFile.Write("###");
 TestAddUser("WaterRep", "Reporter", applicationInfo);
 
 
@@ -44,7 +47,10 @@ void TestUser(string username, string passwrd)
 {
     var userInfo = new User(applicationInfo, username, passwrd);
     logFile.Write($"Is User valid: {userInfo.ValidUser} >> Is User Password Valid: {userInfo.ValidPassword}");
-    logFile.Write($"Is User: {userInfo.UserId}, Role: {userInfo.RoleId} ");
+    foreach (var role in userInfo.RoleId)
+    {
+        logFile.Write($"RoleId: {role}");
+    }
     logFile.Write($"Allowed Apps are: ");
     if (!userInfo.ValidPassword) return;
     foreach (var app in userInfo.AppAndFunctionIds)

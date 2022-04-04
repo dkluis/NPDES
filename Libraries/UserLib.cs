@@ -3,7 +3,7 @@
 public class User
 {
     public readonly string UserId;
-    public readonly string RoleId;
+    public readonly List<string> RoleId;
     public readonly Dictionary<string, string> AppAndFunctionIds;
     public readonly bool ValidUser;
     public readonly bool ValidPassword;
@@ -12,7 +12,7 @@ public class User
     public User(AppInfo appInfo)
     {
         UserId = "";
-        RoleId = "";
+        RoleId = new List<string>();
         AppAndFunctionIds = new Dictionary<string, string>();
         ValidPassword = false;
         ValidUser = false;
@@ -24,7 +24,7 @@ public class User
         ValidPassword = false;
         ValidUser = false;
         _appInfo = appInfo;
-        RoleId = "";
+        RoleId = new List<string>();
         AppAndFunctionIds = new Dictionary<string, string>();
         var encryptedPassword = "";
         UserId = username;
@@ -34,20 +34,20 @@ public class User
         var rdr = db.ExecQuery($"select * from Users where `UserID` = '{username}';");
         if (!rdr.HasRows)
         {
-            RoleId = string.Empty;
+            ValidUser = false;
+            UserId = string.Empty;
             db.Close();
             return;
         }
 
-        AppAndFunctionIds = new Dictionary<string, string>();
         while (rdr.Read())
         {
             encryptedPassword = rdr[1].ToString() ?? string.Empty;
-            RoleId = rdr[2].ToString() ?? string.Empty;
+            //RoleId = rdr[2].ToString() ?? string.Empty;
         }
-
         db.Close();
         ValidUser = true;
+        
         if (encryptedPassword != unencryptedPassword)
         {
             return;
@@ -56,15 +56,26 @@ public class User
         {
             ValidPassword = true;
         }
-
+        
         db.Open();
-        rdr = db.ExecQuery($"select * from AppsByUser where `User` = '{UserId}' and `Role` = '{RoleId}'");
+        rdr = db.ExecQuery($"select * from UserRoles where `UserID` = '{UserId}';");
+        if (rdr.HasRows)
+        {
+            while (rdr.Read())
+            {
+                RoleId.Add(rdr[1].ToString()!);
+            }
+        }
+        db.Close();
+        
+        db.Open();
+        rdr = db.ExecQuery($"select * from AppsByUser where `User` = '{UserId}';");
         if (!rdr.HasRows) return;
         
         while (rdr.Read())
         {
-            if (rdr[2].ToString() is null || rdr[3].ToString() is null) continue;
-            AppAndFunctionIds.Add(rdr[2].ToString()!, rdr[3].ToString()!);
+            if (rdr[3].ToString() is null || rdr[5].ToString() is null) continue;
+            AppAndFunctionIds.Add(rdr[3].ToString()!, rdr[5].ToString()!);
         }
 
         db.Close();
@@ -87,8 +98,8 @@ public class User
         
         using var db = new MariaDb(_appInfo);
         db.Open();
-        string sql = $"insert into Users values ('{userName}', 'Reset', '{roleId}');";
-        var rows = db.ExecNonQuery(sql);
+        string sql = $"insert into Users values ('{userName}', 'Reset');";
+        var rows = db.ExecNonQuery(sql,true);
         Console.WriteLine(rows);
         success = db.Success;
         db.Close();

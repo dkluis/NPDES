@@ -143,7 +143,7 @@ public class MariaDb : IDisposable
             {
                 if (!_connOpen) Open();
                 _rows = _cmd.ExecuteNonQuery();
-                if (_rows > 0) Success = false;
+                if (_rows == 0) Success = false;
                 return _rows;
             }
             catch (Exception e)
