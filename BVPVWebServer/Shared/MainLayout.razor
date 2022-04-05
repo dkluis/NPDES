@@ -36,7 +36,7 @@
     </MudDrawer>
     <!--  Future implementation MAYBE
     <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-    <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+    <MudThemeManager Open="ThemeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
     -->
     <MudMainContent>
         @Body
@@ -53,11 +53,11 @@
     }
 
     private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
-    public bool _themeManagerOpen = false;
+    public bool ThemeManagerOpen;
 
     void OpenThemeManager(bool value)
     {
-        _themeManagerOpen = value;
+        ThemeManagerOpen = value;
     }
 
     void UpdateTheme(ThemeManagerTheme value)

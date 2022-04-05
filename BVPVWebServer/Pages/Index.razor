@@ -1,14 +1,37 @@
 @page "/"
 
+@using BVPVWebServer.Data
+@inject WeatherForecastService ForecastService
+
 <PageTitle>Home Styropek ES</PageTitle>
 
 <MudText Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
 <MudText Typo="Typo.h4" Align="Align.Center">UI Options & Examples</MudText>
 
 <MudGrid>
+    <MudItem xs="6">
+        <MudPaper Class="py4" Outlined="true">
+            <MudText Typo="Typo.body1">Some Entry Form</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Class="py4" Outlined="true">
+            <MudText Typo="Typo.body1">Some other Entry form</MudText>
+        </MudPaper>
+    </MudItem>
     <MudItem xs="12">
         <MudPaper Class="align-center justify-left py-4" Outlined="true">
-            <MudText Typo="Typo.body1" Align="Align.Center">Menu</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">Weather Data Grid</MudText>
+            <MudDataGrid Items="@WeatherForecasts.Take(10)" Outlined="true">
+                <Columns>
+                    <Column T="WeatherForecast" Field="Date" Title="Date"></Column>
+                    <Column T="WeatherForecast" Field="TemperatureC" Title="Temp C"></Column>
+                    <Column T="WeatherForecast" Field="TemperatureF" Title="Temp F"></Column>
+                    <Column T="WeatherForecast" Field="Summary" Title="Summary"></Column>
+                </Columns>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
             <MudAppBar Color="Color.Secondary" DisableGutters="true" Bottom="true">
                 <p>--</p>
                 <MudFab StartIcon="@Icons.Material.Filled.FileDownload" Color="Color.Tertiary" Label="Import" Edge="Edge.Start"></MudFab>
@@ -16,16 +39,17 @@
                 <MudFab StartIcon="@Icons.Material.Filled.FileUpload" Color="Color.Tertiary" Label="Export"></MudFab>
                 <MudSpacer/>
             </MudAppBar>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="6">
-        <MudPaper Class="py4" Outlined="true">
-            <MudText Typo="Typo.body1">User Maintenance</MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="6">
-        <MudPaper Class="py4" Outlined="true">
-            <MudText Typo="Typo.body1">User Maintenance</MudText>
-        </MudPaper>
-    </MudItem>
 </MudGrid>
+
+
+
+
+@code
+{
+    private IEnumerable<WeatherForecast> WeatherForecasts = new List<WeatherForecast>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        WeatherForecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+}
