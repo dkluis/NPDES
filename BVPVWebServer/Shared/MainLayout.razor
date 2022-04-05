@@ -12,7 +12,9 @@
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit"/>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="_themeManager.DrawerClipMode" Elevation="_themeManager.DrawerElevation">
         <MudDrawerHeader>
@@ -20,10 +22,10 @@
         </MudDrawerHeader>
         <NavMenu></NavMenu>
     </MudDrawer>
-<!--  Future implemention MAYBE
-<MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-<MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
--->
+    <!--  Future implementation MAYBE
+    <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
+    <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+    -->
     <MudMainContent>
         @Body
     </MudMainContent>
@@ -37,7 +39,7 @@
     {
         _drawerOpen = !_drawerOpen;
     }
-    
+
     private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
     public bool _themeManagerOpen = false;
 
@@ -56,4 +58,5 @@
     {
         StateHasChanged();
     }
+
 }

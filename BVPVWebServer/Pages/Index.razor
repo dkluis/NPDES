@@ -3,5 +3,28 @@
 <PageTitle>Home Styropek ES</PageTitle>
 
 <MudText Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
+<MudText Typo="Typo.h4" Align="Align.Center">UI Options & Examples</MudText>
 
-Welcome to your new app.
+<MudGrid>
+    <MudItem xs="12">
+        <MudPaper Class="align-center justify-left py-4" Outlined="true">
+            <MudText Typo="Typo.body1" Align="Align.Center">Menu</MudText>
+            <MudAppBar Color="Color.Secondary" DisableGutters="true" Bottom="true">
+                <MudFab StartIcon="@Icons.Material.Filled.FileDownload" Color="Color.Tertiary" Label="Import" Edge="Edge.Start"></MudFab>
+                <p>--</p>
+                <MudFab StartIcon="@Icons.Material.Filled.FileUpload" Color="Color.Tertiary" Label="Export"></MudFab>
+                <MudSpacer/>
+            </MudAppBar>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Class="py4" Outlined="true">
+            <MudText Typo="Typo.body1">User Maintenance</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Class="py4" Outlined="true">
+            <MudText Typo="Typo.body1">User Maintenance</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
