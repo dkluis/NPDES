@@ -6,6 +6,8 @@
         <MudNavLink Href="/apps" Match="NavLinkMatch.Prefix">Functions</MudNavLink>
         <MudNavGroup Title="User Admin" Expanded="false">
             <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
+            <!--suppress SpellCheckingInspection -->
+            <MudNavLink Href="/userpasswordreset" Match="NavLinkMatch.Prefix">Reset Password</MudNavLink>
         </MudNavGroup>
     </MudNavGroup>
     <MudNavGroup Title="Waste Management" Expanded="true">
@@ -20,16 +22,27 @@
         <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch Data</MudNavLink>
         <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">counter</MudNavLink>
     </MudNavGroup>
+    <MudNavGroup Title="Mode" Expanded="false">
+        <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Lite/Dark"/>
+    </MudNavGroup>
+
+    @code{
+        private MudTheme _theme = new();
+        private bool _isDarkMode;
+    }
+
 </MudNavMenu>
 
 
 @code {
-    private bool collapseNavMenu = true;
+    private bool _collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
+        _collapseNavMenu = !_collapseNavMenu;
     }
+
 }
