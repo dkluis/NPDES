@@ -1,7 +1,7 @@
 @page "/"
 
 @using BVPVWebServer.Data
-@inject WeatherForecastService ForecastService
+@inject WeatherForecastService _forecastService
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -22,13 +22,16 @@
     <MudItem xs="12">
         <MudPaper Class="align-center justify-left py-4" Outlined="true">
             <MudText Typo="Typo.h4" Align="Align.Center">Weather Data Grid</MudText>
-            <MudDataGrid Items="@WeatherForecasts.Take(10)" Outlined="true">
+            <MudDataGrid Items="@_weatherForecasts" Outlined="true" Sortable="true" Filterable="true">
                 <Columns>
                     <Column T="WeatherForecast" Field="Date" Title="Date"></Column>
                     <Column T="WeatherForecast" Field="TemperatureC" Title="Temp C"></Column>
                     <Column T="WeatherForecast" Field="TemperatureF" Title="Temp F"></Column>
                     <Column T="WeatherForecast" Field="Summary" Title="Summary"></Column>
                 </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="WeatherForecast"></MudDataGridPager>
+                </PagerContent>
             </MudDataGrid>
         </MudPaper>
     </MudItem>
@@ -46,10 +49,10 @@
 
 @code
 {
-    private IEnumerable<WeatherForecast> WeatherForecasts = new List<WeatherForecast>();
+    private IEnumerable<WeatherForecast> _weatherForecasts = new List<WeatherForecast>();
 
     protected override async Task OnInitializedAsync()
     {
-        WeatherForecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        _weatherForecasts = await _forecastService.GetForecastAsync(DateTime.Now);
     }
 }
