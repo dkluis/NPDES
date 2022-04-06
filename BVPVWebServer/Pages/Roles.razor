@@ -8,7 +8,7 @@
 
 <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
-<MudItem xs="3">
+<MudItem xs="6">
     <MudCard Outlined="true">
         <MudText Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
         <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
@@ -36,32 +36,32 @@
     </MudCard>
 </MudItem>
 
+<MudItem xs="6">
+    <MudCard Outlined="true">
+        <MudText Typo="Typo.h4" Align="Align.Center">Existing Roles</MudText>
+        <MudTable Items="@_roles" Hover="true" Loading="@_loading">
+            <HeadContent>
+                <MudTh>Role</MudTh>
+                <MudTh>Role Level</MudTh>
+                <MudTh>Is ReadOnly</MudTh>
+            </HeadContent>
+
+        </MudTable>
+    </MudCard>
+</MudItem>
+
 @code {
-
-    /*
-    [Inject]
-    ISnackbar Snackbar { get; set; }
-    */
-
+    // Form Handling Code
     MudForm? _form;
-
     readonly RoleFluentValidator _roleValidator = new RoleFluentValidator();
-
-
     readonly Role _role = new Role();
 
     private async Task Submit()
     {
         await _form!.Validate();
-
-    /*
-        if (form.IsValid)
-        {
-            Snackbar.Add("Submitted!");
-        }
-        */
     }
 
+    // Validation Code
     public class RoleFluentValidator : AbstractValidator<Role>
     {
         public RoleFluentValidator()
@@ -82,4 +82,18 @@
         };
     }
 
+}
+
+@code
+{
+    // Table Handling Code
+    private bool _loading;
+    private IEnumerable<Role> _roles = new List<Role>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        _roles = await _roleService.GetAllRoles();
+        _loading = false;
+    }
 }

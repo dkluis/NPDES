@@ -26,6 +26,16 @@ public class RoleService
 
         return Task.FromResult(allRoles);
     }
+
+    public Task<bool> DoesRoleExist(string role)
+    {
+        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var result = db.ExecQueryAsync($"select * from `Roles` where `RoleID` = '{role}'");
+        var rdr = result.Result;
+        return Task.FromResult(rdr.HasRows);
+    }
 }
 
 public class Role
