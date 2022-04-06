@@ -98,6 +98,23 @@ public class MariaDb : IDisposable
                 return _rdr;
             }
         }
+        
+        public async Task<MySqlDataReader> ExecQueryAsync()
+        {
+            Success = true;
+            try
+            {
+                if (!_connOpen) Open();
+                _rdr = await _cmd.ExecuteReaderAsync();
+                return _rdr;
+            }
+            catch (Exception e)
+            {
+                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", "", 0);
+                Success = false;
+                return _rdr;
+            }
+        }
 
         public MySqlDataReader ExecQuery(string sql)
         {
@@ -107,6 +124,24 @@ public class MariaDb : IDisposable
             {
                 if (!_connOpen) Open();
                 _rdr = _cmd.ExecuteReader();
+                return _rdr;
+            }
+            catch (Exception e)
+            {
+                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "", 0);
+                Success = false;
+                return _rdr;
+            }
+        }
+        
+        public async Task<MySqlDataReader> ExecQueryAsync(string sql)
+        {
+            _cmd = Command(sql);
+            Success = true;
+            try
+            {
+                if (!_connOpen) Open();
+                _rdr =  await _cmd.ExecuteReaderAsync();
                 return _rdr;
             }
             catch (Exception e)

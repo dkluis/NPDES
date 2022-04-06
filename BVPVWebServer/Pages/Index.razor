@@ -2,6 +2,7 @@
 
 @using BVPVWebServer.Data
 @inject WeatherForecastService _forecastService
+@inject RoleService _roleService
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -9,6 +10,14 @@
 <MudText Typo="Typo.h4" Align="Align.Center">UI Options & Examples</MudText>
 
 <MudGrid>
+    <MudItem xs="12" >
+        <MudAppBar Color="Color.Secondary" Dense="true" Fixed="false">
+            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Label="Role" Edge="Edge.Start"></MudFab>
+            <p>--</p>
+            <MudFab Size="Size.Small" StartIcon="@Icons.Material.Filled.FileDownload" Color="Color.Tertiary" Label="Export"></MudFab>
+            <MudSpacer/>
+        </MudAppBar>
+    </MudItem>
     <MudItem xs="6">
         <MudPaper Class="py4" Outlined="true">
             <MudText Typo="Typo.body1">Some Entry Form</MudText>
@@ -21,38 +30,28 @@
     </MudItem>
     <MudItem xs="12">
         <MudPaper Class="align-center justify-left py-4" Outlined="true">
-            <MudText Typo="Typo.h4" Align="Align.Center">Weather Data Grid</MudText>
-            <MudDataGrid Items="@_weatherForecasts" Outlined="true" Sortable="true" Filterable="true">
+            <MudText Typo="Typo.h4" Align="Align.Center">Roles Data Grid</MudText>
+            <MudDataGrid Items="@_roles" Outlined="true" Sortable="true">
                 <Columns>
-                    <Column T="WeatherForecast" Field="Date" Title="Date"></Column>
-                    <Column T="WeatherForecast" Field="TemperatureC" Title="Temp C"></Column>
-                    <Column T="WeatherForecast" Field="TemperatureF" Title="Temp F"></Column>
-                    <Column T="WeatherForecast" Field="Summary" Title="Summary"></Column>
+                    <Column T="Role" Field="RoleId" CellClass="string" Title="Role"></Column>
+                    <Column T="Role" Field="RoleLevel" CellClass="int" Title="Access Level"></Column>
+                    <Column T="Role" Field="ReadOnly" CellClass="bool" Title="Readonly"></Column>
                 </Columns>
                 <PagerContent>
-                    <MudDataGridPager T="WeatherForecast"></MudDataGridPager>
+                    <MudDataGridPager T="Role"></MudDataGridPager>
                 </PagerContent>
             </MudDataGrid>
         </MudPaper>
     </MudItem>
-            <MudAppBar Color="Color.Secondary" DisableGutters="true" Bottom="true">
-                <p>--</p>
-                <MudFab StartIcon="@Icons.Material.Filled.FileDownload" Color="Color.Tertiary" Label="Import" Edge="Edge.Start"></MudFab>
-                <p>--</p>
-                <MudFab StartIcon="@Icons.Material.Filled.FileUpload" Color="Color.Tertiary" Label="Export"></MudFab>
-                <MudSpacer/>
-            </MudAppBar>
 </MudGrid>
-
-
 
 
 @code
 {
-    private IEnumerable<WeatherForecast> _weatherForecasts = new List<WeatherForecast>();
+    private List<Role> _roles = new List<Role>();
 
     protected override async Task OnInitializedAsync()
     {
-        _weatherForecasts = await _forecastService.GetForecastAsync(DateTime.Now);
+        _roles = await _roleService.GetAllRoles();
     }
 }

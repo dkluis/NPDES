@@ -12,6 +12,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<RoleService>();
 
 var app = builder.Build();
 
