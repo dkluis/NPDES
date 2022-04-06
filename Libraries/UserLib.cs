@@ -31,7 +31,7 @@ public class User
         using var db = new MariaDb(_appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from Users where `UserID` = '{username}';");
-        if (!rdr.HasRows)
+        if (rdr is {HasRows: false})
         {
             ValidUser = false;
             UserId = string.Empty;
@@ -41,7 +41,7 @@ public class User
 
         var storedPassword = string.Empty;
         var storedSalt = string.Empty;
-        while (rdr.Read())
+        while (rdr != null && rdr.Read())
         {
             storedPassword = rdr[1].ToString() ?? string.Empty;
             storedSalt = rdr[2].ToString() ?? string.Empty;
@@ -60,7 +60,7 @@ public class User
         
         db.Open();
         rdr = db.ExecQuery($"select * from UserRoles where `UserID` = '{UserId}';");
-        if (rdr.HasRows)
+        if (rdr is {HasRows: true})
         {
             while (rdr.Read())
             {
@@ -71,17 +71,15 @@ public class User
         
         db.Open();
         rdr = db.ExecQuery($"select * from AppsByUser where `User` = '{UserId}';");
-        if (!rdr.HasRows) return;
+        if (rdr is {HasRows: false}) return;
 
         var lastApp = string.Empty;
-        while (rdr.Read())
+        while (rdr != null && rdr.Read())
         {
             if (rdr[4].ToString() is null || rdr[6].ToString() is null) continue;
-            if (rdr[4].ToString() != lastApp)
-            {
-                lastApp = rdr[4].ToString();
-                AppsWithFunction.Add(rdr[4].ToString()!, rdr[6].ToString()!);
-            }
+            if (rdr[4].ToString() == lastApp) continue;
+            lastApp = rdr[4].ToString();
+            AppsWithFunction.Add(rdr[4].ToString()!, rdr[6].ToString()!);
         }
 
         db.Close();

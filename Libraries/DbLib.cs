@@ -8,7 +8,7 @@ public class MariaDb : IDisposable
         private readonly TextFileHandler _mDbLog;
         private MySqlCommand _cmd;
         private bool _connOpen;
-        private MySqlDataReader _rdr;
+        private MySqlDataReader? _rdr;
 
         private int _rows;
         public bool Success;
@@ -16,6 +16,9 @@ public class MariaDb : IDisposable
         public MariaDb(AppInfo appInfo)
         {
             _mDbLog = appInfo.TxtFile;
+
+            _conn = new MySqlConnection();
+            _cmd = new MySqlCommand();
 
             Success = false;
             try
@@ -82,7 +85,7 @@ public class MariaDb : IDisposable
             }
         }
 
-        public MySqlDataReader ExecQuery()
+        public MySqlDataReader? ExecQuery()
         {
             Success = true;
             try
@@ -99,7 +102,7 @@ public class MariaDb : IDisposable
             }
         }
         
-        public async Task<MySqlDataReader> ExecQueryAsync()
+        public async Task<MySqlDataReader?> ExecQueryAsync()
         {
             Success = true;
             try
@@ -116,7 +119,7 @@ public class MariaDb : IDisposable
             }
         }
 
-        public MySqlDataReader ExecQuery(string sql)
+        public MySqlDataReader? ExecQuery(string sql)
         {
             _cmd = Command(sql);
             Success = true;
@@ -134,7 +137,7 @@ public class MariaDb : IDisposable
             }
         }
         
-        public async Task<MySqlDataReader> ExecQueryAsync(string sql)
+        public async Task<MySqlDataReader?> ExecQueryAsync(string sql)
         {
             _cmd = Command(sql);
             Success = true;

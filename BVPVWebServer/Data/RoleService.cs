@@ -12,8 +12,8 @@ public class RoleService
         db.Open();
         var result = db.ExecQueryAsync($"select * from `Roles` order by `RoleLevel`");
         var rdr = result.Result;
-        if (!rdr.HasRows) return Task.FromResult(allRoles);
-        while (rdr.Read())
+        if (rdr is {HasRows: true}) return Task.FromResult(allRoles);
+        while (rdr != null && rdr.Read())
         {
             var role = new Role
             {
@@ -34,7 +34,7 @@ public class RoleService
         db.Open();
         var result = db.ExecQueryAsync($"select * from `Roles` where `RoleID` = '{role}'");
         var rdr = result.Result;
-        return Task.FromResult(rdr.HasRows);
+        return Task.FromResult(rdr is {HasRows: true});
     }
 }
 
