@@ -6,7 +6,7 @@
 
 <PageTitle>Roles</PageTitle>
 
-<MudText Typo="Typo.h4" Align="Align.Center">Roles Management</MudText>
+<MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
 <MudItem xs="3">
     <MudCard Outlined="true">
@@ -75,19 +75,10 @@
                 .LessThan(100);
         }
 
-        private async Task<bool> IsUniqueAsync(string email)
-        {
-    // Simulates a long running http call
-            await Task.Delay(2000);
-            return email.ToLower() != "test@test.com";
-        }
-
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
             var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
-            if (result.IsValid)
-                return Array.Empty<string>();
-            return result.Errors.Select(e => e.ErrorMessage);
+            return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };
     }
 
