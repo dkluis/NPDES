@@ -4,7 +4,7 @@ namespace BVPVWebServer.Data;
 
 public class RoleService
 {
-    public Task<List<Role>> GetAllRoles()
+    public Task<List<Role>> GetAllRolesAsync()
     {
         var allRoles = new List<Role>();
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
@@ -25,6 +25,28 @@ public class RoleService
         }
 
         return Task.FromResult(allRoles);
+    }
+    
+    public List<Role> GetAllRoles()
+    {
+        var allRoles = new List<Role>();
+        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from `Roles` order by `RoleLevel`");
+        if (!rdr!.HasRows) return allRoles;
+        while (rdr.Read())
+        {
+            var role = new Role
+            {
+                RoleId = rdr["RoleID"].ToString(),
+                RoleLevel = int.Parse(rdr["RoleLevel"].ToString()!),
+                ReadOnly = bool.Parse(rdr["ReadOnly"].ToString()!)
+            };
+            allRoles.Add(role);
+        }
+
+        return allRoles;
     }
 
     public Task<bool> DoesRoleExist(string role)
