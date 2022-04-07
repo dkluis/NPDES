@@ -12,8 +12,8 @@ public class RoleService
         db.Open();
         var result = db.ExecQueryAsync($"select * from `Roles` order by `RoleLevel`");
         var rdr = result.Result;
-        if (rdr is {HasRows: true}) return Task.FromResult(allRoles);
-        while (rdr != null && rdr.Read())
+        if (!rdr!.HasRows) return Task.FromResult(allRoles);
+        while (rdr.Read())
         {
             var role = new Role
             {
