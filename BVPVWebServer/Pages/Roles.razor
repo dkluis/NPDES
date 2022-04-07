@@ -38,26 +38,30 @@
 
 <MudText>@_Init_Info</MudText>
 
-<MudSimpleTable Dense="true" Hover="true" Bordered="true" Striped="true" FixedHeader="true" Style="height: 100px">
-    <thead>
-        <tr>
-            @foreach (var h in headings)
-            {
-                <th>@h</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var role in _roles)
-        {
-            <tr>
-                <td>@role.RoleId</td>
-                <td>@role.RoleLevel</td>
-                <td>@role.ReadOnly</td>
-            </tr>
-        }
-    </tbody>
-</MudSimpleTable>
+
+<MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+          Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Available Roles</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" 
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId)">Role</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Role">@context.RoleId</MudTd>
+        <MudTd DataLabel="Level">@context.ReadOnly</MudTd>
+        <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {10, 25}"/>
+    </PagerContent>
+</MudTable>
+
 
 @code {
     // Form Handling Code
@@ -97,6 +101,7 @@
     // Table Handling Code
     private string _Init_Info;
     private bool _loading;
+    private string searchString = "";
     private IEnumerable<Role> _roles = new List<Role>();
 
     protected override async Task OnInitializedAsync()
@@ -107,15 +112,16 @@
         _loading = false;
     }
 }
-
-@code {
-    string[] headings = { "Role", "Level", "ReadOnly" };
-    string[] rows = {
-        @"1 Krishna kpartner0@usatoday.com Male 28.25.250.202",
-        @"2 Webb wstitle1@ning.com Male 237.168.134.114",
-        @"3 Nathanil nneal2@cyberchimps.com Male 92.6.0.175",
-        @"4 Adara alockwood3@patch.com Female 182.174.217.152",
-        @"5 Cecilius cchaplin4@shinystat.com Male 195.124.144.18",
-        @"6 Cicely cemerine9@soup.io Female 138.94.191.43",
-    };
+@code
+{
+    private bool FilterFunc(Role role)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (role.RoleId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{role.RoleId}".Contains(searchString))
+            return true;
+        return false;
+    }
 }
