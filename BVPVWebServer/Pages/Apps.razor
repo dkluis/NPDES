@@ -1,5 +1,20 @@
 @page "/apps"
 
+@inject StateService _state
+@inject NavigationManager _navMgr
+@{
+    if (_state.UserId != Environment.UserName)
+    {
+        _state.InitUserInfo(Environment.UserName);
+    }
+}
+@{
+    if (!_state.IsLoggedIn)
+    {
+        _navMgr.NavigateTo("/UserLogin");
+    }
+}
+
 <PageTitle>Functions</PageTitle>
 
 <MudText Typo="Typo.h4" Align="Align.Center">Function Maintenance</MudText>

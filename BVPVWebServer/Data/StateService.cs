@@ -6,11 +6,11 @@ public class StateService
 {
     public static readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
     public static readonly MariaDb Db = new MariaDb(AppInfo);
-
-    public UserInfo? UserInfo;
+    
     public UserSystemState? SystemState;
     public UserAppState? AppState;
     public string? UserId;
+    public bool IsLoggedIn;
 
 
     public void InitUserInfo(string userid)
@@ -18,6 +18,7 @@ public class StateService
         UserId = userid;
         InitSystemState(userid);
         InitAppStates(userid);
+        IsLoggedIn = false;
     }
     
     public void InitSystemState(string userid)
@@ -29,7 +30,6 @@ public class StateService
         {
             SystemState.DarkTheme = (bool) rdr["DarkTheme"];
         }
-
         Db.Close();
     }
 
@@ -64,12 +64,6 @@ public class StateService
     public void Delete()
     {
     }
-}
-
-public class UserInfo
-{
-    public UserSystemState? UserSystemState;
-    public UserAppState? UserAppState;
 }
 
 public class UserSystemState

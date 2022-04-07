@@ -1,13 +1,24 @@
 @page "/"
-@using BVPVWebServer.Data
+
+@inject NavigationManager _navMgr
 @inject StateService _state
 @{
-    _state.InitUserInfo(Environment.UserName);
+    if (_state.UserId != Environment.UserName)
+    {
+        _state.InitUserInfo(Environment.UserName);
+    }
 }
 
+<MudAlert Severity="Severity.Info">User @Environment.UserName is known as @_state.UserId</MudAlert>
+<MudAlert Severity="Severity.Info">Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>
+<MudAlert Severity="Severity.Info">IsLoggedIn: @_state.IsLoggedIn </MudAlert>
 
-@_state.UserId
-@_state.SystemState!.DarkTheme
+@{
+    if (!_state.IsLoggedIn)
+    {
+        _navMgr.NavigateTo("/UserLogin");
+    }
+}
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -17,3 +28,15 @@
 <MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
     <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
 </MudPaper>
+
+@code
+{
+    private void CheckUser()
+    {
+        if (_state.UserId != Environment.UserName)
+        {
+            _state.InitUserInfo(Environment.UserName);
+        }
+    }
+
+}

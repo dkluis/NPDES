@@ -1,5 +1,14 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+﻿@inject StateService _state
+@{
+    if (_state.UserId != Environment.UserName)
+    {
+        _state.InitUserInfo(Environment.UserName);
+    }
+}
+
+
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All">NPDES Home</MudNavLink>
     
     <MudDivider Class="my-2"/>
     <MudNavGroup Title="Waste Management" Expanded="false">
@@ -33,8 +42,7 @@
     </MudNavGroup>
 
     @code{
-        private MudTheme _theme = new();
-        private bool _isDarkMode = true;
+
     }
 
 </MudNavMenu>
@@ -42,12 +50,12 @@
 
 @code {
     private bool _collapseNavMenu = true;
-
     private string? NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
-
     private void ToggleNavMenu()
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
-
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
 }
+

@@ -27,7 +27,7 @@ public class RoleService
         return Task.FromResult(allRoles);
     }
     
-    public List<Role> GetAllRoles()
+    public static IEnumerable<Role> GetAllRoles()
     {
         var allRoles = new List<Role>();
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
@@ -49,14 +49,13 @@ public class RoleService
         return allRoles;
     }
 
-    public Task<bool> DoesRoleExist(string role)
+    public bool DoesRoleExist(string role)
     {
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
-        var result = db.ExecQueryAsync($"select * from `Roles` where `RoleID` = '{role}'");
-        var rdr = result.Result;
-        return Task.FromResult(rdr is {HasRows: true});
+        var rdr = db.ExecQuery($"select * from `Roles` where `RoleID` = '{role}'");
+        return (rdr is {HasRows: true});
     }
 }
 

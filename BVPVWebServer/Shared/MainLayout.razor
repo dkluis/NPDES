@@ -1,10 +1,11 @@
-﻿@using BVPVWebServer.Data
-@inherits LayoutComponentBase
-@inject StateService _state
+﻿@inherits LayoutComponentBase
 
-@code
-{
-    private bool loggedIn = true;
+@inject StateService _state
+@{
+    if (_state.UserId != Environment.UserName)
+    {
+        _state.InitUserInfo(Environment.UserName);
+    }
 }
 
 <MudThemeProvider Theme="_themeManager.Theme"></MudThemeProvider>
@@ -18,12 +19,12 @@
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
-        @if (loggedIn)
+        @if (_state.IsLoggedIn)
         {
             <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit"/>
             <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit"/>
         }
-        @if (!loggedIn)
+        @if (!_state.IsLoggedIn)
         {
             <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit"/>
         }
