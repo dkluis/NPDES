@@ -1,14 +1,15 @@
-﻿@inherits LayoutComponentBase
-
-<MudThemeProvider Theme="_themeManager.Theme"></MudThemeProvider>
-<MudDialogProvider></MudDialogProvider>
-<MudSnackbarProvider></MudSnackbarProvider>
+﻿@using BVPVWebServer.Data
+@inherits LayoutComponentBase
+@inject StateService _state
 
 @code
 {
     private bool loggedIn = true;
 }
 
+<MudThemeProvider Theme="_themeManager.Theme"></MudThemeProvider>
+<MudDialogProvider></MudDialogProvider>
+<MudSnackbarProvider></MudSnackbarProvider>
 <PageTitle>MainLayout</PageTitle>
 
 <MudThemeProvider/>

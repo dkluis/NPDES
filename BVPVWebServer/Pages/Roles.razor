@@ -1,12 +1,17 @@
+@page "/roles"
+
 @using FluentValidation
 @using BVPVWebServer.Data
 @inject RoleService _roleService
-
-@page "/roles"
+@inject StateService _state
+@{
+    _state.InitUserInfo("Dick");
+}
 
 <PageTitle>Roles</PageTitle>
 
 <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
+<MudText Typo="Typo.caption">DarkTheme Info is: @_state.SystemState!.DarkTheme</MudText>
 
 <MudItem xs="6">
     <MudCard Outlined="true">

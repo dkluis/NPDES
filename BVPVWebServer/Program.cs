@@ -13,6 +13,7 @@ builder.Services.AddMudServices();
 
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<RoleService>();
+builder.Services.AddSingleton<StateService>();
 
 var app = builder.Build();
 

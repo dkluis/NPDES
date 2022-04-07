@@ -1,4 +1,13 @@
 @page "/"
+@using BVPVWebServer.Data
+@inject StateService _state
+@{
+    _state.InitUserInfo(Environment.UserName);
+}
+
+
+@_state.UserId
+@_state.SystemState!.DarkTheme
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -8,8 +17,3 @@
 <MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
     <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
 </MudPaper>
-
-@code
-{
-
-}

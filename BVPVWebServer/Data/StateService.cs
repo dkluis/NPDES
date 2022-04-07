@@ -1,46 +1,75 @@
+using Libraries;
+
 namespace BVPVWebServer.Data;
 
 public class StateService
 {
-    public class UserState
+    public static readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+    public static readonly MariaDb Db = new MariaDb(AppInfo);
+
+    public UserInfo? UserInfo;
+    public UserSystemState? SystemState;
+    public UserAppState? AppState;
+    public string? UserId;
+
+
+    public void InitUserInfo(string userid)
     {
-        public UserState Info;
-        public UserSystemState SystemState;
-        public UserAppState AppState;
-
-        public void Get()
+        UserId = userid;
+        InitSystemState(userid);
+        InitAppStates(userid);
+    }
+    
+    public void InitSystemState(string userid)
+    {
+        SystemState = new UserSystemState();
+        Db.Open();
+        var rdr = Db.ExecQueryAsync($"select * from `UserSystemState` where `UserID` = '{userid}'").Result;
+        if (!rdr!.HasRows)
         {
-            
+            SystemState.DarkTheme = (bool) rdr["DarkTheme"];
         }
 
-        public void UpdateAll()
+        Db.Close();
+    }
+
+    public void InitAppStates(string userid)
+    {
+        AppState = new UserAppState();
+        Db.Open();
+        var rdr = Db.ExecQueryAsync($"select * from `UserAppState` where `UserID` = '{userid}'").Result;
+        if (!rdr!.HasRows)
         {
-            
+            AppState!.App = rdr["AppID"].ToString();
+            var kv = new List<KeyValuePair<string, string>>();
+            //TODO break string of setting in DB out into key value pairs !!!!!
+            AppState.Setting = kv;
         }
 
-        public void UpdateSystemState()
-        {
-            
-        }
+        Db.Close();
+    }
 
-        public void UpdateAppState()
-        {
-            
-        }
+    public void UpdateAll()
+    {
+    }
 
-        public void Delete()
-        {
-            
-        }
-        
+    public void UpdateSystemState()
+    {
+    }
+
+    public void UpdateAppState()
+    {
+    }
+
+    public void Delete()
+    {
     }
 }
 
-public class UserStateInfo
+public class UserInfo
 {
-    public string User { get; set; }
-    public List<UserAppState> AppStates { get; set; }
-    public UserSystemState SystemState { get; set; }
+    public UserSystemState? UserSystemState;
+    public UserAppState? UserAppState;
 }
 
 public class UserSystemState
@@ -50,6 +79,6 @@ public class UserSystemState
 
 public class UserAppState
 {
-    public string App { get; set; }
-    public string Setting { get; set; }
+    public string? App { get; set; }
+    public List<KeyValuePair<string, string>>? Setting { get; set; }
 }
