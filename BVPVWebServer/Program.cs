@@ -12,6 +12,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<WeatherForecastService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<StateService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 

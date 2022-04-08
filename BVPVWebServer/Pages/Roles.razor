@@ -55,7 +55,7 @@
             <MudText Class="py-2" Typo="Typo.h4" Align="Align.Center"> Roles Table</MudText>
             <MudItem xs="12" sm="10" md="8" xl="6" xxl="4">
                 <MudCard Outlined="false">
-                    <MudTextField Style="margin-bottom: 5px" T="string" @bind-Text="_sqlsearchString" Variant="Variant.Filled"
+                    <MudTextField Style="margin-bottom: 5px" T="string" @bind-Text="_sqlSearchString" Variant="Variant.Filled"
                                   Label="Enter (wildcard) search ">
                     </MudTextField>
                     <MudGrid Justify="Justify.FlexEnd">
@@ -138,25 +138,22 @@
 @code
 {
     // Table Handling Code
-    private string? _initInfo;
     private bool _loading;
     private string _searchString = "";
-    private string _sqlsearchString = "";
+    private string _sqlSearchString = "";
     private IEnumerable<Role> _roles = new List<Role>();
 
     protected override void OnInitialized()
     {
         _loading = true;
-        _roles = RoleService.GetAllRoles(_sqlsearchString);
-        _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
+        _roles = RoleService.GetAllRoles(_sqlSearchString);
         _loading = false;
     }
 
     private void ProcessTableFill()
     {
         _loading = true;
-        _roles = RoleService.GetAllRoles(_sqlsearchString);
-        _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
+        _roles = RoleService.GetAllRoles(_sqlSearchString);
         _loading = false;
     }
 
@@ -164,7 +161,6 @@
     {
         _loading = true;
         _roles = RoleService.GetAllRoles("*");
-        _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
         _loading = false;
     }
 }
