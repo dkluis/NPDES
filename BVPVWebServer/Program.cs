@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using BVPVWebServer.Data;
 using MudBlazor.Services;
 
@@ -11,7 +9,7 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddMudServices();
 
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<WeatherForecastService>();
 builder.Services.AddSingleton<RoleService>();
 builder.Services.AddSingleton<StateService>();
 

@@ -1,5 +1,7 @@
 @page "/"
 
+@inject RoleService _roleService
+
 @inject NavigationManager _navMgr
 @inject StateService _state
 @{
@@ -9,16 +11,9 @@
     }
 }
 
-<MudAlert Severity="Severity.Info">User @Environment.UserName is known as @_state.UserId</MudAlert>
-<MudAlert Severity="Severity.Info">Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>
-<MudAlert Severity="Severity.Info">IsLoggedIn: @_state.IsLoggedIn </MudAlert>
-
-@{
-    if (!_state.IsLoggedIn)
-    {
-        _navMgr.NavigateTo("/UserLogin");
-    }
-}
+<MudAlert Severity="MudBlazor.Severity.Info">User @Environment.UserName is known as @_state.UserId</MudAlert>
+<MudAlert Severity="MudBlazor.Severity.Info">Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>
+<MudAlert Severity="MudBlazor.Severity.Info">IsLoggedIn: @_state.IsLoggedIn </MudAlert>
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -29,14 +24,59 @@
     <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
 </MudPaper>
 
+@{
+    if (!_state.IsLoggedIn)
+    {
+        <MudItem xs="6">
+            <MudCard Outlined="true">
+                <MudText Align="Align.Center" Typo="Typo.h4">Login Now:  You are not Logged In</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessLogin)">Login Button</MudButton>
+            </MudCard>
+        </MudItem>
+    }
+}
+
 @code
 {
-    private void CheckUser()
+    private void ProcessLogin()
     {
-        if (_state.UserId != Environment.UserName)
+        _state.IsLoggedIn = true; 
+        StateHasChanged();
+        _navMgr.NavigateTo("/");
+    }
+}
+
+
+@code {
+    // Form Handling Code
+    MudForm? _form;
+    readonly RoleFluentValidator _roleValidator = new RoleFluentValidator();
+    readonly Role _role = new Role();
+
+    private async Task Submit()
+    {
+        await _form!.Validate();
+    }
+
+    // Validation Code
+    public class RoleFluentValidator : AbstractValidator<Role>
+    {
+        public RoleFluentValidator()
         {
-            _state.InitUserInfo(Environment.UserName);
+            RuleFor(x => x.RoleId)
+                .NotEmpty()
+                .Length(1, 10);
+
+            RuleFor(x => x.RoleLevel)
+                .GreaterThan(0)
+                .LessThan(100);
         }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
+            return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
+        };
     }
 
 }
