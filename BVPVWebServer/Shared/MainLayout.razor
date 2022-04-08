@@ -2,9 +2,9 @@
 
 @inject StateService _state
 @{
-    if (_state.UserId != Environment.UserName)
+    if (_state == null)
     {
-        _state.InitUserInfo(Environment.UserName);
+        _state!.InitUserInfo(Environment.UserName);
     }
 }
 

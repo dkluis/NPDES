@@ -10,8 +10,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.Services.AddScoped<WeatherForecastService>();
-builder.Services.AddSingleton<RoleService>();
-builder.Services.AddSingleton<StateService>();
+builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<StateService>();
 
 var app = builder.Build();
 

@@ -4,12 +4,6 @@
 
 @inject NavigationManager _navMgr
 @inject StateService _state
-@{
-    if (_state.UserId != Environment.UserName)
-    {
-        _state.InitUserInfo(Environment.UserName);
-    }
-}
 
 <MudAlert Severity="MudBlazor.Severity.Info">User @Environment.UserName is known as @_state.UserId</MudAlert>
 <MudAlert Severity="MudBlazor.Severity.Info">Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>

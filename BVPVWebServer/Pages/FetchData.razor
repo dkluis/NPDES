@@ -3,21 +3,14 @@
 @inject StateService _state
 @inject NavigationManager _navMgr
 @{
-    if (_state.UserId != Environment.UserName)
-    {
-        _state.InitUserInfo(Environment.UserName);
-    }
-}
-@{
     if (!_state.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/UserLogin");
+        _navMgr.NavigateTo("/");
     }
 }
 
 <PageTitle>Weather forecast</PageTitle>
 
-@using BVPVWebServer.Data
 @inject WeatherForecastService ForecastService
 
 <h1>Weather forecast</h1>

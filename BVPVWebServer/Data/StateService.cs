@@ -25,7 +25,7 @@ public class StateService
     {
         SystemState = new UserSystemState();
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `UserSystemState` where `UserID` = '{userid}'").Result;
+        var rdr = Db.ExecQuery($"select * from `UserSystemState` where `UserID` = '{userid}'");
         if (!rdr!.HasRows)
         {
             SystemState.DarkTheme = (bool) rdr["DarkTheme"];
@@ -37,7 +37,7 @@ public class StateService
     {
         AppState = new UserAppState();
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `UserAppState` where `UserID` = '{userid}'").Result;
+        var rdr = Db.ExecQuery($"select * from `UserAppState` where `UserID` = '{userid}'");
         if (!rdr!.HasRows)
         {
             AppState!.App = rdr["AppID"].ToString();
