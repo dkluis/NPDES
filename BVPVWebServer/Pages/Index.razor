@@ -1,17 +1,14 @@
 @page "/"
+@using Severity = MudBlazor.Severity
 
 @inject RoleService _roleService
 
 @inject NavigationManager _navMgr
 @inject StateService _state
 
-<MudAlert Severity="MudBlazor.Severity.Info">User @Environment.UserName is known as @_state.UserId</MudAlert>
-<MudAlert Severity="MudBlazor.Severity.Info">Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>
-<MudAlert Severity="MudBlazor.Severity.Info">IsLoggedIn: @_state.IsLoggedIn </MudAlert>
-
 <PageTitle>Home Styropek ES</PageTitle>
 
-<MudText Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
+<MudText Class="py-6" Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
 <MudText Typo="Typo.h4" Align="Align.Center">Home Page</MudText>
 
 <MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
@@ -21,21 +18,25 @@
 @{
     if (!_state.IsLoggedIn)
     {
-        <MudItem xs="6">
-            <MudCard Outlined="true">
-                <MudText Align="Align.Center" Typo="Typo.h4">Login Now:  You are not Logged In</MudText>
-                <MudButton DisableElevation="true" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessLogin)">Login Button</MudButton>
-            </MudCard>
-        </MudItem>
+        <MudGrid Justify="Justify.Center" Class="py-8">
+            <MudItem xs="6">
+                <MudCard Outlined="true">
+                    <MudText Class="py-4" Align="Align.Center" Typo="Typo.h4">Login Now: You are not Logged In</MudText>
+                    <MudButton DisableElevation="true" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessLogin)">Login</MudButton>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
     }
 }
+
+<MudAlert Severity="MudBlazor.Severity.Info">System User @Environment.UserName is known as NPDES user @_state.UserId and Initial Dark Theme: @_state!.SystemState!.DarkTheme</MudAlert>
+<MudAlert Severity="Severity.Warning">These webpages are written different NO Refreshing is needed ever!!!  In fact a Refresh will cause a LOGOUT!!!</MudAlert>
 
 @code
 {
     private void ProcessLogin()
     {
-        _state.IsLoggedIn = true; 
-        StateHasChanged();
+        _state.IsLoggedIn = true;
         _navMgr.NavigateTo("/");
     }
 }
@@ -72,5 +73,4 @@
             return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };
     }
-
 }
