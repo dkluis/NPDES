@@ -46,24 +46,27 @@
         </MudCardActions>
     </MudCard>
 </MudItem>
+
 <MudItem xs="8">
     <MudCard Outlined="true">
+        <MudText Typo="Typo.h4" Align="Align.Center"> Roles Table</MudText>
         <MudItem xs="4">
             <MudCard Outlined="true">
                 <MudTextField T="string" @bind-Text="_sqlsearchString" Variant="Variant.Filled"
-                              Label="Enter search or Enter * for all Roles ">
+                              Label="Enter (wildcard) search ">
                 </MudTextField>
-                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessTableFill)">Fill Table</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessTableFill)">Search Roles</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(FillTable)">Fill Table</MudButton>
             </MudCard>
         </MudItem>
-        <MudItem xs="8">
+        <MudItem xs="12">
             <MudCard Outlined="true">
                 <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
                           Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Found Roles</MudText>
                         <MudSpacer/>
-                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start"
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search within Table for Role" Adornment="Adornment.Start"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
                         </MudTextField>
                     </ToolBarContent>
@@ -147,6 +150,14 @@
     {
         _loading = true;
         _roles = RoleService.GetAllRoles(_sqlsearchString);
+        _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
+        _loading = false;
+    }
+    
+    private void FillTable()
+    {
+        _loading = true;
+        _roles = RoleService.GetAllRoles("*");
         _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
         _loading = false;
     }
