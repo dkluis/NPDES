@@ -23,11 +23,15 @@
                 <MudTextField @bind-Value="_role.RoleId"
                               For="@(() => _role.RoleId)"
                               Immediate="true"
-                              Label="Enter Role"/>
+                              Label="Enter Role"
+                              Variant="Variant.Filled">
+                </MudTextField>
                 <MudNumericField @bind-Value="_role.RoleLevel"
                                  For="@(() => _role.RoleLevel)"
                                  Immediate="true"
-                                 Label="Enter Role Level"/>
+                                 Label="Enter Role Level"
+                                 Variant="Variant.Filled">
+                </MudNumericField>
                 <MudText Style="padding-top: 10px">Is Role ReadOnly Access: </MudText>
                 <MudRadioGroup @bind-Selection="_role.ReadOnly"
                                For="@(() => _role.ReadOnly)"
@@ -42,31 +46,51 @@
         </MudCardActions>
     </MudCard>
 </MudItem>
-
-<MudText>@_initInfo</MudText>
-
-<MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-          Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Available Roles</MudText>
-            <MudSpacer />
-            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" 
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-    <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId)">Role</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Role">@context.RoleId</MudTd>
-        <MudTd DataLabel="Level">@context.ReadOnly</MudTd>
-        <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
-    </RowTemplate>
-    <PagerContent>
-        <MudTablePager PageSizeOptions="new [] {10, 25}"/>
-    </PagerContent>
-</MudTable>
+<MudItem xs="8">
+    <MudCard Outlined="true">
+        <MudItem xs="4">
+            <MudCard Outlined="true">
+                <MudTextField T="string" @bind-Text="_sqlsearchString" Variant="Variant.Filled"
+                              Label="Enter search or Enter * for all Roles ">
+                </MudTextField>
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessTableFill)">Fill Table</MudButton>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="8">
+            <MudCard Outlined="true">
+                <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+                          Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Found Roles</MudText>
+                        <MudSpacer/>
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId)">Role</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh T="int">
+                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Role">@context.RoleId</MudTd>
+                        <MudTd DataLabel="Level">@context.ReadOnly</MudTd>
+                        <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new[] {10, 25}"/>
+                    </PagerContent>
+                </MudTable>
+            </MudCard>
+        </MudItem>
+    </MudCard>
+</MudItem>
 
 @code {
     // Form Handling Code
@@ -99,6 +123,7 @@
             return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };
     }
+
 }
 
 @code
@@ -107,12 +132,21 @@
     private string? _initInfo;
     private bool _loading;
     private string _searchString = "";
+    private string _sqlsearchString = "";
     private IEnumerable<Role> _roles = new List<Role>();
 
     protected override void OnInitialized()
     {
         _loading = true;
-        _roles = RoleService.GetAllRoles();
+        _roles = RoleService.GetAllRoles(_sqlsearchString);
+        _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
+        _loading = false;
+    }
+
+    private void ProcessTableFill()
+    {
+        _loading = true;
+        _roles = RoleService.GetAllRoles(_sqlsearchString);
         _initInfo = "DEBUGGING Info ---->>>> GetAllRoles has returned: " + _roles.Count() + " Records";
         _loading = false;
     }

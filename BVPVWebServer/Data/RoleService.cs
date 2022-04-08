@@ -27,13 +27,27 @@ public class RoleService
         return Task.FromResult(allRoles);
     }
     
-    public static IEnumerable<Role> GetAllRoles()
+    public static IEnumerable<Role> GetAllRoles(string SearchFor = "")
     {
         var allRoles = new List<Role>();
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from `Roles` order by `RoleLevel`");
+        var sql = "";
+        if (SearchFor == "")
+        {
+            sql = $"select * from `Roles` where `RoleID` = ' ' order by `RoleLevel`";
+        }
+        else if (SearchFor == "*")
+        {
+            sql = $"select * from `Roles` order by `RoleLevel`";
+        }
+        else
+        {
+            sql = $"select * from `Roles` where `RoleID` like '%{SearchFor}%' order by `RoleLevel`";
+        }
+       
+        var rdr = db.ExecQuery(sql);
         if (!rdr!.HasRows) return allRoles;
         while (rdr.Read())
         {
