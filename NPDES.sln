@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserTesting", "UserTesting\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BVPVWebServer", "BVPVWebServer\BVPVWebServer.csproj", "{72AA549C-FC16-4449-9A76-258D40E7E3C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BVPVAPIServer", "BVPVAPIServer\BVPVAPIServer.csproj", "{EDA00EF5-2E49-4EB1-B986-425E78D82750}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{72AA549C-FC16-4449-9A76-258D40E7E3C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72AA549C-FC16-4449-9A76-258D40E7E3C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72AA549C-FC16-4449-9A76-258D40E7E3C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA00EF5-2E49-4EB1-B986-425E78D82750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA00EF5-2E49-4EB1-B986-425E78D82750}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA00EF5-2E49-4EB1-B986-425E78D82750}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA00EF5-2E49-4EB1-B986-425E78D82750}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

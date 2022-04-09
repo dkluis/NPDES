@@ -1,5 +1,7 @@
 ﻿@page "/fetchdata"
 
+@inject HttpClient _httpClient
+
 @inject StateService _state
 @inject NavigationManager _navMgr
 @{
@@ -53,7 +55,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        //forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        forecasts = await _httpClient.GetFromJsonAsync<WeatherForecast[]>("https://localhost:5001/WeatherForecast");
     }
 
 }
