@@ -8,6 +8,7 @@ public class AppInfo
     public readonly string ActiveDbConn;
     public readonly string Application;
     public readonly string Program;
+    public readonly string ApiServerBase;
 
     public readonly string FullConfigPath;
     public readonly string FileName;
@@ -33,6 +34,7 @@ public class AppInfo
         }
 
         WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
+        ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");
 
         LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
         FileName = Program + ".log";

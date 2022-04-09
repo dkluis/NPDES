@@ -12,6 +12,12 @@ public class StateService
     public string? UserId;
     public bool IsLoggedIn;
 
+    public string ApiServerBase;
+
+    public StateService()
+    {
+        ApiServerBase = AppInfo.ApiServerBase;
+    }
 
     public void InitUserInfo(string userid)
     {
@@ -19,6 +25,7 @@ public class StateService
         InitSystemState(userid);
         InitAppStates(userid);
         IsLoggedIn = false;
+        ApiServerBase = AppInfo.ApiServerBase;
     }
     
     public void InitSystemState(string userid)

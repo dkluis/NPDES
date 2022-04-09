@@ -53,6 +53,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _forecasts = await _httpClient.GetFromJsonAsync<WeatherForecast[]>("http://bvpvserver.local:5101/weatherforecast");
+        _forecasts = await _httpClient.GetFromJsonAsync<WeatherForecast[]>(_state.ApiServerBase + "weatherforecast");
     }
 }
