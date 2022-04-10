@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Libraries;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BVPVAPIServer.Controllers;
 
@@ -18,10 +16,11 @@ public class UserController : ControllerBase
     {
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` = '{userId}' LIMIT 1").Result;
-        UserRec UserInfo = new UserRec();
+        var userInfo = new UserRec();
+        if (rdr == null) return userInfo;
         while (rdr.Read())
         {
-            UserInfo = new UserRec
+            userInfo = new UserRec
             {
                 UserId = rdr["UserID"].ToString(),
                 Password = rdr["Password"].ToString(),
@@ -30,7 +29,7 @@ public class UserController : ControllerBase
         }
         Db.Close();
         
-        return UserInfo;
+        return userInfo;
     }
 
     [HttpGet("/GetAll")]
@@ -39,15 +38,16 @@ public class UserController : ControllerBase
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Users`").Result;
         List<UserRec> users = new List<UserRec>();
+        if (rdr == null) return users;
         while (rdr.Read())
         {
-            var UserInfo = new UserRec
+            var userInfo = new UserRec
             {
                 UserId = rdr["UserID"].ToString(),
                 Password = rdr["Password"].ToString(),
                 Salt = rdr["Salt"].ToString()
             };
-            users.Add(UserInfo);
+            users.Add(userInfo);
         }
         Db.Close();
 
@@ -59,7 +59,8 @@ public class UserController : ControllerBase
     {
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` like '{wildcard}'").Result;
-        List<UserRec> Users = new List<UserRec>();
+        List<UserRec> users = new List<UserRec>();
+        if (rdr == null) return users;
         while (rdr.Read())
         {
             var userInfo = new UserRec
@@ -68,18 +69,18 @@ public class UserController : ControllerBase
                 Password = rdr["Password"].ToString(),
                 Salt = rdr["Salt"].ToString()
             };
-            Users.Add(userInfo);
+            users.Add(userInfo);
         }
         Db.Close();
 
-        return Users;
+        return users;
     }
     
     [HttpPut("Add/{userRec}")]
     public bool PutUserInfo(UserRec userRec) 
     {
         Db.Open();
-        var sql = $"insert into Users values ('{userRec!.UserId}', '{userRec!.Password}', '{userRec!.Salt}');";
+        var sql = $"insert into Users values ('{userRec.UserId}', '{userRec.Password}', '{userRec.Salt}');";
         Db.ExecNonQuery(sql);
         var result = Db.Success;
         Db.Close();
