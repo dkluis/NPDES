@@ -6,18 +6,18 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace BVPVAPIServer.Controllers;
 
 [ApiController]
-[Route("[controller]/{user}")]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
  
     public static readonly AppInfo AppInf = new AppInfo("NPDES", "WebUI", "DbProduction");
     public static readonly MariaDb Db = new MariaDb(AppInf);
 
-    [HttpGet(Name = "GetUser")]
-    public string GetUserInfo(string user) 
+    [HttpGet("{userId}")]
+    public UserRec GetUserInfo(string userId) 
     {
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` = '{user}' LIMIT 1").Result;
+        var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` = '{userId}' LIMIT 1").Result;
         UserRec UserInfo = new UserRec();
         while (rdr.Read())
         {
@@ -28,24 +28,17 @@ public class UserController : ControllerBase
                 Salt = rdr["Salt"].ToString()
             };
         }
-
-        return JsonSerializer.Serialize<UserRec>(UserInfo);
+        Db.Close();
+        
+        return UserInfo;
     }
-}
 
-[ApiController]
-[Route("[controller]")]
-public class AllUsers : ControllerBase
-{
-    public static readonly AppInfo AppInf = new AppInfo("NPDES", "WebUI", "DbProduction");
-    public static readonly MariaDb Db = new MariaDb(AppInf);
-
-    [HttpGet(Name = "Users")]
-    public List<UserRec> GetAllUsers() 
+    [HttpGet("/GetAll")]
+    public List<UserRec> GetAllUsers()
     {
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Users`").Result;
-        List<UserRec> Users = new List<UserRec>();
+        List<UserRec> users = new List<UserRec>();
         while (rdr.Read())
         {
             var UserInfo = new UserRec
@@ -54,13 +47,69 @@ public class AllUsers : ControllerBase
                 Password = rdr["Password"].ToString(),
                 Salt = rdr["Salt"].ToString()
             };
-            var userrec = JsonConvert.SerializeObject(UserInfo);
-            Users.Add(UserInfo);
+            users.Add(UserInfo);
+        }
+        Db.Close();
+
+        return users;
+    }
+    
+    [HttpGet("/GetAllViaWildCard/{wildcard}")]
+    public List<UserRec> GetAllUsersWildCard(string wildcard)
+    {
+        Db.Open();
+        var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` like '{wildcard}'").Result;
+        List<UserRec> Users = new List<UserRec>();
+        while (rdr.Read())
+        {
+            var userInfo = new UserRec
+            {
+                UserId = rdr["UserID"].ToString(),
+                Password = rdr["Password"].ToString(),
+                Salt = rdr["Salt"].ToString()
+            };
+            Users.Add(userInfo);
         }
         Db.Close();
 
         return Users;
     }
+    
+    [HttpPut("Add/{userRec}")]
+    public bool PutUserInfo(UserRec userRec) 
+    {
+        Db.Open();
+        var sql = $"insert into Users values ('{userRec!.UserId}', '{userRec!.Password}', '{userRec!.Salt}');";
+        Db.ExecNonQuery(sql);
+        var result = Db.Success;
+        Db.Close();
+        
+        return result;
+    }
+    
+    [HttpPut("Update/{userRec}")]
+    public bool UpdateUserInfo(UserRec userRec) 
+    {
+        Db.Open();
+        //var sql = $"insert into Users values ('{userRec!.UserId}', '{userRec!.Password}', '{userRec!.Salt}');";
+        //Db.ExecNonQuery(sql);
+        Db.Close();
+        
+        return true;
+    }
+    
+    [HttpDelete("Delete/{userId}")]
+    public bool DeleteUserInfo(string userId) 
+    {
+        Db.Open();
+        var sql = $"delete from Users where `UserID` ='{userId}';";
+        Db.ExecNonQuery(sql);
+        var result = Db.Success;
+        Db.Close();
+        
+        return result;
+    }
+    
 }
 
 public class UserRec
