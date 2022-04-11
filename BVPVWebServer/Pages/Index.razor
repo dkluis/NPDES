@@ -1,13 +1,15 @@
 @page "/"
-@using Severity = MudBlazor.Severity
+@page "/Index"
+
 @using BVPVWebServer.Dialogs
+@using Severity = MudBlazor.Severity
+
 @inject IDialogService _dialog
 
 @inject RoleService _roleService
 @inject UserService _userService
 @inject NavigationManager _navMgr
 @inject StateService _stateService
-
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -17,13 +19,6 @@
 <MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
     <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
 </MudPaper>
-
-@{
-    if (!_stateService.IsLoggedIn)
-    {
-        _navMgr.NavigateTo("/LoginWindow");
-    }
-}
 
 <MudAlert Severity="MudBlazor.Severity.Info">
     System User @Environment.UserName is known as NPDES user @_stateService.UserId and Initial Dark Theme: @_stateService!.SystemState!.DarkTheme
@@ -36,7 +31,7 @@
 {
     private async Task ProcessLogin()
     {
-        var dialog =_dialog.Show<LoginDialog>("Custom Options Dialog");
+        var dialog = _dialog.Show<LoginDialog>("Custom Options Dialog");
         var result = await dialog!.Result;
         if (!result.Cancelled) _stateService.IsLoggedIn = true;
         _navMgr.NavigateTo("/");
@@ -74,6 +69,20 @@
             var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
             return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };
+    }
+
+}
+
+@code{
+    private string? LastPage;
+    private bool IsUserLoggedIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!_stateService.IsLoggedIn)
+        {
+            if (!IsUserLoggedIn) _navMgr.NavigateTo("/LoginWindow");
+        }
     }
 
 }

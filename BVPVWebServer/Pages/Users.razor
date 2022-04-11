@@ -1,5 +1,6 @@
 @page "/users"
 
+@inject HttpClient _http
 @inject StateService _state
 @inject NavigationManager _navMgr
 @{
@@ -13,6 +14,14 @@
 
 <MudText Typo="Typo.h4" Align="Align.Center">User Maintenance</MudText>
 
-@code {
 
+
+@code {
+    private Users[]? _users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = await _http.GetFromJsonAsync<Users[]>("/GetAll");
+        Console.WriteLine(_users);
+    }
 }

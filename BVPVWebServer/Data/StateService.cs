@@ -1,4 +1,5 @@
 using Libraries;
+using Newtonsoft.Json;
 
 namespace BVPVWebServer.Data;
 
@@ -13,10 +14,20 @@ public class StateService
     public bool IsLoggedIn;
 
     public string ApiServerBase;
+    public string ConfigPath;
+    
+    private static TextFileHandler? _sessionInfo;
+    private bool _sessioninitialized = false;
+    public string? LastDateLoggedIn;
 
     public StateService()
     {
         ApiServerBase = AppInfo.ApiServerBase;
+    }
+
+    public AppInfo GetAppInfo()
+    {
+        return AppInfo;
     }
 
     public void InitUserInfo(string userid)
@@ -24,8 +35,10 @@ public class StateService
         UserId = userid;
         InitSystemState(userid);
         InitAppStates(userid);
+        ConfigPath = AppInfo.ConfigPath;
         IsLoggedIn = false;
         ApiServerBase = AppInfo.ApiServerBase;
+        InitSessionState();
     }
     
     public void InitSystemState(string userid)
@@ -71,7 +84,25 @@ public class StateService
     public void Delete()
     {
     }
+    
+    public void InitSessionState()
+    {
+        _sessionInfo = new TextFileHandler($"{UserId}-{DateTime.Now:yyyy-MM-dd}.txt", "SessionService",
+            $"{ConfigPath}", 3);
+        _sessioninitialized = true;
+        LastDateLoggedIn = _sessionInfo.ReadKeyArray("Login");
+    }
+
+    public bool WriteJson(List<KeyValuePair<string, string>> keyValuePair)
+    {
+        if (!_sessioninitialized) return false;
+        var json = JsonConvert.SerializeObject(keyValuePair);
+        _sessionInfo!.WriteJson(json);
+        return true;
+    }
 }
+
+
 
 public class UserSystemState
 {

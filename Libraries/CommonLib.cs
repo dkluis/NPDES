@@ -11,6 +11,7 @@ public class AppInfo
     public readonly string ApiServerBase;
 
     public readonly string FullConfigPath;
+    public readonly string ConfigPath;
     public readonly string FileName;
     public readonly string FilePath;
     public readonly string WorkingDir;
@@ -32,6 +33,7 @@ public class AppInfo
             Console.WriteLine($"Full Config File Does not Exist {FullConfigPath}");
             Environment.Exit(666);
         }
+        ConfigPath = new BaseConfig().ConfigPath;
 
         WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
         ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");
@@ -118,6 +120,12 @@ public class TextFileHandler
         if (loglevel > _level) return;
         using StreamWriter file = new(_fullFilePath, append);
         foreach (var msg in messages) file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
+    }
+
+    public void WriteJson(string message)
+    {
+        using StreamWriter file = new(_fullFilePath, false);
+        file.WriteLine(message);
     }
 
     public void Elapsed()

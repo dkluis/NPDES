@@ -5,11 +5,32 @@
 
 <h3>LoginWindow</h3>
 
-@{
-    _stateService.IsLoggedIn = true;
-    
-}
+<MudText>Last Page = @LastPage</MudText>
+<MudText>IsLoggedIn = @IsUserLoggedIn</MudText>
+<MudText>Last Date Logged In = @_stateService.LastDateLoggedIn</MudText>
+<MudButton @onclick="@FakeALogin">Fake a Login</MudButton>
 
 @code {
+    private string? LastPage;
+    private bool IsUserLoggedIn;
     
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private async Task FakeALogin()
+    {
+        _stateService.UserId = "Tommy";
+        _stateService.IsLoggedIn = true;
+        var date = DateTime.Now.ToString("yyyy-MM-dd");
+        var keyValuePair = new KeyValuePair<string, string>("Login", DateTime.Now.ToString("yyyy-MM-dd"));
+        var jsonArray = new List<KeyValuePair<string, string>>();
+        jsonArray.Add(keyValuePair);
+        _stateService.WriteJson(jsonArray);
+        StateHasChanged();
+        _navMgr.NavigateTo("/Index");
+
+    }
 }
