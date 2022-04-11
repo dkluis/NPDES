@@ -1,5 +1,14 @@
 @page "/LoginWindow"
+
+@inject StateService _stateService
+@inject NavigationManager _navMgr
+
 <h3>LoginWindow</h3>
+
+@{
+    _stateService.IsLoggedIn = true;
+    
+}
 
 @code {
     

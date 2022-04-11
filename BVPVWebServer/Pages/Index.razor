@@ -1,7 +1,6 @@
 @page "/"
 @using Severity = MudBlazor.Severity
 @using BVPVWebServer.Dialogs
-@using System.Diagnostics
 @inject IDialogService _dialog
 
 @inject RoleService _roleService
@@ -22,14 +21,7 @@
 @{
     if (!_stateService.IsLoggedIn)
     {
-        <MudGrid Justify="Justify.Center" Class="py-8">
-            <MudItem xs="6">
-                <MudCard Outlined="true">
-                    <MudText Class="py-4" Align="Align.Center" Typo="Typo.h4">Login Now: You are not Logged In</MudText>
-                    <MudButton DisableElevation="true" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessLogin)">Login</MudButton>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
+        _navMgr.NavigateTo("/LoginWindow");
     }
 }
 
