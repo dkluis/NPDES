@@ -1,4 +1,6 @@
+using IronXL.Xml.Spreadsheet;
 using Libraries;
+using MudBlazor.Utilities;
 using Newtonsoft.Json;
 
 namespace BVPVWebServer.Data;
@@ -7,27 +9,18 @@ public class StateService
 {
     public static readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
     public static readonly MariaDb Db = new MariaDb(AppInfo);
-    
+
     public UserSystemState? SystemState;
     public UserAppState? AppState;
     public string? UserId;
     public bool IsLoggedIn;
+    public string? LastDateLoggedIn;
 
     public string ApiServerBase;
-    public string ConfigPath;
-    
-    private static TextFileHandler? _sessionInfo;
-    private bool _sessioninitialized = false;
-    public string? LastDateLoggedIn;
 
     public StateService()
     {
         ApiServerBase = AppInfo.ApiServerBase;
-    }
-
-    public AppInfo GetAppInfo()
-    {
-        return AppInfo;
     }
 
     public void InitUserInfo(string userid)
@@ -35,12 +28,8 @@ public class StateService
         UserId = userid;
         InitSystemState(userid);
         InitAppStates(userid);
-        ConfigPath = AppInfo.ConfigPath;
-        IsLoggedIn = false;
-        ApiServerBase = AppInfo.ApiServerBase;
-        InitSessionState();
     }
-    
+
     public void InitSystemState(string userid)
     {
         SystemState = new UserSystemState();
@@ -49,7 +38,10 @@ public class StateService
         if (!rdr!.HasRows)
         {
             SystemState.DarkTheme = (bool) rdr["DarkTheme"];
+            SystemState.LastLoginDate = (string) rdr["LastLoginDate"];
+            SystemState.LastPage = (string) rdr["LastPage"];
         }
+
         Db.Close();
     }
 
@@ -85,21 +77,6 @@ public class StateService
     {
     }
     
-    public void InitSessionState()
-    {
-        _sessionInfo = new TextFileHandler($"{UserId}-{DateTime.Now:yyyy-MM-dd}.txt", "SessionService",
-            $"{ConfigPath}", 3);
-        _sessioninitialized = true;
-        LastDateLoggedIn = _sessionInfo.ReadKeyArray("Login");
-    }
-
-    public bool WriteJson(List<KeyValuePair<string, string>> keyValuePair)
-    {
-        if (!_sessioninitialized) return false;
-        var json = JsonConvert.SerializeObject(keyValuePair);
-        _sessionInfo!.WriteJson(json);
-        return true;
-    }
 }
 
 
@@ -107,6 +84,8 @@ public class StateService
 public class UserSystemState
 {
     public bool DarkTheme { get; set; }
+    public string LastLoginDate { get; set; }
+    public string LastPage { get; set; }
 }
 
 public class UserAppState
