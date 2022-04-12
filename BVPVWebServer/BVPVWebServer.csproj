@@ -16,4 +16,8 @@
       <ProjectReference Include="..\Libraries\Libraries.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dialogs" />
+    </ItemGroup>
+
 </Project>

@@ -4,42 +4,33 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
-@using Severity = MudBlazor.Severity
-
-@inject RoleService _roleService
-@inject UserService _userService
-@inject NavigationManager _navMgr
 @inject StateService _stateService
+@inject NavigationManager _navMgr
 
-<PageTitle>Home Styropek ES</PageTitle>
+<h3>LoginWindow</h3>
 
-<MudText Class="py-6" Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
-<MudText Typo="Typo.h4" Align="Align.Center">Home Page</MudText>
+<MudText>Last Page = @_stateService.SystemState!.LastPage</MudText>
+<MudText>IsLoggedIn = @_stateService.IsLoggedIn</MudText>
+<MudButton @onclick="@FakeALogin">Fake a Login</MudButton>
 
-<MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
-    <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
-</MudPaper>
-
-<MudAlert Severity="Severity.Info">
-    System User @Environment.UserName is known as NPDES user @_stateService.UserId, Dark Theme: @_stateService!.SystemState!.DarkTheme 
-    and LastPage: NIY
-</MudAlert>
-
-
-
-@code{
+@code {
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 })
+        if (result.Value is {Length: >= 1 })
         {
-            _navMgr.NavigateTo("/LoginWindow");
-        }
-        else
-        {
-            _stateService.InitUserInfo(result.Value);
+            _stateService.InitSystemState(result.Value);
             _stateService.IsLoggedIn = true;
+            _navMgr.NavigateTo("/Index");
         }
     }
 
-}
+    private async Task FakeALogin()
+    {
+        await _sessionStore.SetAsync("User", "Dick");
+        StateHasChanged();
+        _stateService.InitSystemState("Dick");
+        _stateService.IsLoggedIn = true;
+        _navMgr.NavigateTo("/Home");
+    }
+}}

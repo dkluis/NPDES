@@ -1,0 +1,44 @@
+@page "/Home"
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
+@using Severity = MudBlazor.Severity
+
+@inject RoleService _roleService
+@inject UserService _userService
+@inject NavigationManager _navMgr
+@inject StateService _stateService
+
+<PageTitle>Home Styropek ES</PageTitle>
+
+<MudText Class="py-6" Typo="Typo.h3" Align="Align.Center">BVPV Styropek - Environmental Services</MudText>
+<MudText Typo="Typo.h4" Align="Align.Center">Home Page</MudText>
+
+<MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
+    <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
+</MudPaper>
+
+<MudAlert Severity="Severity.Info">
+    System User @Environment.UserName is known as NPDES user @_stateService.UserId, Dark Theme: @_stateService!.SystemState!.DarkTheme 
+    and LastPage: @_stateService.SystemState.LastPage
+</MudAlert>
+
+
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 })
+        {
+            _navMgr.NavigateTo("/");
+        }
+        else
+        {
+            _stateService.InitUserInfo(result.Value);
+            _stateService.IsLoggedIn = true;
+        }
+    }
+
+}

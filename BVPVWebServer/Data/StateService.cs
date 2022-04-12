@@ -1,7 +1,4 @@
-using IronXL.Xml.Spreadsheet;
 using Libraries;
-using MudBlazor.Utilities;
-using Newtonsoft.Json;
 
 namespace BVPVWebServer.Data;
 
@@ -10,13 +7,12 @@ public class StateService
     public static readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
     public static readonly MariaDb Db = new MariaDb(AppInfo);
 
-    public UserSystemState? SystemState;
-    public UserAppState? AppState;
+    public SystemState? SystemState;
+    public AppState? AppState;
     public string? UserId;
     public bool IsLoggedIn;
-    public string? LastDateLoggedIn;
 
-    public string ApiServerBase;
+    public readonly string ApiServerBase;
 
     public StateService()
     {
@@ -32,14 +28,17 @@ public class StateService
 
     public void InitSystemState(string userid)
     {
-        SystemState = new UserSystemState();
+        SystemState = new SystemState();
         Db.Open();
         var rdr = Db.ExecQuery($"select * from `UserSystemState` where `UserID` = '{userid}'");
-        if (!rdr!.HasRows)
+        if (rdr!.HasRows)
         {
-            SystemState.DarkTheme = (bool) rdr["DarkTheme"];
-            SystemState.LastLoginDate = (string) rdr["LastLoginDate"];
-            SystemState.LastPage = (string) rdr["LastPage"];
+            while (rdr.Read())
+            {
+                UserId = (string) rdr["UserID"];
+                SystemState.DarkTheme = (bool) rdr["DarkTheme"];
+                SystemState.LastPage = (string) rdr["LastPage"];
+            }
         }
 
         Db.Close();
@@ -47,14 +46,22 @@ public class StateService
 
     public void InitAppStates(string userid)
     {
-        AppState = new UserAppState();
+        AppState = new AppState();
         Db.Open();
         var rdr = Db.ExecQuery($"select * from `UserAppState` where `UserID` = '{userid}'");
-        if (!rdr!.HasRows)
+        if (rdr!.HasRows)
         {
-            AppState!.App = rdr["AppID"].ToString();
+            while (rdr.Read())
+            {
+                AppState!.App = rdr["AppID"].ToString();
+                var kv = new List<KeyValuePair<string, string>>();
+                AppState.Setting = kv;
+            }
+        }
+        else
+        {
+            AppState.App = "";
             var kv = new List<KeyValuePair<string, string>>();
-            //TODO break string of setting in DB out into key value pairs !!!!!
             AppState.Setting = kv;
         }
 
@@ -81,14 +88,19 @@ public class StateService
 
 
 
-public class UserSystemState
+public class SystemState
 {
     public bool DarkTheme { get; set; }
-    public string LastLoginDate { get; set; }
-    public string LastPage { get; set; }
+    public string? LastPage { get; set; }
+
+    public SystemState()
+    {
+        DarkTheme = true;
+        LastPage = "";
+    }
 }
 
-public class UserAppState
+public class AppState
 {
     public string? App { get; set; }
     public List<KeyValuePair<string, string>>? Setting { get; set; }

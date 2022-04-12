@@ -2,11 +2,12 @@ namespace Libraries;
 
 public class BaseConfig
 {
-    public string FullConfigPath;
-    public string ConfigPath;
+    public readonly string FullConfigPath;
+    public readonly string ConfigPath;
 
     public BaseConfig()
     {
+        ConfigPath = string.Empty;
         var os = Environment.OSVersion;
         var pid = os.Platform;
         switch (pid)
