@@ -1,10 +1,13 @@
 @page "/users"
 
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
 @inject HttpClient _http
-@inject StateService _state
+@inject StateService _stateService
 @inject NavigationManager _navMgr
 @{
-    if (!_state.IsLoggedIn)
+    if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/LoginWindow");
     }
@@ -17,11 +20,11 @@
 
 
 @code {
-    private Users[]? _users;
-
     protected override async Task OnInitializedAsync()
     {
-        _users = await _http.GetFromJsonAsync<Users[]>("/GetAll");
-        Console.WriteLine(_users);
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
+        _stateService.IsLoggedIn = true;
     }
+    
 }

@@ -1,9 +1,12 @@
 @page "/counter"
 
-@inject StateService _state
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
+@inject StateService _stateService
 @inject NavigationManager _navMgr
 @{
-    if (!_state.IsLoggedIn)
+    if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/LoginWindow");
     }
@@ -18,6 +21,13 @@
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
+        _stateService.IsLoggedIn = true;
+    }
+    
     private int _currentCount = 0;
 
     private void IncrementCount()

@@ -1,10 +1,10 @@
 @page "/"
 @page "/Index"
 
-@using BVPVWebServer.Dialogs
-@using Severity = MudBlazor.Severity
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
 
-@inject IDialogService _dialog
+@using Severity = MudBlazor.Severity
 
 @inject RoleService _roleService
 @inject UserService _userService
@@ -20,68 +20,26 @@
     <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
 </MudPaper>
 
-<MudAlert Severity="MudBlazor.Severity.Info">
+<MudAlert Severity="Severity.Info">
     System User @Environment.UserName is known as NPDES user @_stateService.UserId and Initial Dark Theme: @_stateService!.SystemState!.DarkTheme
 </MudAlert>
 <MudAlert Severity="Severity.Warning">
     These webpages are written different NO Refreshing is needed ever!!! In fact a Refresh will cause a LOGOUT!!!
 </MudAlert>
 
-@code
-{
-    private async Task ProcessLogin()
-    {
-        var dialog = _dialog.Show<LoginDialog>("Custom Options Dialog");
-        var result = await dialog!.Result;
-        if (!result.Cancelled) _stateService.IsLoggedIn = true;
-        _navMgr.NavigateTo("/");
-    }
-}
-
-
-@code {
-    // Form Handling Code
-    MudForm? _form;
-    readonly RoleFluentValidator _roleValidator = new RoleFluentValidator();
-    readonly Role _role = new Role();
-
-    private async Task Submit()
-    {
-        await _form!.Validate();
-    }
-
-    // Validation Code
-    public class RoleFluentValidator : AbstractValidator<Role>
-    {
-        public RoleFluentValidator()
-        {
-            RuleFor(x => x.RoleId)
-                .NotEmpty()
-                .Length(1, 10);
-
-            RuleFor(x => x.RoleLevel)
-                .GreaterThan(0)
-                .LessThan(100);
-        }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
-            return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
-        };
-    }
-
-}
 
 @code{
-    private string? LastPage;
-    private bool IsUserLoggedIn;
-
     protected override async Task OnInitializedAsync()
     {
-        if (!_stateService.IsLoggedIn)
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 })
         {
-            if (!IsUserLoggedIn) _navMgr.NavigateTo("/LoginWindow");
+            _navMgr.NavigateTo("/LoginWindow");
+        }
+        else
+        {
+            _stateService.InitUserInfo(result.Value);
+            _stateService.IsLoggedIn = true;
         }
     }
 

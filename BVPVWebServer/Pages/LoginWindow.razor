@@ -1,5 +1,8 @@
 @page "/LoginWindow"
 
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
 @inject StateService _stateService
 @inject NavigationManager _navMgr
 
@@ -16,12 +19,21 @@
     
     protected override async Task OnInitializedAsync()
     {
-        if (_stateService.IsLoggedIn) _navMgr.NavigateTo("/Index");
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is {Length: >= 1 })
+        {
+            _stateService.InitSystemState(result.Value);
+            _stateService.IsLoggedIn = true;
+            _navMgr.NavigateTo("/Index");
+        }
     }
 
     private async Task FakeALogin()
     {
+        await _sessionStore.SetAsync("User", "Dick");
+        StateHasChanged();
         _stateService.InitSystemState("Dick");
         _stateService.IsLoggedIn = true;
+        _navMgr.NavigateTo("/Index");
     }
 }

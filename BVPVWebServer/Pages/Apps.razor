@@ -1,9 +1,13 @@
 @page "/apps"
 
-@inject StateService _state
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
+@inject StateService _stateService
 @inject NavigationManager _navMgr
+
 @{
-    if (_state is {IsLoggedIn: false })
+    if (_stateService is {IsLoggedIn: false })
     {
         _navMgr.NavigateTo("/LoginWindow");
     }
@@ -14,5 +18,10 @@
 <MudText Typo="Typo.h4" Align="Align.Center">Function Maintenance</MudText>
 
 @code {
-    
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
+        _stateService.IsLoggedIn = true;
+    }
 }
