@@ -1,10 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
-@inject StateService _state
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage _sessionStore
+
+@inject NavigationManager _navMgr
+
+@inject StateService _stateService
 @{
-    if (_state == null)
+    if (_stateService == null)
     {
-        _state!.InitUserInfo("Init");
+        _stateService!.InitUserInfo("Init");
     }
 }
 
@@ -19,10 +24,10 @@
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
-        @if (_state.IsLoggedIn)
+        @if (_stateService.IsLoggedIn)
         {
             <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit"/>
-            <MudText Typo="Typo.h6">@_state.UserId</MudText>
+            <MudText Typo="Typo.h6">@_stateService.UserId</MudText>
         }
         else
         {
@@ -68,8 +73,14 @@
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is  {Length: > 1 })
+        {
+            _stateService.InitUserInfo(result.Value);
+            _stateService.IsLoggedIn = true;
+        }
         StateHasChanged();
     }
 

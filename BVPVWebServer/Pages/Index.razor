@@ -7,13 +7,20 @@
 @inject StateService _stateService
 @inject NavigationManager _navMgr
 
-<h3>LoginWindow</h3>
-
-<MudText>Last Page = @_stateService.SystemState!.LastPage</MudText>
-<MudText>IsLoggedIn = @_stateService.IsLoggedIn</MudText>
-<MudButton @onclick="@FakeALogin">Fake a Login</MudButton>
+@if (_stateService.IsLoggedIn)
+{
+    _navMgr.NavigateTo("/Home");
+}
+else
+{
+    <h3>LoginWindow</h3>
+    <MudText>Last Page = @_stateService.SystemState!.LastPage</MudText>
+    <MudText>IsLoggedIn = @_stateService.IsLoggedIn</MudText>
+    <MudButton @onclick="@FakeALogin">Fake a Login</MudButton>
+}
 
 @code {
+
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
@@ -21,7 +28,6 @@
         {
             _stateService.InitSystemState(result.Value);
             _stateService.IsLoggedIn = true;
-            _navMgr.NavigateTo("/Index");
         }
     }
 
@@ -33,4 +39,4 @@
         _stateService.IsLoggedIn = true;
         _navMgr.NavigateTo("/Home");
     }
-}}
+}

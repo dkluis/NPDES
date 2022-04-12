@@ -20,15 +20,19 @@
 </MudPaper>
 
 <MudAlert Severity="Severity.Info">
-    System User @Environment.UserName is known as NPDES user @_stateService.UserId, Dark Theme: @_stateService!.SystemState!.DarkTheme 
+    System User @Environment.UserName is known as NPDES user @_stateService.UserId, Dark Theme: @_stateService!.SystemState!.DarkTheme
     and LastPage: @_stateService.SystemState.LastPage
 </MudAlert>
 
 
-
 @code{
+
     protected override async Task OnInitializedAsync()
     {
+        if (_stateService.IsLoggedIn)
+        {
+            return;
+        }
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 })
         {
