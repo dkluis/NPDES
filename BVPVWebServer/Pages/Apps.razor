@@ -9,19 +9,22 @@
 @{
     if (_stateService is {IsLoggedIn: false })
     {
-        _navMgr.NavigateTo("/LoginWindow");
+        _navMgr.NavigateTo("/");
+    }
+    else
+    {
+        <PageTitle>Functions</PageTitle>
+
+        <MudText Typo="Typo.h4" Align="Align.Center">Function Maintenance</MudText>
     }
 }
 
-<PageTitle>Functions</PageTitle>
 
-<MudText Typo="Typo.h4" Align="Align.Center">Function Maintenance</MudText>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
-        _stateService.IsLoggedIn = true;
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
 }

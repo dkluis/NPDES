@@ -9,7 +9,7 @@
 @{
     if (!_stateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/LoginWindow");
+        _navMgr.NavigateTo("/");
     }
 }
 
@@ -23,8 +23,7 @@
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
-        _stateService.IsLoggedIn = true;
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
     
 }

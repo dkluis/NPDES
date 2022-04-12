@@ -8,24 +8,26 @@
 @{
     if (!_stateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/LoginWindow");
+        _navMgr.NavigateTo("/");
+    }
+    else
+    {<PageTitle>Counter</PageTitle>
+
+        <h1>Counter</h1>
+
+        <p role="status">Current count: @_currentCount</p>
+
+        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
     }
 }
 
-<PageTitle>Counter</PageTitle>
-
-<h1>Counter</h1>
-
-<p role="status">Current count: @_currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/LoginWindow");
-        _stateService.IsLoggedIn = true;
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
     
     private int _currentCount = 0;
