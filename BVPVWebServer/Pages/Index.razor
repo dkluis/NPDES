@@ -1,54 +1,54 @@
 @page "/"
 @page "/Index"
 
-@using System.Text.RegularExpressions
-
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.ComponentModel.DataAnnotations
 @inject ProtectedSessionStorage _sessionStore
 
 @inject StateService _stateService
 @inject NavigationManager _navMgr
 
-@if (_stateService.IsLoggedIn && _stateService.UserId != "Init")
+@if (_stateService.IsLoggedIn)
 {
     _navMgr.NavigateTo("/Home");
 }
 else
 {
-    <MudText Typo="Typo.h3" Align="Align.Center">Login Window</MudText>
-    <MudButton @onclick="@FakeALogin">Fake a Login</MudButton>
-    
-    <MudGrid>
-    <MudItem xs="12" sm="7" md="5">
-        <MudPaper Class="pa-4">
-            <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
-                    <MudTextField T="string" Label="Username" Required="true" RequiredError="User name is required!" @ref="_userName"/>
-                    <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="_pwField1"
-                                  InputType="InputType.Password"
-                                  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
-                                  RequiredError="Password is required!"/>
-                    <MudTextField T="string"
-                                  Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
-                                  Validation="@(new Func<string, string>(PasswordMatch))"/>
-            </MudForm>   
-        </MudPaper>
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="@(()=>_form.Validate())">Validate</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="@(()=>_form.Reset())" Class="mx-2">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" DisableElevation="true" OnClick="@(()=>_form.ResetValidation())">Reset Validation</MudButton>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="5" md="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({_errors.Length})")</MudText>
-                @foreach (var error in _errors)
-                {
-                    <MudText Color="@Color.Error">@error</MudText>
-                }
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+    <div style="max-width: 400px;">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Username" HelperText="Max. 8 characters"
+                                  @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                Fill out the form correctly to see the success message.
+            </MudText>
 
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Show Validation Summary">
+                    @if (success)
+                    {
+                        <MudText Color="Color.Success">Success</MudText>
+                    }
+                    else
+                    {
+                        <MudText Color="@Color.Error">
+                            <ValidationSummary />
+                        </MudText>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </EditForm>
+    </div>
 }
 
 @code {
@@ -64,42 +64,40 @@ else
 
     private async Task FakeALogin()
     {
-        await _sessionStore.SetAsync("User", "Dick");
+        await _sessionStore.SetAsync("User", model.Username);
         StateHasChanged();
-        _stateService.InitSystemState("Dick");
+        _stateService.InitSystemState(model.Username);
         _stateService.IsLoggedIn = true;
         _navMgr.NavigateTo("/Home");
     }
+
 }
 
 @code {
-    bool _success;
-    string[] _errors = { };
-    MudTextField<string>? _pwField1;
-    MudTextField<string>? _userName;
-    MudForm? _form;
+    RegisterAccountForm model = new RegisterAccountForm();
+    bool success;
 
-    private IEnumerable<string> PasswordStrength(string pw)
+    public class RegisterAccountForm
     {
-        yield return $"Username = {_userName.Value}";
-        if (string.IsNullOrWhiteSpace(pw))
-        {
-            yield return "Password is required!";
-            yield break;
-        }
-        if (pw.Length < 8)
-            yield return "Password must be at least of length 8";
-        if (!Regex.IsMatch(pw, @"[A-Z]"))
-            yield return "Password must contain at least one capital letter";
-        if (!Regex.IsMatch(pw, @"[a-z]"))
-            yield return "Password must contain at least one lowercase letter";
-        if (!Regex.IsMatch(pw, @"[0-9]"))
-            yield return "Password must contain at least one digit";
+        [Required]
+        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+        public string Username { get; set; }
+        
+        [Required]
+        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare(nameof(Password))]
+        public string Password2 { get; set; }
+
     }
 
-    private string? PasswordMatch(string arg)
+    private void OnValidSubmit(EditContext context)
     {
-        return _pwField1 != null && _pwField1.Value != arg ? "Passwords don't match" : null;
+        success = true;
+        StateHasChanged();
+        FakeALogin();
     }
 
 }

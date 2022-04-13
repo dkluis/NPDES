@@ -1,17 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
 @inject NavigationManager _navMgr
-
 @inject StateService _stateService
-@{
-    if (_stateService == null)
-    {
-        _stateService!.InitUserInfo("Init");
-    }
-}
 
 <MudThemeProvider Theme="_themeManager.Theme"></MudThemeProvider>
 <MudDialogProvider></MudDialogProvider>
