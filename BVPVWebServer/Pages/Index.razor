@@ -14,39 +14,24 @@
 else
 {
     <div style="max-width: 400px;">
-        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="Username" HelperText="Max. 8 characters"
-                                  @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Username" HelperText="Max. 15 characters"
+                                  @bind-Value="_model.Username" For="@(() => _model.Username)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
+                                  @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password" />
                     <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                  @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
+                                  @bind-Value="_model.Password2" For="@(() => _model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
                 </MudCardActions>
             </MudCard>
             <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
                 Fill out the form correctly to see the success message.
             </MudText>
-
-            <MudExpansionPanels>
-                <MudExpansionPanel Text="Show Validation Summary">
-                    @if (success)
-                    {
-                        <MudText Color="Color.Success">Success</MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="@Color.Error">
-                            <ValidationSummary />
-                        </MudText>
-                    }
-                </MudExpansionPanel>
-            </MudExpansionPanels>
         </EditForm>
     </div>
 }
@@ -62,11 +47,11 @@ else
         }
     }
 
-    private async Task FakeALogin()
+    private async Task DoTheLogin()
     {
-        await _sessionStore.SetAsync("User", model.Username);
+        await _sessionStore.SetAsync("User", _model.Username!);
         StateHasChanged();
-        _stateService.InitSystemState(model.Username);
+        _stateService.InitSystemState(_model.Username!);
         _stateService.IsLoggedIn = true;
         _navMgr.NavigateTo("/Home");
     }
@@ -74,30 +59,31 @@ else
 }
 
 @code {
-    RegisterAccountForm model = new RegisterAccountForm();
-    bool success;
-
+    // ReSharper disable once FieldCanBeMadeReadOnly.Local
+    RegisterAccountForm _model = new RegisterAccountForm();
+ 
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-        public string Username { get; set; }
+        [StringLength(15, ErrorMessage = "Name length can't be more than 15.")]
+        public string? Username { get; set; }
         
         [Required]
         [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         [Required]
         [Compare(nameof(Password))]
-        public string Password2 { get; set; }
+        public string? Password2 { get; set; }
 
     }
 
     private void OnValidSubmit(EditContext context)
     {
-        success = true;
         StateHasChanged();
-        FakeALogin();
+#pragma warning disable CS4014
+        DoTheLogin();
+#pragma warning restore CS4014
     }
 
 }

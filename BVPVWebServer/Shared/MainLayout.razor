@@ -1,8 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
 @inject ProtectedSessionStorage _sessionStore
-
 @inject NavigationManager _navMgr
+@inject ISnackbar _snackbar
+
 @inject StateService _stateService
 
 <MudThemeProvider Theme="_themeManager.Theme"></MudThemeProvider>
@@ -13,19 +14,9 @@
 <MudThemeProvider/>
 
 <MudLayout>
-    <MudAppBar Elevation="_themeManager.AppBarElevation">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+    <MudAppBar Style="height: 40px" Elevation="_themeManager.AppBarElevation">
+        <MudIconButton Style="height: 20px" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
-        @if (_stateService.IsLoggedIn)
-        {
-            <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit"/>
-            <MudText Typo="Typo.h6">@_stateService.UserId</MudText>
-        }
-        else
-        {
-            <MudText Typo="Typo.h6">Not Logged In</MudText>
-        }
-        
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="_themeManager.DrawerClipMode" Elevation="_themeManager.DrawerElevation">
         <MudDrawerHeader>
