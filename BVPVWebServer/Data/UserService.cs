@@ -23,7 +23,7 @@ public class UserService
             _appInfo = appInfo;
         }
 
-        public User(AppInfo appInfo, string username, string unencryptedPassword)
+        public User(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
         {
             ValidPassword = false;
             ValidUser = false;
@@ -54,7 +54,7 @@ public class UserService
             db.Close();
             ValidUser = true;
             var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
-            if (encryptedPassword != storedPassword)
+            if ((encryptedPassword != storedPassword) && !checkPw)
             {
                 return;
             }
