@@ -4,8 +4,8 @@ namespace BVPVWebServer.Data;
 
 public class StateService
 {
-    public readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
-    public readonly MariaDb? Db;
+    private readonly AppInfo _appInfo;
+    private readonly MariaDb? _db;
 
     public SystemState? SystemState;
     public AppState? AppState;
@@ -16,8 +16,9 @@ public class StateService
 
     public StateService()
     {
-        ApiServerBase = AppInfo.ApiServerBase;
-        Db = new MariaDb(AppInfo);
+        _appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        _db = new MariaDb(_appInfo);
+        ApiServerBase = _appInfo.ApiServerBase;
     }
 
     public void InitUserInfo(string userid)
@@ -27,11 +28,16 @@ public class StateService
         InitAppStates(userid);
     }
 
+    public AppInfo GetAppInfo()
+    {
+        return _appInfo;
+    }
+    
     public void InitSystemState(string userid)
     {
         SystemState = new SystemState();
-        Db.Open();
-        var rdr = Db.ExecQuery($"select * from `UserSystemState` where `UserID` = '{userid}'");
+        _db.Open();
+        var rdr = _db.ExecQuery($"select * from `UserSystemState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())
@@ -42,14 +48,14 @@ public class StateService
             }
         }
 
-        Db.Close();
+        _db.Close();
     }
 
     public void InitAppStates(string userid)
     {
         AppState = new AppState();
-        Db.Open();
-        var rdr = Db.ExecQuery($"select * from `UserAppState` where `UserID` = '{userid}'");
+        _db.Open();
+        var rdr = _db.ExecQuery($"select * from `UserAppState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())
@@ -66,7 +72,7 @@ public class StateService
             AppState.Setting = kv;
         }
 
-        Db.Close();
+        _db.Close();
     }
 
     public void UpdateAll()

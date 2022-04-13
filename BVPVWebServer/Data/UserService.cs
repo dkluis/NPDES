@@ -91,13 +91,6 @@ public class UserService
             db.Close();
         }
 
-        public bool CanUserUseApp(string app)
-        {
-            // ReSharper disable once NotAccessedVariable
-            var result = string.Empty;
-            return AppsWithFunction.TryGetValue(app, out result);
-        }
-
         public bool AddUser(string userName, string password)
         {
             var success = false;
@@ -131,6 +124,17 @@ public class UserService
                 if (!db.Success) success = false;
             }
 
+            db.Close();
+            return success;
+        }
+        public bool CanUserUseApp(string app)
+        {
+            var success = true;
+            using var db = new MariaDb(_appInfo);
+            db.Open();
+            var sql = $"select `App` from AppsByUser where `User` = '{UserId}' and `App` = '{app}'";
+            var rdr = db.ExecQuery(sql);
+            if (rdr!.HasRows == false) success = false;
             db.Close();
             return success;
         }

@@ -1,9 +1,10 @@
 @page "/counter"
+@using Severity = MudBlazor.Severity
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
 @inject StateService _stateService
+@inject UserService _userService
 @inject NavigationManager _navMgr
 @{
     if (!_stateService.IsLoggedIn)
@@ -11,25 +12,33 @@
         _navMgr.NavigateTo("/");
     }
     else
-    {<PageTitle>Counter</PageTitle>
+    {
+        var _userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId, "", false);
+        if (_userInfo.CanUserUseApp("counter") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <PageTitle>Counter</PageTitle>
 
-        <h1>Counter</h1>
+            <h1>Counter</h1>
 
-        <p role="status">Current count: @_currentCount</p>
+            <p role="status">Current count: @_currentCount</p>
 
-        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
+            <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        }
     }
 }
 
-
 @code {
+
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
-    
+
     private int _currentCount = 0;
 
     private void IncrementCount()

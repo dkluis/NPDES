@@ -1,8 +1,8 @@
-﻿@inject StateService _state
+﻿@inject StateService _stateService
 @{
-    if (_state.UserId == null)
+    if (_stateService.UserId == null)
     {
-        _state.InitUserInfo("Init");
+        _stateService.InitUserInfo("Init");
     }
 }
 

@@ -16,95 +16,103 @@
     }
     else
     {
-        <PageTitle>Roles</PageTitle>
+        var _userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId, "", false);
+        if (_userInfo.CanUserUseApp("roles") == false)
+        {
+            <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <PageTitle>Roles</PageTitle>
 
-        <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
-        <MudGrid Justify="Justify.Center">
-            <MudItem xs="4" md="3" xl="2" xxl="1" Class="py-8">
-                <MudCard Outlined="true">
-                    <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
-                    <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
-                        <MudCardContent>
-                            <MudTextField @bind-Value="_role.RoleId"
-                                          For="@(() => _role.RoleId)"
-                                          Immediate="true"
-                                          Label="Enter Role"
-                                          Variant="Variant.Filled">
-                            </MudTextField>
-                            <MudNumericField @bind-Value="_role.RoleLevel"
-                                             For="@(() => _role.RoleLevel)"
-                                             Immediate="true"
-                                             Label="Enter Role Level"
-                                             Variant="Variant.Filled">
-                            </MudNumericField>
-                            <MudText Style="padding-top: 10px">Is Role ReadOnly Access: </MudText>
-                            <MudRadioGroup @bind-Selection="_role.ReadOnly"
-                                           For="@(() => _role.ReadOnly)"
-                                           Label="Select ReadOnly">
-                                <MudRadio Class="pa-2" Option="false" Color="Color.Primary" Dense="true">False</MudRadio>
-                                <MudRadio class="pa-2" Option="true" Color="Color.Secondary" Dense="true">True</MudRadio>
-                            </MudRadioGroup>
-                        </MudCardContent>
-                    </MudForm>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="4" md="3" xl="2" xxl="1" Class="py-8">
+                    <MudCard Outlined="true">
+                        <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
+                        <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                            <MudCardContent>
+                                <MudTextField @bind-Value="_role.RoleId"
+                                              For="@(() => _role.RoleId)"
+                                              Immediate="true"
+                                              Label="Enter Role"
+                                              Variant="Variant.Filled">
+                                </MudTextField>
+                                <MudNumericField @bind-Value="_role.RoleLevel"
+                                                 For="@(() => _role.RoleLevel)"
+                                                 Immediate="true"
+                                                 Label="Enter Role Level"
+                                                 Variant="Variant.Filled">
+                                </MudNumericField>
+                                <MudText Style="padding-top: 10px">Is Role ReadOnly Access: </MudText>
+                                <MudRadioGroup @bind-Selection="_role.ReadOnly"
+                                               For="@(() => _role.ReadOnly)"
+                                               Label="Select ReadOnly">
+                                    <MudRadio Class="pa-2" Option="false" Color="Color.Primary" Dense="true">False</MudRadio>
+                                    <MudRadio class="pa-2" Option="true" Color="Color.Secondary" Dense="true">True</MudRadio>
+                                </MudRadioGroup>
+                            </MudCardContent>
+                        </MudForm>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
 
-        <MudGrid Justify="Justify.Center">
-            <MudItem xs="12" sm="9" md="7" xl="6" xxl="4" Class="py-4">
-                <MudCard Elevation="5" Outlined="true">
-                    <MudText Class="py-2" Typo="Typo.h4" Align="Align.Center"> Roles Table</MudText>
-                    <MudItem xs="12" sm="10" md="8" xl="6" xxl="4">
-                        <MudCard Outlined="false">
-                            <MudTextField Style="margin-bottom: 5px" T="string" @bind-Text="_sqlSearchString" Variant="Variant.Filled"
-                                          Label="Enter (wildcard) search ">
-                            </MudTextField>
-                            <MudGrid Justify="Justify.FlexEnd">
-                                <MudButton Style="margin: 10px" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessTableFill)">DB Search Roles</MudButton>
-                                <MudButton Style="margin: 10px" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(FillTable)">DB Fill All</MudButton>
-                            </MudGrid>
-                        </MudCard>
-                    </MudItem>
-                    <MudItem>
-                        <MudCard Outlined="false">
-                            <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-                                      Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
-                                <ToolBarContent>
-                                    <MudText Typo="Typo.h6">Found Roles</MudText>
-                                    <MudSpacer/>
-                                    <MudTextField @bind-Value="_searchString" Placeholder="Table Search (wildcard) Roles" Adornment="Adornment.Start"
-                                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
-                                    </MudTextField>
-                                </ToolBarContent>
-                                <HeaderContent>
-                                    <MudTh>
-                                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId)">Role</MudTableSortLabel>
-                                    </MudTh>
-                                    <MudTh T="int">
-                                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel>
-                                    </MudTh>
-                                    <MudTh>
-                                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
-                                    </MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Role">@context.RoleId</MudTd>
-                                    <MudTd DataLabel="Level">@context.ReadOnly</MudTd>
-                                    <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
-                                </RowTemplate>
-                                <PagerContent>
-                                    <MudTablePager PageSizeOptions="new[] {10, 25}"/>
-                                </PagerContent>
-                            </MudTable>
-                        </MudCard>
-                    </MudItem>
-                </MudCard>
-            </MudItem>
-        </MudGrid>
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12" sm="9" md="7" xl="6" xxl="4" Class="py-4">
+                    <MudCard Elevation="5" Outlined="true">
+                        <MudText Class="py-2" Typo="Typo.h4" Align="Align.Center"> Roles Table</MudText>
+                        <MudItem xs="12" sm="10" md="8" xl="6" xxl="4">
+                            <MudCard Outlined="false">
+                                <MudTextField Style="margin-bottom: 5px" T="string" @bind-Text="_sqlSearchString" Variant="Variant.Filled"
+                                              Label="Enter (wildcard) search ">
+                                </MudTextField>
+                                <MudGrid Justify="Justify.FlexEnd">
+                                    <MudButton Style="margin: 10px" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(ProcessTableFill)">DB Search Roles</MudButton>
+                                    <MudButton Style="margin: 10px" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="@(FillTable)">DB Fill All</MudButton>
+                                </MudGrid>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem>
+                            <MudCard Outlined="false">
+                                <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+                                          Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
+                                    <ToolBarContent>
+                                        <MudText Typo="Typo.h6">Found Roles</MudText>
+                                        <MudSpacer/>
+                                        <MudTextField @bind-Value="_searchString" Placeholder="Table Search (wildcard) Roles" Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                                        </MudTextField>
+                                    </ToolBarContent>
+                                    <HeaderContent>
+                                        <MudTh>
+                                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId)">Role</MudTableSortLabel>
+                                        </MudTh>
+                                        <MudTh T="int">
+                                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel>
+                                        </MudTh>
+                                        <MudTh>
+                                            <MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
+                                        </MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Role">@context.RoleId</MudTd>
+                                        <MudTd DataLabel="Level">@context.ReadOnly</MudTd>
+                                        <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
+                                    </RowTemplate>
+                                    <PagerContent>
+                                        <MudTablePager PageSizeOptions="new[] {10, 25}"/>
+                                    </PagerContent>
+                                </MudTable>
+                            </MudCard>
+                        </MudItem>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        }
     }
 }
 

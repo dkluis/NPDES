@@ -78,7 +78,7 @@ else
     
     private void OnValidSubmit(EditContext context)
     {
-        _userInfo = new UserService.User(_stateService.AppInfo, _model.Username!, _model.Password!);
+        _userInfo = new UserService.User(_stateService.GetAppInfo(), _model.Username!, _model.Password!);
         if (!_userInfo.ValidUser)
         {
             _snackbar.Add($"Username is {_userInfo.ValidUser}");

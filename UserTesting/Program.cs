@@ -3,7 +3,7 @@
 var applicationInfo = new AppInfo("NPDES", "User-Test", "DbProduction");
 var logFile = applicationInfo.TxtFile;
 logFile.Start();
-
+/*
 logFile.Write("###");
 TestAddUser("Dick", "password", applicationInfo);
 TestAddUserRoles("Dick", new[] {"SuperAdmin", "Reporter"}, applicationInfo);
@@ -44,10 +44,11 @@ logFile.Write("###");
 TestAddUser("WaterRep", "password", applicationInfo);
 TestAddUserRoles("WaterRep", new[] {"Reporter"}, applicationInfo);
 
-
+*/
 logFile.Stop();
 Environment.Exit(0);
 
+/*
 //#######################################################################
 
 void TestUser(string username, string passwrd)
@@ -83,3 +84,4 @@ void TestAddUserRoles(string username, string[] roles, AppInfo ap)
     var user = new User(ap);
     user.AddUserRoles(username, roles);
 }
+*/
