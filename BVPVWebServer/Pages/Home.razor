@@ -1,6 +1,5 @@
 @page "/Home"
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
 @using Severity = MudBlazor.Severity
@@ -29,7 +28,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (_stateService.IsLoggedIn)
+        if (_stateService.IsLoggedIn && _stateService.UserId != "Init")
         {
             return;
         }

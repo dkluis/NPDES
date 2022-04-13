@@ -4,8 +4,8 @@ namespace BVPVWebServer.Data;
 
 public class StateService
 {
-    public static readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
-    public static readonly MariaDb Db = new MariaDb(AppInfo);
+    public readonly AppInfo AppInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+    public readonly MariaDb? Db;
 
     public SystemState? SystemState;
     public AppState? AppState;
@@ -17,6 +17,7 @@ public class StateService
     public StateService()
     {
         ApiServerBase = AppInfo.ApiServerBase;
+        Db = new MariaDb(AppInfo);
     }
 
     public void InitUserInfo(string userid)

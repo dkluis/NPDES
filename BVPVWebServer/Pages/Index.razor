@@ -1,11 +1,15 @@
 @page "/"
 @page "/Index"
 
+@inject NavigationManager _navMgr
 @using System.ComponentModel.DataAnnotations
 @inject ProtectedSessionStorage _sessionStore
 
+@inject ISnackbar _snackbar
+
 @inject StateService _stateService
-@inject NavigationManager _navMgr
+@inject UserService _userService
+
 
 @if (_stateService.IsLoggedIn)
 {
@@ -22,8 +26,6 @@ else
                                   @bind-Value="_model.Username" For="@(() => _model.Username)" />
                     <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
                                   @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                  @bind-Value="_model.Password2" For="@(() => _model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
@@ -65,21 +67,28 @@ else
     public class RegisterAccountForm
     {
         [Required]
-        [StringLength(15, ErrorMessage = "Name length can't be more than 15.")]
         public string? Username { get; set; }
         
         [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string? Password { get; set; }
-
-        [Required]
-        [Compare(nameof(Password))]
-        public string? Password2 { get; set; }
 
     }
 
+    private UserService.User? _userInfo;
+    
     private void OnValidSubmit(EditContext context)
     {
+        _userInfo = new UserService.User(_stateService.AppInfo, _model.Username!, _model.Password!);
+        if (!_userInfo.ValidUser)
+        {
+            _snackbar.Add($"Username is {_userInfo.ValidUser}");
+            return;
+        }
+        else if (!_userInfo.ValidPassword)
+        {
+            _snackbar.Add($"Password is {_userInfo.ValidPassword}");
+            return;
+        }
         StateHasChanged();
 #pragma warning disable CS4014
         DoTheLogin();
