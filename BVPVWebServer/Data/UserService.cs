@@ -112,10 +112,28 @@ public class UserService
         return success;
     }
 
-    public UserElements GetUsers(string searchString)
-    {
-        UserElements ue = new();
-
+    public static List<UserElement> GetUsers(AppInfo appInfo, string searchString)
+    { 
+        var ue = new List<UserElement>();
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"select * from Users where `UserID` like '{searchString}'";
+        var rdr = db.ExecQuery(sql);
+        if (rdr!.HasRows == true)
+        {
+            while (rdr.Read())
+            {
+                if (rdr["UserID"].ToString() == "Init") continue;
+                var rec = new UserElement
+                {
+                    UserId = (string) rdr["UserID"],
+                    Password = (string) rdr["Password"],
+                    Salt = (string) rdr["Salt"]
+                };
+                ue.Add(rec);
+            }
+        }
+        db.Close();
         return ue;
     }
 }
@@ -142,14 +160,4 @@ public class UserElement
     public string Password { get; set; }
     public string Salt { get; set; }
         
-}
-
-public class UserElements
-{
-    public UserElements()
-    {
-        Users = new List<UserElement>();
-    }
-
-    public List<UserElement> Users { get; set; }
 }

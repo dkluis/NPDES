@@ -19,7 +19,7 @@
     {
         if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
         {
-            <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
@@ -43,25 +43,27 @@
             {
                 <MudAlert>Change Password is active</MudAlert>
             }
-
-            <MudAlert>view is active</MudAlert>
+            <!---This is the Table View Area -->
             <div style="max-width: 300px;">
                 <MudCard Outlined="true" Elevation="2">
                     <MudCardContent>
-                        <MudTextField Label="Username" HelperText="Use % for Wildcard search" @bind-Value="Username"/>
+                        <MudTooltip Text="Use % for wildcard.  Example:  %find% or Find% or %Find" Placement="Placement.End">
+                        <MudTextField Placeholder="%" Label="Username" HelperText="Use % to get all Users" @bind-Value="_username"/>
+                        </MudTooltip>
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-                                   OnClick="FillTable">Fill Table</MudButton>
+                                   OnClick="FillTable" >Fill Table</MudButton>
                     </MudCardActions>
                 </MudCard>
                 <MudAlert Severity="Severity.Info" Align="Align.Center" Class="my-4">% in Username will show all.</MudAlert>
             </div>
             
-            <MudTable Items="@Elements" Dense="@dense" Hover="true" CanCancelEdit="true" ReadOnly="false"
-                      @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+            <MudTable Items="@_elements" Dense="true" Hover="true" CanCancelEdit="true" ReadOnly="false" 
+                      FixedHeader="true" FixedFooter="true" Height="300px" 
+                      @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
                       RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch">
+                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@BlockSwitch">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Users Information</MudText>
 
@@ -70,17 +72,17 @@
                     <col style="width:15px;"/>
                     <col/>
                     <col/>
-                    <col style="width:50px;"/>
+                    
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<UserElement, object>(x => x.UserId)">Username</MudTableSortLabel>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object>(x => x.UserId)">Username</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<UserElement, object>(x => x.Password)">Password</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object>(x => x.Salt)">Salt</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<UserElement, object>(x => x.Salt)">Salt</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -90,22 +92,16 @@
                 </RowTemplate>
                 <RowEditingTemplate>
                     <MudTd DataLabel="Username">@context.UserId</MudTd>
-                    <MudTd DataLabel="Password">
-                        <MudTextField @bind-Value="@context.Password" Required/>
-                    </MudTd>
-                    <MudTd DataLabel="Salt">
-                        <MudTextField @bind-Value="@context.Salt" Required/>
-                    </MudTd>
+                    <MudTd DataLabel="Password">@context.Password</MudTd>
+                    <MudTd DataLabel="Salt">@context.Salt</MudTd>
                 </RowEditingTemplate>
                 <PagerContent>
                     <MudTablePager/>
                 </PagerContent>
             </MudTable>
-            
-            <MudText Inline="true">Selected: @selectedItem1</MudText>
 
             <MudExpansionPanels Style="flex: 1;">
-                <MudExpansionPanel Text="Show Edit Log">
+                <MudExpansionPanel Text="Debug Information Log">
                     @foreach (var message in editEvents)
                     {
                         <MudText>@message</MudText>
@@ -126,9 +122,7 @@
 @code
 {
     // For Page specific code
-    private string Username;
-    private string Password;
-
+    private string? _username;
 }
 
 @code
@@ -139,6 +133,7 @@
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+        _username = "%";
     }
 
     private bool _add;
@@ -168,31 +163,17 @@
 
     private void FillTable()
     {
-        //var us = UserService.User(_stateService.GetAppInfo());
+        _elements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
     }
 }
 
 @code 
 { 
     private List<string> editEvents = new();
-    private bool dense = false;
-    private bool hover = true;
-    private bool ronly = false;
-    private bool canCancelEdit = false;
-    private bool blockSwitch = false;
-    private string searchString = "";
-    private UserElement selectedItem1 = null;
-    private UserElement elementBeforeEdit;
-    private HashSet<UserElement> selectedItems1 = new HashSet<UserElement>();
-
-    private IEnumerable<UserElement> Elements = new List<UserElement>();
-
-    /*
-    protected override async Task OnInitializedAsync()
-    {
-        //Elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
-    }
-    */
+    public bool BlockSwitch = false;
+    private UserElement? _selectedItem1;
+    private UserElement? _elementBeforeEdit;
+    private IEnumerable<UserElement> _elements = new List<UserElement>();
 
     private void ClearEventLog()
     {
@@ -207,25 +188,26 @@
 
     private void BackupItem(object element)
     {
-        elementBeforeEdit = new()
+        _elementBeforeEdit = new()
         {
             UserId = ((UserElement)element).UserId,
             Password = ((UserElement)element).Password,
             Salt = ((UserElement)element).Salt
         };
-        AddEditionEvent($"RowEditPreview event: made a backup of Element {((UserElement)element).UserId}");
+        AddEditionEvent($"RowClick Selected {((UserElement)element).UserId}");
     }
 
     private void ItemHasBeenCommitted(object element)
     {
-        AddEditionEvent($"RowEditCommit event: Changes to Element {((UserElement)element).UserId} committed");
+        //TODO add the update to the user table
+        AddEditionEvent($"RowSave {((UserElement)element).UserId}");
     }
 
     private void ResetItemToOriginalValues(object element)
     {
-        ((UserElement)element).UserId = elementBeforeEdit.UserId;
-        ((UserElement)element).Password = elementBeforeEdit.Password;
-        ((UserElement)element).Salt = elementBeforeEdit.Salt;
-        AddEditionEvent($"RowEditCancel event: Editing of Element {((UserElement)element).UserId} cancelled");
+        ((UserElement)element).UserId = _elementBeforeEdit!.UserId;
+        ((UserElement)element).Password = _elementBeforeEdit.Password;
+        ((UserElement)element).Salt = _elementBeforeEdit.Salt;
+        AddEditionEvent($"RowSwitch away from {((UserElement)element).UserId}");
     }
 }
