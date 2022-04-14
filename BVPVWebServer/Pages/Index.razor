@@ -22,9 +22,9 @@ else
             <DataAnnotationsValidator />
             <MudCard>
                 <MudCardContent>
-                    <MudTextField Label="Username" HelperText="Max. 15 characters"
+                    <MudTextField Label="Username"
                                   @bind-Value="_model.Username" For="@(() => _model.Username)" />
-                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                    <MudTextField Label="Password" Class="mt-3"
                                   @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password" />
                 </MudCardContent>
                 <MudCardActions>
