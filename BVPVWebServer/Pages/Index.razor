@@ -31,9 +31,6 @@ else
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
                 </MudCardActions>
             </MudCard>
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                Fill out the form correctly to see the success message.
-            </MudText>
         </EditForm>
     </div>
 }
@@ -78,7 +75,7 @@ else
     
     private void OnValidSubmit(EditContext context)
     {
-        _userInfo = new UserService().LoadUser(_stateService.GetAppInfo(), _model.Username!, _model.Password!, false);
+        _userInfo = UserService.LoadUser(_stateService.GetAppInfo(), _model.Username!, _model.Password!, false);
         if (!_userInfo.ValidUser)
         {
             _snackbar.Add($"Username is {_userInfo.ValidUser}");

@@ -57,6 +57,7 @@
                                 </MudItem>
                             </MudGrid>
                         </EditForm>
+                        <MudText >@AddErrors : @SelectedItem1.UserId</MudText>
                     </MudCard>
                 </div>
             }
@@ -88,7 +89,7 @@
 
                 <MudTable Items="@_elements" Dense="true" Hover="true" CanCancelEdit="true" ReadOnly="false"
                           FixedHeader="true" FixedFooter="true" Height="300px"
-                          @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+                          @bind-SelectedItem="SelectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
                           RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
                           RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@BlockSwitch">
                     <ToolBarContent>
@@ -211,9 +212,9 @@
 
 @code
 {
-    private List<string> _editEvents = new();
+    private readonly List<string> _editEvents = new();
         private const bool BlockSwitch = false;
-    private UserElement? _selectedItem1;
+    public UserElement? SelectedItem1;
     private UserElement? _elementBeforeEdit;
     private IEnumerable<UserElement> _elements = new List<UserElement>();
 
@@ -257,6 +258,7 @@
 @code {
     readonly AddUserForm _addUserForm = new AddUserForm();
     public bool Success;
+    public string? AddErrors;
 
     public class AddUserForm
     {
@@ -275,7 +277,21 @@
 
     private void OnValidSubmit(EditContext context)
     {
-        Success = true;
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), _addUserForm.Username!, "", false);
+        if ( info.UserId == _addUserForm.Username)
+        {
+            AddErrors = $"User {_addUserForm.Username} already exist ";
+            return; 
+        }
+        Success = UserService.AddUser(_stateService.GetAppInfo(), _addUserForm.Username!, _addUserForm.Password!);
+        if (!Success)
+        {
+            AddErrors = $"Adding User {_addUserForm.Username} failed";
+            return;
+        }
+        _addUserForm.Username = "";
+        _addUserForm.Password = "";
+        _addUserForm.Password2 = "";
         StateHasChanged();
     }
 

@@ -4,7 +4,7 @@ namespace BVPVWebServer.Data;
 
 public class UserService
 {
-    public User LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
+    public static User LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
     {
         var user = new User
         {
@@ -61,7 +61,7 @@ public class UserService
         return user;
     }
 
-    public bool AddUser(AppInfo appInfo, string userName, string password)
+    public static bool AddUser(AppInfo appInfo, string userName, string password)
     {
         var user = new User();
         LoadUser(appInfo, userName, password, false);
