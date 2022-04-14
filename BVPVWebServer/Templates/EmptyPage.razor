@@ -5,10 +5,14 @@
 @inject StateService _stateService
 @inject NavigationManager _navMgr
 
-@inject RoleService _roleService
+@inject UserService _userService
 
-<PageTitle>Roles</PageTitle>
+<PageTitle>Users</PageTitle>
+
 @{
+    //
+    //  DONOT FORGET TO CHANGE ALL USER stuff to new PAGE stuff
+    // 
     if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/");
@@ -16,22 +20,77 @@
     else
     {
         var userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
-        if (userInfo.CanUserUseApp("EmptyPage") == false)
+        if (userInfo.CanUserUseApp("users") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
-            <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
+            
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
+                <MudButton @onclick="ShowDelete" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+                <MudButton @onclick="ShowChangePassword" StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset Password</MudButton>
+            </MudButtonGroup>
+
+            if (_add)
+            {
+                <MudAlert>Add is active</MudAlert>
+            }
+            if (_delete)
+            {
+                <MudAlert>Delete is active</MudAlert>
+            }
+            if (_password)
+            {
+                <MudAlert>Change Password is active</MudAlert>
+            }
+            
+            <MudAlert>view is active</MudAlert>
+            
         }
     }
 }
-          
+       
 @code
 {
+    // For Page specific code
+}
+
+@code
+{
+    //Template code
+    
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
+ 
+    private bool _add;
+    private bool _delete;
+    private bool _password;
+    
+    private void ShowAdd()
+    {
+        _add = true;
+        _delete = false;
+        _password = false;
+    }
+
+    private void ShowDelete()
+    {
+        _add = false;
+        _delete = true;
+        _password = false;
+    }
+
+    private void ShowChangePassword()
+    {
+        _add = false;
+        _delete = false;
+        _password = true;
+    }
 }
+

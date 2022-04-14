@@ -139,4 +139,29 @@ public class UserService
             return success;
         }
     }
+
+    public class UserElement
+    {
+        public UserElement()
+        {
+            UserId = string.Empty;
+            Password = string.Empty;
+            Salt = string.Empty;
+        }
+
+        public string UserId { get; set; }
+        public string Password { get; set; }
+        public string Salt { get; set; }
+        
+    }
+
+    public class UserElements
+    {
+        public UserElements()
+        {
+            Users = new List<UserElement>();
+        }
+
+        public List<UserElement> Users { get; set; }
+    }
 }

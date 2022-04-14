@@ -1,4 +1,5 @@
 @page "/users"
+@using Severity = MudBlazor.Severity
 
 @inject ProtectedSessionStorage _sessionStore
 
@@ -24,22 +25,202 @@
         else
         {
             <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
-            
-            <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
-                <MudButton StartIcon="@Icons.Material.Filled.Add">Add User</MudButton>
-                <MudButton StartIcon="@Icons.Material.Filled.Delete">Delete User</MudButton>
-                <MudButton StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset Password</MudButton>
-                <MudButton StartIcon="@Icons.Material.Filled.ShowChart" IconColor="Color.Warning">Users View</MudButton>
+
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
+                <MudButton @onclick="ShowDelete" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+                <MudButton @onclick="ShowChangePassword" StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset Password</MudButton>
             </MudButtonGroup>
+
+            if (_add)
+            {
+                <MudAlert>Add is active</MudAlert>
+            }
+            if (_delete)
+            {
+                <MudAlert>Delete is active</MudAlert>
+            }
+            if (_password)
+            {
+                <MudAlert>Change Password is active</MudAlert>
+            }
+
+            <MudAlert>view is active</MudAlert>
+            <div style="max-width: 300px;">
+                <MudCard Outlined="true" Elevation="2">
+                    <MudCardContent>
+                        <MudTextField Label="Username" HelperText="Use % for Wildcard search" @bind-Value="Username"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Show View</MudButton>
+                    </MudCardActions>
+                </MudCard>
+                <MudAlert Severity="Severity.Info" Align="Align.Center" Class="my-4">% in Username will show all.</MudAlert>
+            </div>
+            
+            <MudTable Items="@Elements" Dense="@dense" Hover="true" CanCancelEdit="true" ReadOnly="false"
+                      @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+                      RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Users Information</MudText>
+
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width:15px;"/>
+                    <col/>
+                    <col/>
+                    <col style="width:50px;"/>
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<UserService.UserElement, object>(x => x.UserId)">Username</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<UserService.UserElement, object>(x => x.Password)">Password</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserService.UserElement, object>(x => x.Salt)">Salt</MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Username">@context.UserId</MudTd>
+                    <MudTd DataLabel="Password">@context.Password</MudTd>
+                    <MudTd DataLabel="Salt">@context.Salt</MudTd>
+                </RowTemplate>
+                <RowEditingTemplate>
+                    <MudTd DataLabel="Username">@context.UserId</MudTd>
+                    <MudTd DataLabel="Password">
+                        <MudTextField @bind-Value="@context.Password" Required/>
+                    </MudTd>
+                    <MudTd DataLabel="Salt">
+                        <MudTextField @bind-Value="@context.Salt" Required/>
+                    </MudTd>
+                </RowEditingTemplate>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
+            
+            <MudText Inline="true">Selected: @selectedItem1</MudText>
+
+            <MudExpansionPanels Style="flex: 1;">
+                <MudExpansionPanel Text="Show Edit Log">
+                    @foreach (var message in editEvents)
+                    {
+                        <MudText>@message</MudText>
+                    }
+                    @if (editEvents.Count > 0)
+                    {
+                        <div class="d-flex">
+                            <MudSpacer/>
+                            <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="ClearEventLog">Clear event log</MudButton>
+                        </div>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
     }
 }
-          
+
 @code
 {
+    // For Page specific code
+    private string Username;
+    private string Password;
+
+}
+
+@code
+{
+    //Template code
+
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+    }
+
+    private bool _add;
+    private bool _delete;
+    private bool _password;
+
+    private void ShowAdd()
+    {
+        _add = true;
+        _delete = false;
+        _password = false;
+    }
+
+    private void ShowDelete()
+    {
+        _add = false;
+        _delete = true;
+        _password = false;
+    }
+
+    private void ShowChangePassword()
+    {
+        _add = false;
+        _delete = false;
+        _password = true;
+    }
+}
+
+@code 
+{ 
+    private List<string> editEvents = new();
+    private bool dense = false;
+    private bool hover = true;
+    private bool ronly = false;
+    private bool canCancelEdit = false;
+    private bool blockSwitch = false;
+    private string searchString = "";
+    private UserService.UserElement selectedItem1 = null;
+    private UserService.UserElement elementBeforeEdit;
+    private HashSet<UserService.UserElement> selectedItems1 = new HashSet<UserService.UserElement>();
+
+    private IEnumerable<UserService.UserElement> Elements = new List<UserService.UserElement>();
+
+    /*
+    protected override async Task OnInitializedAsync()
+    {
+        //Elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
+    }
+    */
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            UserId = ((UserService.UserElement)element).UserId,
+            Password = ((UserService.UserElement)element).Password,
+            Salt = ((UserService.UserElement)element).Salt
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((UserService.UserElement)element).UserId}");
+    }
+
+    private void ItemHasBeenCommitted(object element)
+    {
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((UserService.UserElement)element).UserId} committed");
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((UserService.UserElement)element).UserId = elementBeforeEdit.UserId;
+        ((UserService.UserElement)element).Password = elementBeforeEdit.Password;
+        ((UserService.UserElement)element).Salt = elementBeforeEdit.Salt;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((UserService.UserElement)element).UserId} cancelled");
     }
 }
