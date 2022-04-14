@@ -74,11 +74,12 @@ else
 
     }
 
-    private UserService.User? _userInfo;
+    private User? _userInfo;
     
     private void OnValidSubmit(EditContext context)
     {
-        _userInfo = new UserService.User(_stateService.GetAppInfo(), _model.Username!, _model.Password!);
+        _userInfo = new UserService().LoadUser(_stateService.GetAppInfo(), _model.Username!, _model.Password!, false);
+        //_userInfo = new User(_stateService.GetAppInfo(), _model.Username!, _model.Password!);
         if (!_userInfo.ValidUser)
         {
             _snackbar.Add($"Username is {_userInfo.ValidUser}");

@@ -17,8 +17,8 @@
     }
     else
     {
-        var userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
-        if (userInfo.CanUserUseApp("users") == false)
+        var userInfo = new UserService().LoadUser(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
+        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -52,7 +52,8 @@
                         <MudTextField Label="Username" HelperText="Use % for Wildcard search" @bind-Value="Username"/>
                     </MudCardContent>
                     <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Show View</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
+                                   OnClick="FillTable">Show View</MudButton>
                     </MudCardActions>
                 </MudCard>
                 <MudAlert Severity="Severity.Info" Align="Align.Center" Class="my-4">% in Username will show all.</MudAlert>
@@ -74,13 +75,13 @@
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<UserService.UserElement, object>(x => x.UserId)">Username</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<UserElement, object>(x => x.UserId)">Username</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<UserService.UserElement, object>(x => x.Password)">Password</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<UserElement, object>(x => x.Password)">Password</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserService.UserElement, object>(x => x.Salt)">Salt</MudTableSortLabel>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object>(x => x.Salt)">Salt</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -165,6 +166,11 @@
         _delete = false;
         _password = true;
     }
+
+    private void FillTable()
+    {
+        //var us = UserService.User(_stateService.GetAppInfo());
+    }
 }
 
 @code 
@@ -176,11 +182,11 @@
     private bool canCancelEdit = false;
     private bool blockSwitch = false;
     private string searchString = "";
-    private UserService.UserElement selectedItem1 = null;
-    private UserService.UserElement elementBeforeEdit;
-    private HashSet<UserService.UserElement> selectedItems1 = new HashSet<UserService.UserElement>();
+    private UserElement selectedItem1 = null;
+    private UserElement elementBeforeEdit;
+    private HashSet<UserElement> selectedItems1 = new HashSet<UserElement>();
 
-    private IEnumerable<UserService.UserElement> Elements = new List<UserService.UserElement>();
+    private IEnumerable<UserElement> Elements = new List<UserElement>();
 
     /*
     protected override async Task OnInitializedAsync()
@@ -204,23 +210,23 @@
     {
         elementBeforeEdit = new()
         {
-            UserId = ((UserService.UserElement)element).UserId,
-            Password = ((UserService.UserElement)element).Password,
-            Salt = ((UserService.UserElement)element).Salt
+            UserId = ((UserElement)element).UserId,
+            Password = ((UserElement)element).Password,
+            Salt = ((UserElement)element).Salt
         };
-        AddEditionEvent($"RowEditPreview event: made a backup of Element {((UserService.UserElement)element).UserId}");
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((UserElement)element).UserId}");
     }
 
     private void ItemHasBeenCommitted(object element)
     {
-        AddEditionEvent($"RowEditCommit event: Changes to Element {((UserService.UserElement)element).UserId} committed");
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((UserElement)element).UserId} committed");
     }
 
     private void ResetItemToOriginalValues(object element)
     {
-        ((UserService.UserElement)element).UserId = elementBeforeEdit.UserId;
-        ((UserService.UserElement)element).Password = elementBeforeEdit.Password;
-        ((UserService.UserElement)element).Salt = elementBeforeEdit.Salt;
-        AddEditionEvent($"RowEditCancel event: Editing of Element {((UserService.UserElement)element).UserId} cancelled");
+        ((UserElement)element).UserId = elementBeforeEdit.UserId;
+        ((UserElement)element).Password = elementBeforeEdit.Password;
+        ((UserElement)element).Salt = elementBeforeEdit.Salt;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((UserElement)element).UserId} cancelled");
     }
 }

@@ -4,164 +4,150 @@ namespace BVPVWebServer.Data;
 
 public class UserService
 {
-    public class User
+    public User LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
     {
-        public readonly string UserId;
-        public readonly string HighestRoleId;
-        public readonly Dictionary<string, string> AppsWithFunction;
-        public readonly bool ValidUser;
-        public readonly bool ValidPassword;
-        private readonly AppInfo _appInfo;
+        var user = new User();
+        user.ValidPassword = false;
+        user.ValidUser = false;
+        user.HighestRoleId = string.Empty;
+        user.UserId = username;
 
-        public User(AppInfo appInfo)
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from Users where `UserID` = '{username}';");
+        if (rdr is {HasRows: false})
         {
-            UserId = string.Empty;
-            HighestRoleId = string.Empty;
-            AppsWithFunction = new Dictionary<string, string>();
-            ValidPassword = false;
-            ValidUser = false;
-            _appInfo = appInfo;
+            user.ValidUser = false;
+            user.UserId = string.Empty;
+            db.Close();
+            return user;
         }
 
-        public User(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
+        var storedPassword = string.Empty;
+        var storedSalt = string.Empty;
+        while (rdr != null && rdr.Read())
         {
-            ValidPassword = false;
-            ValidUser = false;
-            _appInfo = appInfo;
-            HighestRoleId = string.Empty;
-            AppsWithFunction = new Dictionary<string, string>();
-            UserId = username;
-
-            using var db = new MariaDb(_appInfo);
-            db.Open();
-            var rdr = db.ExecQuery($"select * from Users where `UserID` = '{username}';");
-            if (rdr is {HasRows: false})
-            {
-                ValidUser = false;
-                UserId = string.Empty;
-                db.Close();
-                return;
-            }
-
-            var storedPassword = string.Empty;
-            var storedSalt = string.Empty;
-            while (rdr != null && rdr.Read())
-            {
-                storedPassword = rdr[1].ToString() ?? string.Empty;
-                storedSalt = rdr[2].ToString() ?? string.Empty;
-            }
-
-            db.Close();
-            ValidUser = true;
-            var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
-            if ((encryptedPassword != storedPassword) && !checkPw)
-            {
-                return;
-            }
-            else
-            {
-                ValidPassword = true;
-            }
-
-            db.Open();
-            rdr = db.ExecQuery($"select * from UserRolesView where `User` = '{UserId}' order by `Role Level` Limit 1;");
-            if (rdr is {HasRows: true})
-            {
-                while (rdr.Read())
-                {
-                    HighestRoleId = (string) rdr!["Role"];
-                }
-            }
-
-            db.Close();
-
-            db.Open();
-            rdr = db.ExecQuery($"select * from AppsByUserView where `User` = '{UserId}';");
-            if (rdr is {HasRows: false}) return;
-
-            var lastApp = string.Empty;
-            while (rdr != null && rdr.Read())
-            {
-                if (rdr[4].ToString() is null || rdr[6].ToString() is null) continue;
-                if (rdr[4].ToString() == lastApp) continue;
-                lastApp = rdr[4].ToString();
-                AppsWithFunction.Add(rdr[4].ToString()!, rdr[6].ToString()!);
-            }
-
-            db.Close();
+            storedPassword = rdr[1].ToString() ?? string.Empty;
+            storedSalt = rdr[2].ToString() ?? string.Empty;
         }
 
-        public bool AddUser(string userName, string password)
+        db.Close();
+        user.ValidUser = true;
+        var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
+        if ((encryptedPassword != storedPassword) && !checkPw)
         {
-            var success = false;
-            if (ValidUser)
+            return user;
+        }
+        else
+        {
+            user.ValidPassword = true;
+        }
+
+        db.Open();
+        rdr = db.ExecQuery(
+            $"select * from UserRolesView where `User` = '{user.UserId}' order by `Role Level` Limit 1;");
+        if (rdr is {HasRows: true})
+        {
+            while (rdr.Read())
             {
-                _appInfo.TxtFile.Write($"Error adding user: {userName}",
-                    "UserLib-Add", 0);
-                return success;
+                user.HighestRoleId = (string) rdr!["Role"];
             }
-
-            var mySalt = BCrypt.Net.BCrypt.GenerateSalt();
-            var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
-            using var db = new MariaDb(_appInfo);
-            db.Open();
-            string sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
-            db.ExecNonQuery(sql, true);
-            success = db.Success;
-            db.Close();
-            return success;
         }
 
-        public bool AddUserRoles(string userName, string[] userRoles)
-        {
-            var success = true;
-            using var db = new MariaDb(_appInfo);
-            db.Open();
-            foreach (var role in userRoles)
-            {
-                string sql = $"insert into UserRoles values ('{userName}', '{role}');";
-                db.ExecNonQuery(sql, true);
-                if (!db.Success) success = false;
-            }
-
-            db.Close();
-            return success;
-        }
-        public bool CanUserUseApp(string app)
-        {
-            var success = true;
-            using var db = new MariaDb(_appInfo);
-            db.Open();
-            var sql = $"select `App` from AppsByUserView where `User` = '{UserId}' and `App` = '{app}'";
-            var rdr = db.ExecQuery(sql);
-            if (rdr!.HasRows == false) success = false;
-            db.Close();
-            return success;
-        }
-    }
-
-    public class UserElement
-    {
-        public UserElement()
-        {
-            UserId = string.Empty;
-            Password = string.Empty;
-            Salt = string.Empty;
-        }
-
-        public string UserId { get; set; }
-        public string Password { get; set; }
-        public string Salt { get; set; }
+        db.Close();
         
+        return user;
     }
 
-    public class UserElements
+    public bool AddUser(AppInfo appInfo, string userName, string password)
     {
-        public UserElements()
+        var user = new User();
+        LoadUser(appInfo, userName, password, false);
+        var success = false;
+        if (user.ValidUser)
         {
-            Users = new List<UserElement>();
+            appInfo.TxtFile.Write($"Error adding user: {userName}",
+                "UserLib-Add", 0);
+            return success;
         }
 
-        public List<UserElement> Users { get; set; }
+        var mySalt = BCrypt.Net.BCrypt.GenerateSalt();
+        var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        string sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
+        db.ExecNonQuery(sql, true);
+        success = db.Success;
+        db.Close();
+        return success;
     }
+
+    public bool AddUserRoles(AppInfo appInfo, string userName, string[] userRoles)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        foreach (var role in userRoles)
+        {
+            string sql = $"insert into UserRoles values ('{userName}', '{role}');";
+            db.ExecNonQuery(sql, true);
+            if (!db.Success) success = false;
+        }
+
+        db.Close();
+        return success;
+    }
+
+    public static bool CanUserUseApp(AppInfo appInfo, string? userid, string app)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"select `App` from AppsByUserView where `User` = '{userid}' and `App` = '{app}'";
+        var rdr = db.ExecQuery(sql);
+        if (rdr!.HasRows == false) success = false;
+        db.Close();
+        return success;
+    }
+
+    public UserElements GetUsers(string searchsting)
+    {
+        UserElements ue = new();
+
+        return ue;
+    }
+}
+
+public class User
+{
+    public string UserId { get; set; }
+    public string HighestRoleId { get; set; }
+    public bool ValidUser { get; set; }
+    public bool ValidPassword { get; set; }
+    
+}
+
+public class UserElement
+{
+    public UserElement()
+    {
+        UserId = string.Empty;
+        Password = string.Empty;
+        Salt = string.Empty;
+    }
+
+    public string UserId { get; set; }
+    public string Password { get; set; }
+    public string Salt { get; set; }
+        
+}
+
+public class UserElements
+{
+    public UserElements()
+    {
+        Users = new List<UserElement>();
+    }
+
+    public List<UserElement> Users { get; set; }
 }
