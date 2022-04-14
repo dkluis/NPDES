@@ -6,11 +6,13 @@ public class UserService
 {
     public User LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
     {
-        var user = new User();
-        user.ValidPassword = false;
-        user.ValidUser = false;
-        user.HighestRoleId = string.Empty;
-        user.UserId = username;
+        var user = new User
+        {
+            ValidPassword = false,
+            ValidUser = false,
+            HighestRoleId = string.Empty,
+            UserId = username
+        };
 
         using var db = new MariaDb(appInfo);
         db.Open();
@@ -50,7 +52,7 @@ public class UserService
         {
             while (rdr.Read())
             {
-                user.HighestRoleId = (string) rdr!["Role"];
+                user.HighestRoleId = (string) rdr["Role"];
             }
         }
 
@@ -110,7 +112,7 @@ public class UserService
         return success;
     }
 
-    public UserElements GetUsers(string searchsting)
+    public UserElements GetUsers(string searchString)
     {
         UserElements ue = new();
 
@@ -120,8 +122,8 @@ public class UserService
 
 public class User
 {
-    public string UserId { get; set; }
-    public string HighestRoleId { get; set; }
+    public string? UserId { get; set; }
+    public string? HighestRoleId { get; set; }
     public bool ValidUser { get; set; }
     public bool ValidPassword { get; set; }
     

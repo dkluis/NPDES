@@ -17,7 +17,6 @@
     }
     else
     {
-        var userInfo = new UserService().LoadUser(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
         if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
@@ -53,7 +52,7 @@
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto"
-                                   OnClick="FillTable">Show View</MudButton>
+                                   OnClick="FillTable">Fill Table</MudButton>
                     </MudCardActions>
                 </MudCard>
                 <MudAlert Severity="Severity.Info" Align="Align.Center" Class="my-4">% in Username will show all.</MudAlert>

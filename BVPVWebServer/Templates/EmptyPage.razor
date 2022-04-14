@@ -19,7 +19,6 @@
     }
     else
     {
-        var userInfo = new UserService().LoadUser(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
         if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
