@@ -7,7 +7,7 @@ public class UserService
     public class User
     {
         public readonly string UserId;
-        public readonly List<string> RoleId;
+        public readonly string HighestRoleId;
         public readonly Dictionary<string, string> AppsWithFunction;
         public readonly bool ValidUser;
         public readonly bool ValidPassword;
@@ -16,7 +16,7 @@ public class UserService
         public User(AppInfo appInfo)
         {
             UserId = string.Empty;
-            RoleId = new List<string>();
+            HighestRoleId = string.Empty;
             AppsWithFunction = new Dictionary<string, string>();
             ValidPassword = false;
             ValidUser = false;
@@ -28,7 +28,7 @@ public class UserService
             ValidPassword = false;
             ValidUser = false;
             _appInfo = appInfo;
-            RoleId = new List<string>();
+            HighestRoleId = string.Empty;
             AppsWithFunction = new Dictionary<string, string>();
             UserId = username;
 
@@ -64,19 +64,19 @@ public class UserService
             }
 
             db.Open();
-            rdr = db.ExecQuery($"select * from UserRoles where `UserID` = '{UserId}';");
+            rdr = db.ExecQuery($"select * from UserRolesView where `User` = '{UserId}' order by `Role Level` Limit 1;");
             if (rdr is {HasRows: true})
             {
                 while (rdr.Read())
                 {
-                    RoleId.Add(rdr[1].ToString()!);
+                    HighestRoleId = (string) rdr!["Role"];
                 }
             }
 
             db.Close();
 
             db.Open();
-            rdr = db.ExecQuery($"select * from AppsByUser where `User` = '{UserId}';");
+            rdr = db.ExecQuery($"select * from AppsByUserView where `User` = '{UserId}';");
             if (rdr is {HasRows: false}) return;
 
             var lastApp = string.Empty;
@@ -132,7 +132,7 @@ public class UserService
             var success = true;
             using var db = new MariaDb(_appInfo);
             db.Open();
-            var sql = $"select `App` from AppsByUser where `User` = '{UserId}' and `App` = '{app}'";
+            var sql = $"select `App` from AppsByUserView where `User` = '{UserId}' and `App` = '{app}'";
             var rdr = db.ExecQuery(sql);
             if (rdr!.HasRows == false) success = false;
             db.Close();

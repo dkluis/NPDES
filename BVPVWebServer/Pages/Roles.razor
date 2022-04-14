@@ -1,6 +1,5 @@
 @page "/roles"
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
 @inject StateService _stateService
@@ -16,8 +15,8 @@
     }
     else
     {
-        var _userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId, "", false);
-        if (_userInfo.CanUserUseApp("roles") == false)
+        var userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
+        if (userInfo.CanUserUseApp("roles") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }

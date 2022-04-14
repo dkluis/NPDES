@@ -1,4 +1,4 @@
-@page "/apps"
+@page "/EmptyPage"
 
 @inject ProtectedSessionStorage _sessionStore
 
@@ -7,7 +7,7 @@
 
 @inject RoleService _roleService
 
-
+<PageTitle>Roles</PageTitle>
 @{
     if (!_stateService.IsLoggedIn)
     {
@@ -16,14 +16,12 @@
     else
     {
         var userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
-        if (userInfo.CanUserUseApp("apps") == false)
+        if (userInfo.CanUserUseApp("EmptyPage") == false)
         {
             <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
-            <PageTitle>Roles</PageTitle>
-
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
         }
     }

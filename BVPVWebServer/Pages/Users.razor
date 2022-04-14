@@ -1,29 +1,45 @@
 @page "/users"
 
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage _sessionStore
 
-@inject HttpClient _http
 @inject StateService _stateService
 @inject NavigationManager _navMgr
+
+@inject UserService _userService
+
+<PageTitle>Users</PageTitle>
+
 @{
     if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/");
     }
+    else
+    {
+        var userInfo = new UserService.User(_stateService.GetAppInfo(), _stateService.UserId!, "", false);
+        if (userInfo.CanUserUseApp("users") == false)
+        {
+            <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
+            
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined">
+                <MudButton StartIcon="@Icons.Material.Filled.Add">Add User</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Delete">Delete User</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset Password</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.ShowChart" IconColor="Color.Warning">Users View</MudButton>
+            </MudButtonGroup>
+        }
+    }
 }
-
-<PageTitle>Users</PageTitle>
-
-<MudText Typo="Typo.h4" Align="Align.Center">User Maintenance</MudText>
-
-
-
-@code {
+          
+@code
+{
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
-    
 }
