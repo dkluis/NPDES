@@ -27,8 +27,8 @@
             <MudItem>
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
                     <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
-                    <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">Users</MudButton>
                     <MudButton StartIcon="@Icons.Custom.Uncategorized.Bacteria">Assign Roles</MudButton>
+                    <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">View</MudButton>
                 </MudButtonGroup>
             </MudItem>
 
@@ -104,7 +104,7 @@
                         @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                         <MudTd DataLabel="Password">@context!.Password</MudTd>
                         <MudTd>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="Delete"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => OnButtonClicked(context.UserId))"></MudIconButton>
                             <MudIconButton Icon="@Icons.Material.Filled.ChangeHistory"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
@@ -133,6 +133,15 @@
     }
 }
 
+<MudMessageBox @ref="mbox" Title="Warning" CancelText="Cancel">
+    <MessageContent>
+        Deleting can <b><i>not</i></b> be undone!
+    </MessageContent>
+    <YesButton>
+        <MudButton OnClick="@(() => Delete(SelectedUserID))" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
+    </YesButton>
+</MudMessageBox>
+
 @code
 {
     // For Page specific code
@@ -147,8 +156,8 @@
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
     }
 
-    private bool _add;
-    private bool _view = true;
+    private bool _add = true;
+    private bool _view;
 
     private void ShowAdd()
     {
@@ -174,7 +183,8 @@
 @code
 {
     private readonly List<string> _editEvents = new();
-    private UserElement? _selectedUser;
+    private UserElement _selectedUser;
+    public string SelectedUserID;
     private MudTable<UserElement>? _mudTableUsers;
     private IEnumerable<UserElement> _userElements = new List<UserElement>();
 }
@@ -223,29 +233,42 @@
 
 @code
 {
-    private void Delete()
+    MudMessageBox mbox { get; set; }
+    string state = "Message box hasn't been opened yet";
+
+    private async void OnButtonClicked(string userid)
     {
-        AddErrors = "";
-        if (_selectedUser == null)
+        SelectedUserID = userid;
+        bool? result = await mbox.Show();
+        state= result==null ? "Cancelled" : "Deleted!";
+        StateHasChanged();
+    }
+}
+
+@code
+{
+    private void Delete(string userid)
+    {
+        if (userid == null)
         {
-            AddErrors = "No User Selected";
+            _editEvents.Add("No User Selected");
             return;
         }
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), _selectedUser!.UserId!, "", false);
-        if (info.UserId != _selectedUser.UserId)
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), userid, "", false);
+        if (info.UserId != userid)
         {
-            AddErrors = $"User '{_selectedUser.UserId}' does not exist";
+            AddErrors = $"User '{userid}' does not exist";
             return;
         }
 
-        Success = UserService.DeleteUser(_stateService.GetAppInfo(), _selectedUser.UserId!);
+        Success = UserService.DeleteUser(_stateService.GetAppInfo(), userid);
         if (!Success)
         {
-            AddErrors = $"Deleting User {_selectedUser.UserId} failed";
+            AddErrors = $"Deleting User {userid} failed";
             return;
         }
 
-        _editEvents.Add($"User {_selectedUser.UserId} is deleted");
+        _editEvents.Add($"User {userid} is deleted");
         FillTable();
         StateHasChanged();
     }
