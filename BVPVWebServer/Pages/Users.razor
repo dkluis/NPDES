@@ -27,13 +27,7 @@
             <MudItem>
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
                     <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
-                    <MudButton @onclick="ShowDelete" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
-                    <MudButton @onclick="ShowChangePassword" StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset</MudButton>
                     <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">Users</MudButton>
-                </MudButtonGroup>
-            </MudItem>
-            <MudItem>
-                <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Filled" Style="margin-bottom: 10px">
                     <MudButton StartIcon="@Icons.Custom.Uncategorized.Bacteria">Assign Roles</MudButton>
                 </MudButtonGroup>
             </MudItem>
@@ -67,42 +61,6 @@
                     </MudCard>
                 </div>
             }
-            if (_delete)
-            {
-                if (_selectedItem1 != null)
-                {
-                    _selectedUserId = _selectedItem1.UserId;
-                    _usernameDelRes = _selectedUserId;
-                }
-                <div style="max-width: 400px;">
-                    <MudCard Outlined="true">
-                        <MudText Typo="Typo.h5" Align="Align.Center">Delete User</MudText>
-                        <MudGrid>
-                            <MudItem xs="12">
-                                <MudCard>
-                                    <MudCardContent>
-                                        <MudTextField Label="Username" @bind-Value="_usernameDelRes"/>
-                                    </MudCardContent>
-                                    <MudCardActions>
-                                        <MudButton OnClick="Delete" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Delete User</MudButton>
-                                    </MudCardActions>
-                                </MudCard>
-                            </MudItem>
-                        </MudGrid>
-                        <MudText Color="Color.Error" Align="Align.Center">@AddErrors</MudText>
-                    </MudCard>
-                </div>
-                _selectedItem1 = new UserElement();
-            }
-            if (_password)
-            {
-                if (_selectedItem1 != null)
-                {
-                    _selectedUserId = _selectedItem1.UserId;
-                    _usernameDelRes = _selectedUserId;
-                }
-                _selectedItem1 = new UserElement();
-            }
             if (_view)
             {
                 <!---This is the Table View Area -->
@@ -121,20 +79,15 @@
                     </MudCard>
                 </div>
 
-                <MudTable Items="@_elements" Dense="true" Hover="true" CanCancelEdit="true" ReadOnly="false"
-                          FixedHeader="true" FixedFooter="true" Height="300px"
-                          @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
-                          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-                          RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@BlockSwitch">
+                <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" FixedFooter="true" Height="350px"
+                          Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers" @bind-SelectedItem="_selectedUser">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Users Information</MudText>
-
                     </ToolBarContent>
                     <ColGroup>
                         <col style="width:30px;"/>
-                        <col/>
-                        <col/>
-
+                        <col style="Width:200px"/>
+                        <col style="width: 150px"/>
                     </ColGroup>
                     <HeaderContent>
                         <MudTh>
@@ -143,26 +96,18 @@
                         <MudTh>
                             <MudTableSortLabel SortBy="new Func<UserElement, object?>(x => x.Password)">Password</MudTableSortLabel>
                         </MudTh>
-                        <MudTh>
-                            <MudTableSortLabel SortBy="new Func<UserElement, object?>(x => x.Salt)">Salt</MudTableSortLabel>
-                        </MudTh>
+                        <MudTh>Functions</MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                         <MudTd DataLabel="Username">@context!.UserId</MudTd>
                         @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                         <MudTd DataLabel="Password">@context!.Password</MudTd>
-                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                        <MudTd DataLabel="Salt">@context!.Salt</MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="Delete"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.ChangeHistory"></MudIconButton>
+                        </MudTd>
                     </RowTemplate>
-                    <RowEditingTemplate>
-                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                        <MudTd DataLabel="Username">@context!.UserId</MudTd>
-                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                        <MudTd DataLabel="Password">@context!.Password</MudTd>
-                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                        <MudTd DataLabel="Salt">@context!.Salt</MudTd>
-                    </RowEditingTemplate>
                     <PagerContent>
                         <MudTablePager/>
                     </PagerContent>
@@ -178,7 +123,7 @@
                         {
                             <div class="d-flex">
                                 <MudSpacer/>
-                                <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="ClearEventLog">Clear event log</MudButton>
+                                <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled">Clear event log</MudButton>
                             </div>
                         }
                     </MudExpansionPanel>
@@ -196,8 +141,6 @@
 
 @code
 {
-    //Template code
-
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
@@ -205,39 +148,17 @@
     }
 
     private bool _add;
-    private bool _delete;
-    private bool _password;
     private bool _view = true;
 
     private void ShowAdd()
     {
         _add = true;
-        _delete = false;
-        _password = false;
-        _view = false;
-    }
-
-    private void ShowDelete()
-    {
-        _add = false;
-        _delete = true;
-        _password = false;
-        _view = false;
-    }
-
-    private void ShowChangePassword()
-    {
-        _add = false;
-        _delete = false;
-        _password = true;
         _view = false;
     }
 
     private void ShowView()
     {
         _add = false;
-        _delete = false;
-        _password = false;
         _view = true;
     }
 
@@ -245,7 +166,7 @@
     private void FillTable()
     {
         if (_username is null or "") _username = "%";
-        _elements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
+        _userElements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
         _username = String.Empty;
     }
 }
@@ -253,47 +174,9 @@
 @code
 {
     private readonly List<string> _editEvents = new();
-        private const bool BlockSwitch = false;
-    private UserElement? _selectedItem1;
-    private string? _selectedUserId;
-    private UserElement? _elementBeforeEdit;
-    private IEnumerable<UserElement> _elements = new List<UserElement>();
-
-    private void ClearEventLog()
-    {
-        _editEvents.Clear();
-    }
-
-    private void AddEditionEvent(string message)
-    {
-        _editEvents.Add(message);
-        StateHasChanged();
-    }
-
-    private void BackupItem(object element)
-    {
-        _elementBeforeEdit = new UserElement
-        {
-            UserId = ((UserElement) element).UserId,
-            Password = ((UserElement) element).Password,
-            Salt = ((UserElement) element).Salt
-        };
-        AddEditionEvent($"RowClick Selected {((UserElement) element).UserId}");
-    }
-
-    private void ItemHasBeenCommitted(object element)
-    {
-    //TODO add the update to the user table
-        AddEditionEvent($"RowSave {((UserElement) element).UserId}");
-    }
-
-    private void ResetItemToOriginalValues(object element)
-    {
-        ((UserElement) element).UserId = _elementBeforeEdit!.UserId;
-        ((UserElement) element).Password = _elementBeforeEdit.Password;
-        ((UserElement) element).Salt = _elementBeforeEdit.Salt;
-        AddEditionEvent($"RowSwitch away from {((UserElement) element).UserId}");
-    }
+    private UserElement? _selectedUser;
+    private MudTable<UserElement>? _mudTableUsers;
+    private IEnumerable<UserElement> _userElements = new List<UserElement>();
 }
 
 @code {
@@ -336,24 +219,38 @@
         StateHasChanged();
     }
 
-    private string? _usernameDelRes;
+}
 
+@code
+{
     private void Delete()
     {
         AddErrors = "";
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), _usernameDelRes!, "", false);
-        if (info.UserId != _usernameDelRes)
+        if (_selectedUser == null)
         {
-            AddErrors = $"User {_usernameDelRes} does not exist ";
+            AddErrors = "No User Selected";
             return;
         }
-        Success = UserService.DeleteUser(_stateService.GetAppInfo(), _usernameDelRes!);
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), _selectedUser!.UserId!, "", false);
+        if (info.UserId != _selectedUser.UserId)
+        {
+            AddErrors = $"User '{_selectedUser.UserId}' does not exist";
+            return;
+        }
+
+        Success = UserService.DeleteUser(_stateService.GetAppInfo(), _selectedUser.UserId!);
         if (!Success)
         {
-            AddErrors = $"Deleting User {_usernameDelRes} failed";
+            AddErrors = $"Deleting User {_selectedUser.UserId} failed";
             return;
         }
+
+        _editEvents.Add($"User {_selectedUser.UserId} is deleted");
+        FillTable();
         StateHasChanged();
     }
+}
+
+@code {
 
 }
