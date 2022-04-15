@@ -84,6 +84,28 @@ public class UserService
         return success;
     }
 
+    public static bool DeleteUser(AppInfo appInfo, string userName)
+    {
+        var user = new User();
+        LoadUser(appInfo, userName, "", false);
+        var success = false;
+        if (user.ValidUser)
+        {
+            appInfo.TxtFile.Write($"Error adding user: {userName}",
+                "UserLib-Add", 0);
+            return success;
+        }
+        
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        string sql = $"delete from Users where `UserID` = '{userName}';";
+        db.ExecNonQuery(sql, true);
+        success = db.Success;
+        db.Close();
+        return success;
+    }
+    
+
     public bool AddUserRoles(AppInfo appInfo, string userName, string[] userRoles)
     {
         var success = true;
@@ -156,7 +178,7 @@ public class UserElement
         Salt = string.Empty;
     }
 
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
     public string Password { get; set; }
     public string Salt { get; set; }
         

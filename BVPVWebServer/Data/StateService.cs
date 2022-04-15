@@ -36,7 +36,7 @@ public class StateService
     public void InitSystemState(string userid)
     {
         SystemState = new SystemState();
-        _db.Open();
+        _db!.Open();
         var rdr = _db.ExecQuery($"select * from `UserSystemState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
@@ -54,7 +54,7 @@ public class StateService
     public void InitAppStates(string userid)
     {
         AppState = new AppState();
-        _db.Open();
+        _db!.Open();
         var rdr = _db.ExecQuery($"select * from `UserAppState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
