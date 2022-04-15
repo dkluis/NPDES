@@ -24,14 +24,20 @@
         else
         {
             <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
-
-            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
-                <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
-                <MudButton @onclick="ShowDelete" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
-                <MudButton @onclick="ShowChangePassword" StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset</MudButton>
-                <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">Users</MudButton>
-            </MudButtonGroup>
-
+            <MudItem>
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
+                    <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
+                    <MudButton @onclick="ShowDelete" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+                    <MudButton @onclick="ShowChangePassword" StartIcon="@Icons.Material.Filled.ChangeHistory" IconColor="Color.Warning">Reset</MudButton>
+                    <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">Users</MudButton>
+                </MudButtonGroup>
+            </MudItem>
+            <MudItem>
+                <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Filled" Style="margin-bottom: 10px">
+                    <MudButton StartIcon="@Icons.Custom.Uncategorized.Bacteria">Assign Roles</MudButton>
+                </MudButtonGroup>
+            </MudItem>
+            
             if (_add)
             {
                 <div style="max-width: 400px;">
@@ -57,13 +63,19 @@
                                 </MudItem>
                             </MudGrid>
                         </EditForm>
-                        <MudText >@AddErrors : @SelectedItem1.UserId</MudText>
+                        <MudText >@AddErrors</MudText>
                     </MudCard>
                 </div>
             }
             if (_delete)
             {
                 <MudAlert>Delete is active</MudAlert>
+                if (SelectedItem1 != null)
+                {
+                    SelectedUserId = SelectedItem1.UserId;
+                    <MudAlert Severity="Severity.Info">Selected User: @SelectedUserId</MudAlert>
+                    SelectedItem1 = new UserElement();
+                }
             }
             if (_password)
             {
@@ -215,6 +227,7 @@
     private readonly List<string> _editEvents = new();
         private const bool BlockSwitch = false;
     public UserElement? SelectedItem1;
+    public string SelectedUserId;
     private UserElement? _elementBeforeEdit;
     private IEnumerable<UserElement> _elements = new List<UserElement>();
 
@@ -294,5 +307,4 @@
         _addUserForm.Password2 = "";
         StateHasChanged();
     }
-
 }
