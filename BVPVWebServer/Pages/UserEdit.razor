@@ -1,0 +1,14 @@
+@page "/useredit/{PassedUserId?}"
+<h3>UserEdit</h3>
+
+@PassedUserId
+
+@code {
+    [Parameter] 
+    public string? PassedUserId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        PassedUserId = PassedUserId ?? "No User";
+    }
+}

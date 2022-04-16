@@ -83,6 +83,20 @@ public class UserService
         db.Close();
         return success;
     }
+    
+    public static bool ChangePassword(AppInfo appInfo, string userName, string password)
+    {
+        var success = false;
+        var mySalt = BCrypt.Net.BCrypt.GenerateSalt();
+        var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        string sql = $"update Users set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
+        db.ExecNonQuery(sql, true);
+        success = db.Success;
+        db.Close();
+        return success;
+    }
 
     public static bool DeleteUser(AppInfo appInfo, string userName)
     {
