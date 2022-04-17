@@ -3,7 +3,6 @@
 @inject NavigationManager _navMgr
 
 @using Severity = MudBlazor.Severity
-@using Microsoft.AspNetCore.Http.Extensions
 
 @inject ProtectedSessionStorage _sessionStore
 @inject StateService _stateService
@@ -167,9 +166,8 @@
                         <MudText Typo="Typo.h6">Users Information</MudText>
                     </ToolBarContent>
                     <ColGroup>
-                        <col style="width:10px;"/>
+                        <col Style="width: 100px"/>
                         <col/>
-                        <col style="width: 200px"/>
                     </ColGroup>
                     <HeaderContent>
                         <MudTh>
@@ -182,7 +180,9 @@
                         <MudTd>
                             <MudText>
                                 <a href="/useredit/@context.UserId">
+                                    <div style="font-weight: bold">
                                     <Mudbutton>&#8942;</Mudbutton>
+                                    </div>
                                 </a>
                             </MudText>
                         </MudTd>

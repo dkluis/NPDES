@@ -1,14 +1,301 @@
 @page "/useredit/{PassedUserId?}"
-<h3>UserEdit</h3>
 
-@PassedUserId
+
+@inject NavigationManager _navMgr
+
+@using Severity = MudBlazor.Severity
+
+@inject ProtectedSessionStorage _sessionStore
+@inject StateService _stateService
+@inject UserService _userService
+
+<PageTitle>User @PassedUserId</PageTitle>
+
+@{
+    if (!_stateService.IsLoggedIn)
+    {
+        _navMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
+
+            <MudItem>
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
+                    <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
+                </MudButtonGroup>
+            </MudItem>
+
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
+                    <div style="max-width: 400px;">
+                        <MudCard Outlined="true">
+                            <MudText Typo="Typo.h5" Align="Align.Center">Change Password</MudText>
+                            <EditForm Model="@_changeUserPasswordForm" OnValidSubmit="OnValidSubmitChange">
+                                <DataAnnotationsValidator/>
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudCard>
+                                            <MudCardContent>
+                                                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                                              @bind-Value="_changeUserPasswordForm.PasswordChange" For="@(() => _changeUserPasswordForm.PasswordChange)" InputType="InputType.Password"/>
+                                                <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                                              @bind-Value="_changeUserPasswordForm.PasswordChange2" For="@(() => _changeUserPasswordForm.PasswordChange2)" InputType="InputType.Password"/>
+                                            </MudCardContent>
+                                            <MudCardActions>
+                                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Change Password</MudButton>
+                                            </MudCardActions>
+                                        </MudCard>
+                                    </MudItem>
+                                </MudGrid>
+                            </EditForm>
+                            <MudText Color="Color.Error" Align="Align.Center">@ChangeErrors</MudText>
+                        </MudCard>
+                    </div>
+                </MudExpansionPanel>
+ 
+                <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
+                    <MudText>Assign Roles</MudText>
+                    <MudText>From Table with @PassedUserId</MudText>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
+                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
+                </MudExpansionPanel>
+
+
+            </MudExpansionPanels>
+        }
+    }
+}
+
+<MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
+    <MessageContent>
+        Deleting User: @SelectedUserId
+        <b>
+            <i>can not</i>
+        </b> be undone!
+    </MessageContent>
+    <YesButton>
+        <MudButton OnClick="@(() => Delete())" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
+    </YesButton>
+</MudMessageBox>
+
+@code
+{
+    // For Page specific code
+    private string? _username;
+    public string Errors;
+}
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _sessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+    }
+
+    private string UserEditLink = @"/useredit";
+    private bool _add = false;
+    private bool _password = false;
+    private bool _view = true;
+    private bool _assignRoles = false;
+
+    private void ShowAdd()
+    {
+        _add = true;
+        _password = false;
+        _view = false;
+        _assignRoles = false;
+    }
+
+    private void ShowPassword()
+    {
+        _add = false;
+        _password = true;
+        _view = false;
+        _assignRoles = false;
+    }
+
+    private void ShowPasswordPreset(string userid)
+    {
+        _add = false;
+        _password = true;
+        _view = false;
+        _assignRoles = false;
+        SelectedUserId = userid;
+    }
+
+    private void ShowAssignRoles()
+    {
+        _add = false;
+        _password = false;
+        _view = false;
+        _assignRoles = true;
+    }
+
+    private void ShowView()
+    {
+        _add = false;
+        _password = false;
+        _view = true;
+        _assignRoles = false;
+    }
+
+    private void ShowAssignRolesPreset(string userid)
+    {
+        _add = false;
+        _password = false;
+        _view = false;
+        _assignRoles = true;
+        SelectedUserId = userid;
+    }
+
+    private void FillTable()
+    {
+        if (_username is null or "") _username = "%";
+        _userElements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
+        _username = String.Empty;
+    }
+}
+
+@code
+{
+    private readonly List<string> _editEvents = new();
+    private UserElement? _selectedUser;
+    public string? SelectedUserId;
+    public string? NewPassword;
+    private MudTable<UserElement>? _mudTableUsers;
+    private IEnumerable<UserElement> _userElements = new List<UserElement>();
+}
 
 @code {
-    [Parameter] 
+    readonly ChangePasswordForm _changeUserPasswordForm = new ChangePasswordForm();
+    public bool ChangeSuccess;
+    public string? ChangeErrors;
+
+    public class ChangePasswordForm
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        public string? PasswordChange { get; set; }
+
+        [Required]
+        [Compare(nameof(PasswordChange))]
+        public string? PasswordChange2 { get; set; }
+    }
+
+    private void OnValidSubmitChange(EditContext context)
+    {
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        if (info.UserId != PassedUserId)
+        {
+            ChangeErrors = $"User {PassedUserId} does not exist";
+            return;
+        }
+        ChangeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId, _changeUserPasswordForm.PasswordChange!);
+        if (!ChangeSuccess)
+        {
+            ChangeErrors = $"Changing Password {PassedUserId} failed";
+            return;
+        }
+        _changeUserPasswordForm.PasswordChange = "";
+        _changeUserPasswordForm.PasswordChange2 = "";
+        StateHasChanged();
+    }
+
+}
+
+@code
+{
+    MudMessageBox? DelBox { get; set; }
+
+    private async void OnButtonClicked()
+    {
+        SelectedUserId = PassedUserId;
+        await DelBox!.Show();
+        StateHasChanged();
+    }
+
+    MudMessageBox? ChangeBox { get; set; }
+
+    private async void OnChangeButtonClicked(string userid, string password)
+    {
+        SelectedUserId = userid;
+        NewPassword = password;
+        await ChangeBox!.Show();
+        StateHasChanged();
+    }
+}
+
+
+@code
+{
+    private void Delete()
+    {
+        if (PassedUserId == "")
+        {
+            _editEvents.Add("No User Passed");
+            return;
+        }
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        if (info.UserId != PassedUserId)
+        {
+            Errors = $"User '{PassedUserId}' does not exist";
+            return;
+        }
+
+        var Success = UserService.DeleteUser(_stateService.GetAppInfo(), PassedUserId);
+        if (!Success)
+        {
+            Errors = $"Deleting User {PassedUserId} failed";
+            return;
+        }
+
+        _editEvents.Add($"User {PassedUserId} is deleted");
+        _navMgr.NavigateTo("/users");
+    }
+}
+
+@code {
+
+}
+
+@code {
+
+    public List<string> AllUserRoles = new List<string>
+    {
+        "SuperAdmin",
+        "GroupAdmin",
+        "Reporter"
+    };
+
+
+    public bool Label_CheckBox1 = true;
+    public bool Label_CheckBox2;
+    public bool Label_CheckBox3;
+
+}
+
+@code {
+
+    [Parameter]
     public string? PassedUserId { get; set; }
 
     protected override void OnInitialized()
     {
         PassedUserId = PassedUserId ?? "No User";
     }
+
 }
