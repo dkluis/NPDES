@@ -136,6 +136,22 @@ public class UserService
         return success;
     }
 
+    public static List<string> AllAssignedRoles(string userid)
+    {
+        var assignedRoles = new List<string>();
+        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select `RoleID` from `UserRoles` where `UserID` = '{userid} 'order by `RoleID`");
+        if (!rdr!.HasRows) return assignedRoles;
+        while (rdr.Read())
+        {
+            if ((string) rdr["RoleId"] == "None") continue;
+            assignedRoles.Add((string) rdr["RoleID"]);
+        }
+        return assignedRoles;
+    }
+
     public static bool CanUserUseApp(AppInfo appInfo, string? userid, string app)
     {
         var success = true;

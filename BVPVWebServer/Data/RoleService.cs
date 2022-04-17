@@ -62,8 +62,26 @@ public class RoleService
 
         return allRoles;
     }
+    
+    public static List<string> GetAllRoleIds()
+    {
+        var allRoleIds = new List<string>();
+        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var result = db.ExecQueryAsync($"select `RoleID` from Roles order by `RoleLevel`, `RoleID`");
+        var rdr = result.Result;
+        if (!rdr!.HasRows) return allRoleIds;
+        while (rdr.Read())
+        {
+            if ((string) rdr["RoleId"] == "None") continue;
+            allRoleIds.Add((string) rdr["RoleID"]);
+        }
 
-    public bool DoesRoleExist(string role)
+        return allRoleIds;
+    }
+
+    public static bool DoesRoleExist(string role)
     {
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);

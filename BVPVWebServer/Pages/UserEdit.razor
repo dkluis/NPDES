@@ -25,9 +25,9 @@
         else
         {
             <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
-
+            
             <MudItem>
-                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 20px; margin-left: 20px;">
                     <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
                 </MudButtonGroup>
             </MudItem>
@@ -59,20 +59,39 @@
                         </MudCard>
                     </div>
                 </MudExpansionPanel>
- 
-                <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
-                    <MudText>Assign Roles</MudText>
-                    <MudText>From Table with @PassedUserId</MudText>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
-                    <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
-                </MudExpansionPanel>
 
+                <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
+                    <MudText Typo="Typo.h6">All Roles available to @PassedUserId:</MudText>
+                    <MudChipSet @bind-SelectedChips="_selectedMudChips" MultiSelection="true">
+                        @{
+                            foreach (var role in AllUserRoles)
+                            {
+                                if (AssignedRoles.Contains(role))
+                                {
+                                    <MudChip Color="Color.Info" Text="@role" Default="true"></MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Info" Text="@role"></MudChip>
+                                }
+                            }
+                        }
+                    </MudChipSet>
+
+                    <div class="d-flex flex-column">
+                        @if (_selectedMudChips is {Length: > 0 })
+                        {
+                            <MudText Typo="Typo.h6">@PassedUserId's new Role(s) are: @string.Join(" & ", _selectedMudChips.Select(chip => chip.Text)).</MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.h6" Color="Color.Error">No Role(s) Assigned Yet</MudText>
+                        }
+                    </div>
+                    <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled">Submit Role Update</MudButton>
+
+
+                </MudExpansionPanel>
 
             </MudExpansionPanels>
         }
@@ -87,15 +106,27 @@
         </b> be undone!
     </MessageContent>
     <YesButton>
-        <MudButton OnClick="@(() => Delete())" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
+        <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
     </YesButton>
 </MudMessageBox>
 
 @code
 {
     // For Page specific code
-    private string? _username;
-    public string Errors;
+    public string? Errors;
+    public List<string> AllUserRoles = new List<string>();
+    public List<string> AssignedRoles = new List<string>();
+
+    MudChip[]? _selectedMudChips;
+
+
+    [Parameter]
+    public string? PassedUserId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        PassedUserId = PassedUserId ?? "No User";
+    }
 }
 
 @code
@@ -104,80 +135,17 @@
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-    }
-
-    private string UserEditLink = @"/useredit";
-    private bool _add = false;
-    private bool _password = false;
-    private bool _view = true;
-    private bool _assignRoles = false;
-
-    private void ShowAdd()
-    {
-        _add = true;
-        _password = false;
-        _view = false;
-        _assignRoles = false;
-    }
-
-    private void ShowPassword()
-    {
-        _add = false;
-        _password = true;
-        _view = false;
-        _assignRoles = false;
-    }
-
-    private void ShowPasswordPreset(string userid)
-    {
-        _add = false;
-        _password = true;
-        _view = false;
-        _assignRoles = false;
-        SelectedUserId = userid;
-    }
-
-    private void ShowAssignRoles()
-    {
-        _add = false;
-        _password = false;
-        _view = false;
-        _assignRoles = true;
-    }
-
-    private void ShowView()
-    {
-        _add = false;
-        _password = false;
-        _view = true;
-        _assignRoles = false;
-    }
-
-    private void ShowAssignRolesPreset(string userid)
-    {
-        _add = false;
-        _password = false;
-        _view = false;
-        _assignRoles = true;
-        SelectedUserId = userid;
-    }
-
-    private void FillTable()
-    {
-        if (_username is null or "") _username = "%";
-        _userElements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
-        _username = String.Empty;
+        AllUserRoles = RoleService.GetAllRoleIds();
+        AssignedRoles = UserService.AllAssignedRoles(PassedUserId!);
     }
 }
 
 @code
 {
+    // ReSharper disable once CollectionNeverQueried.Local
     private readonly List<string> _editEvents = new();
-    private UserElement? _selectedUser;
     public string? SelectedUserId;
     public string? NewPassword;
-    private MudTable<UserElement>? _mudTableUsers;
-    private IEnumerable<UserElement> _userElements = new List<UserElement>();
 }
 
 @code {
@@ -198,13 +166,13 @@
 
     private void OnValidSubmitChange(EditContext context)
     {
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
             ChangeErrors = $"User {PassedUserId} does not exist";
             return;
         }
-        ChangeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId, _changeUserPasswordForm.PasswordChange!);
+        ChangeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId!, _changeUserPasswordForm.PasswordChange!);
         if (!ChangeSuccess)
         {
             ChangeErrors = $"Changing Password {PassedUserId} failed";
@@ -228,8 +196,10 @@
         StateHasChanged();
     }
 
+    // ReSharper disable once UnusedAutoPropertyAccessor.Local
     MudMessageBox? ChangeBox { get; set; }
 
+    // ReSharper disable once UnusedMember.Local
     private async void OnChangeButtonClicked(string userid, string password)
     {
         SelectedUserId = userid;
@@ -249,15 +219,15 @@
             _editEvents.Add("No User Passed");
             return;
         }
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
             Errors = $"User '{PassedUserId}' does not exist";
             return;
         }
 
-        var Success = UserService.DeleteUser(_stateService.GetAppInfo(), PassedUserId);
-        if (!Success)
+        var success = UserService.DeleteUser(_stateService.GetAppInfo(), PassedUserId!);
+        if (!success)
         {
             Errors = $"Deleting User {PassedUserId} failed";
             return;
@@ -269,33 +239,5 @@
 }
 
 @code {
-
-}
-
-@code {
-
-    public List<string> AllUserRoles = new List<string>
-    {
-        "SuperAdmin",
-        "GroupAdmin",
-        "Reporter"
-    };
-
-
-    public bool Label_CheckBox1 = true;
-    public bool Label_CheckBox2;
-    public bool Label_CheckBox3;
-
-}
-
-@code {
-
-    [Parameter]
-    public string? PassedUserId { get; set; }
-
-    protected override void OnInitialized()
-    {
-        PassedUserId = PassedUserId ?? "No User";
-    }
 
 }
