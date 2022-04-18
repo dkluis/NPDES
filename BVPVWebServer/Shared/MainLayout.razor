@@ -17,6 +17,7 @@
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.End" OnClick="Logout"></MudIconButton>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="_themeManager.DrawerClipMode" Elevation="_themeManager.DrawerElevation">
         <MudDrawerHeader>
@@ -67,4 +68,11 @@
         StateHasChanged();
     }
 
+    private void Logout()
+    {
+        var result = _sessionStore.DeleteAsync("User");
+        _stateService.IsLoggedIn = false;
+        _navMgr.NavigateTo("/");
+    }
+    
 }

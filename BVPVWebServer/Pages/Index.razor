@@ -37,6 +37,7 @@ else
 }
 
 @code {
+
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
