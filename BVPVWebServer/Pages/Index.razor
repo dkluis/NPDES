@@ -2,7 +2,7 @@
 @page "/Index"
 
 @inject NavigationManager _navMgr
-@using System.ComponentModel.DataAnnotations
+
 @inject ProtectedSessionStorage _sessionStore
 
 @inject ISnackbar _snackbar
@@ -59,7 +59,7 @@ else
 
 @code {
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    LoginForm _model = new LoginForm();
+    LoginForm _model = new();
  
     public class LoginForm
     {
@@ -81,7 +81,7 @@ else
             _snackbar.Add($"Username is {_userInfo.ValidUser}");
             return;
         }
-        else if (!_userInfo.ValidPassword)
+        if (!_userInfo.ValidPassword)
         {
             _snackbar.Add($"Password is {_userInfo.ValidPassword}");
             return;

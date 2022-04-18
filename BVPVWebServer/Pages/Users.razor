@@ -2,7 +2,9 @@
 
 @inject NavigationManager _navMgr
 
+@inject ISnackbar _snackbar
 @using Severity = MudBlazor.Severity
+
 
 @inject ProtectedSessionStorage _sessionStore
 @inject StateService _stateService
@@ -24,209 +26,95 @@
         else
         {
             <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
-            <!---
-            <MudItem>
-                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 10px">
-                    <MudButton @onclick="ShowAdd" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
-                    <MudButton @onclick="ShowPassword" StartIcon="@Icons.Material.Filled.ChangeHistory">Password</MudButton>
-                    <MudButton @onclick="ShowAssignRoles" StartIcon="@Icons.Custom.Uncategorized.Bacteria">Roles</MudButton>
-                    <MudButton @onclick="ShowView" StartIcon="@Icons.Material.Filled.History">View</MudButton>
-                </MudButtonGroup>
-            </MudItem>
-            -->
-            if (_add)
-            {
-                <div style="max-width: 400px;">
-                    <MudCard Outlined="true">
-                        <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
-                        <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
-                            <DataAnnotationsValidator/>
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudCard>
-                                        <MudCardContent>
-                                            <MudTextField Label="Username" HelperText="Max. 30 characters"
-                                                          @bind-Value="_addUserForm.UsernameAdd" For="@(() => _addUserForm.UsernameAdd)"/>
-                                            <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                                          @bind-Value="_addUserForm.Password" For="@(() => _addUserForm.Password)" InputType="InputType.Password"/>
-                                            <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                                          @bind-Value="_addUserForm.Password2" For="@(() => _addUserForm.Password2)" InputType="InputType.Password"/>
-                                        </MudCardContent>
-                                        <MudCardActions>
-                                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add User</MudButton>
-                                        </MudCardActions>
-                                    </MudCard>
-                                </MudItem>
-                            </MudGrid>
-                        </EditForm>
-                        <MudText Color="Color.Error" Align="Align.Center">@AddErrors</MudText>
-                    </MudCard>
-                </div>
-            }
-            if (_password)
-            {
-                if (SelectedUserId != "")
-                {
-                    _changeUserPasswordForm.UsernameChange = SelectedUserId;
-                }
-                <div style="max-width: 400px;">
-                    <MudCard Outlined="true">
-                        <MudText Typo="Typo.h5" Align="Align.Center">Change Password</MudText>
-                        <EditForm Model="@_changeUserPasswordForm" OnValidSubmit="OnValidSubmitChange">
-                            <DataAnnotationsValidator/>
-                            <MudGrid>
-                                <MudItem xs="12">
-                                    <MudCard>
-                                        <MudCardContent>
-                                            <MudTextField Label="Username" HelperText="Max. 30 characters"
-                                                          @bind-Value="_changeUserPasswordForm.UsernameChange" For="@(() => _changeUserPasswordForm.UsernameChange)"/>
-                                            <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                                          @bind-Value="_changeUserPasswordForm.PasswordChange" For="@(() => _changeUserPasswordForm.PasswordChange)" InputType="InputType.Password"/>
-                                            <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                                          @bind-Value="_changeUserPasswordForm.PasswordChange2" For="@(() => _changeUserPasswordForm.PasswordChange2)" InputType="InputType.Password"/>
-                                        </MudCardContent>
-                                        <MudCardActions>
-                                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Change Password</MudButton>
-                                        </MudCardActions>
-                                    </MudCard>
-                                </MudItem>
-                            </MudGrid>
-                        </EditForm>
-                        <MudText Color="Color.Error" Align="Align.Center">@ChangeErrors</MudText>
-                    </MudCard>
-                </div>
-            }
-            if (_assignRoles)
-            {
-                <MudText>Assign Roles</MudText>
-                if (SelectedUserId != "")
-                {
-                    <MudText>From Table with @SelectedUserId</MudText>
-                }
-                <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox1" Label="Default"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox2" Label="Primary" Color="Color.Primary"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox3" Label="Secondary" Color="Color.Secondary"></MudCheckBox>
-                <MudCheckBox @bind-Checked="@Label_CheckBox1" Disabled="true" Label="Disabled"></MudCheckBox>
-            }
-            if (_view)
-            {
-                <!---This is the Table View Area -->
-                
-                <MudExpansionPanels Style="flex: 1;">
-                    <MudExpansionPanel Style="font-weight: bold" Text="Add A New User">
-                        <div style="max-width: 400px;">
-                            <MudCard Outlined="true">
-                                <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
-                                <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
-                                    <DataAnnotationsValidator/>
-                                    <MudGrid>
-                                        <MudItem xs="12">
-                                            <MudCard>
-                                                <MudCardContent>
-                                                    <MudTextField Label="Username" HelperText="Max. 30 characters"
-                                                                  @bind-Value="_addUserForm.UsernameAdd" For="@(() => _addUserForm.UsernameAdd)"/>
-                                                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                                                  @bind-Value="_addUserForm.Password" For="@(() => _addUserForm.Password)" InputType="InputType.Password"/>
-                                                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                                                  @bind-Value="_addUserForm.Password2" For="@(() => _addUserForm.Password2)" InputType="InputType.Password"/>
-                                                </MudCardContent>
-                                                <MudCardActions>
-                                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add User</MudButton>
-                                                </MudCardActions>
-                                            </MudCard>
-                                        </MudItem>
-                                    </MudGrid>
-                                </EditForm>
-                                <MudText Color="Color.Error" Align="Align.Center">@AddErrors</MudText>
-                            </MudCard>
+
+            <MudExpansionPanels Style="flex: 1;">
+                <MudExpansionPanel Style="font-weight: bold" Text="Add A New User">
+                    <div style="max-width: 400px;">
+                        <MudCard Outlined="true">
+                            <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
+                            <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
+                                <DataAnnotationsValidator/>
+                                <MudGrid>
+                                    <MudItem xs="12">
+                                        <MudCard>
+                                            <MudCardContent>
+                                                <MudTextField Label="Username" HelperText="Max. 30 characters"
+                                                              @bind-Value="_addUserForm.UsernameAdd" For="@(() => _addUserForm.UsernameAdd)"/>
+                                                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                                              @bind-Value="_addUserForm.Password" For="@(() => _addUserForm.Password)" InputType="InputType.Password"/>
+                                                <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                                              @bind-Value="_addUserForm.Password2" For="@(() => _addUserForm.Password2)" InputType="InputType.Password"/>
+                                            </MudCardContent>
+                                            <MudCardActions>
+                                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add User</MudButton>
+                                            </MudCardActions>
+                                        </MudCard>
+                                    </MudItem>
+                                </MudGrid>
+                            </EditForm>
+                        </MudCard>
+                    </div>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+
+            <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
+                <MudCard Outlined="true" Elevation="4">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5" Align="Align.Center">Search Users</MudText>
+                        <MudTextField Label="Username" HelperText="Use % for wildcard searches" @bind-Value="_username"/>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillTable">Fill Table</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </div>
+
+            <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                      Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Users Information</MudText>
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width: 125px;"/>
+                    <col/>
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object?>(x => x.UserId)">Username</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudText>Actions</MudText>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                    <MudTd DataLabel="Username">@context!.UserId</MudTd>
+                    <MudTd>
+                        <div style="font-weight: bold;">
+                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                                <Mudbutton StartIcon="@Icons.Material.Filled.Apps" @onclick="() => RedirectToUserEdit(context!.UserId!)">&#8942;</Mudbutton>
+                            </MudButtonGroup>
                         </div>
-                    </MudExpansionPanel>
-                </MudExpansionPanels>
-
-
-                <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
-                    <MudCard Outlined="true" Elevation="4">
-                        <MudCardContent>
-                            <MudText Typo="Typo.h5" Align="Align.Center">Search Users</MudText>
-                            <MudTextField Label="Username" HelperText="Use % for wildcard searches" @bind-Value="_username"/>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillTable">Fill Table</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                </div>
-                
-                <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" FixedFooter="true" Height="450px"
-                          Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers" @bind-SelectedItem="_selectedUser">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Users Information</MudText>
-                    </ToolBarContent>
-                    <ColGroup>
-                        <col Style="width: 100px"/>
-                        <col/>
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh>
-                            <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object?>(x => x.UserId)">Username</MudTableSortLabel>
-                        </MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                        <MudTd DataLabel="Username">@context!.UserId</MudTd>
-                        <MudTd>
-                            <MudText>
-                                <a href="/useredit/@context.UserId">
-                                    <div style="font-weight: bold">
-                                    <Mudbutton>&#8942;</Mudbutton>
-                                    </div>
-                                </a>
-                            </MudText>
-                        </MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager/>
-                    </PagerContent>
-                </MudTable>
-            }
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
         }
     }
 }
-
-<MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
-    <MessageContent>
-        Deleting User: @SelectedUserId
-        <b>
-            <i>can not</i>
-        </b> be undone!
-    </MessageContent>
-    <YesButton>
-        <MudButton OnClick="@(() => Delete(SelectedUserId!))" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
-    </YesButton>
-</MudMessageBox>
-
-<MudMessageBox @ref="ChangeBox" Title="Change Password" CancelText="Cancel">
-    <MessageContent>
-        <p>
-            <MudText Typo="Typo.body1">New Password will be:</MudText>
-            <MudText Typo="Typo.body1" Style="font-weight: bold" Color="Color.Info">@NewPassword</MudText>
-        </p>
-        <p>
-            <MudText Typo="Typo.body1" Color="Color.Warning" Style="font-style: italic">Make sure that this is the new password you want and please remember that the new password will be encrypted again!!!</MudText>
-        </p>
-    </MessageContent>
-    <YesButton>
-        <MudButton OnClick="@(() => Delete("aaa"))" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ChangeHistory">Change Password</MudButton>
-    </YesButton>
-</MudMessageBox>
 
 @code
 {
     // For Page specific code
     private string? _username;
+
+    private void RedirectToUserEdit(string userid)
+    {
+        _navMgr.NavigateTo($"useredit/{userid}");
+    }
 }
 
 @code
@@ -235,95 +123,38 @@
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-    }
-
-    private string UserEditLink = @"/useredit";
-    private bool _add = false;
-    private bool _password = false;
-    private bool _view = true;
-    private bool _assignRoles = false;
-
-    private void ShowAdd()
-    {
-        _add = true;
-        _password = false;
-        _view = false;
-        _assignRoles = false;
-    }
-
-    private void ShowPassword()
-    {
-        _add = false;
-        _password = true;
-        _view = false;
-        _assignRoles = false;
-    }
-
-    private void ShowPasswordPreset(string userid)
-    {
-        _add = false;
-        _password = true;
-        _view = false;
-        _assignRoles = false;
-        SelectedUserId = userid;
-    }
-
-    private void ShowAssignRoles()
-    {
-        _add = false;
-        _password = false;
-        _view = false;
-        _assignRoles = true;
-    }
-
-    private void ShowView()
-    {
-        _add = false;
-        _password = false;
-        _view = true;
-        _assignRoles = false;
-    }
-
-    private void ShowAssignRolesPreset(string userid)
-    {
-        _add = false;
-        _password = false;
-        _view = false;
-        _assignRoles = true;
-        SelectedUserId = userid;
+        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        _snackbar.Configuration.NewestOnTop = true;
+        _snackbar.Configuration.VisibleStateDuration = 5000;
+        FillTable();
     }
 
     private void FillTable()
     {
         if (_username is null or "") _username = "%";
         _userElements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
-        _username = String.Empty;
+        _username = string.Empty;
     }
 }
 
 @code
 {
-    private readonly List<string> _editEvents = new();
-    private UserElement? _selectedUser;
-    public string? SelectedUserId;
-    public string? NewPassword;
     private MudTable<UserElement>? _mudTableUsers;
     private IEnumerable<UserElement> _userElements = new List<UserElement>();
 }
 
 @code {
-    readonly AddUserForm _addUserForm = new AddUserForm();
-    public bool Success;
-    public string? AddErrors;
+    readonly AddUserForm _addUserForm = new();
+    private bool _success;
 
     public class AddUserForm
     {
         [Required]
-        [StringLength(30, ErrorMessage = "Name length can't be more than 30 or less then 4.", MinimumLength = 4)]
+        [StringLength(30, ErrorMessage = "Name length can't be more than 30.")]
         public string? UsernameAdd { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string? Password { get; set; }
 
         [Required]
@@ -336,134 +167,26 @@
         var info = UserService.LoadUser(_stateService.GetAppInfo(), _addUserForm.UsernameAdd!, "", false);
         if (info.UserId == _addUserForm.UsernameAdd)
         {
-            AddErrors = $"User {_addUserForm.UsernameAdd} already exist ";
+            _snackbar.Add($"User {_addUserForm.UsernameAdd} already exist", Severity.Error);
             return;
         }
-        Success = UserService.AddUser(_stateService.GetAppInfo(), _addUserForm.UsernameAdd!, _addUserForm.Password!);
-        if (!Success)
+        _success = UserService.AddUser(_stateService.GetAppInfo(), _addUserForm.UsernameAdd!, _addUserForm.Password!);
+        if (!_success)
         {
-            AddErrors = $"Adding User {_addUserForm.UsernameAdd} failed";
+
+            _snackbar.Add($"Adding User {_addUserForm.UsernameAdd} has been changed", Severity.Error);
             return;
         }
+        _snackbar.Add($"User {_addUserForm.UsernameAdd} has been added", Severity.Info);
+        _navMgr.NavigateTo($"/useredit/{_addUserForm.UsernameAdd}");
         _addUserForm.UsernameAdd = "";
         _addUserForm.Password = "";
         _addUserForm.Password2 = "";
         StateHasChanged();
-        ShowView();
     }
 
 }
 
 @code {
-    readonly ChangePasswordForm _changeUserPasswordForm = new ChangePasswordForm();
-    public bool ChangeSuccess;
-    public string? ChangeErrors;
-
-    public class ChangePasswordForm
-    {
-        [Required]
-        [StringLength(30, ErrorMessage = "Name length can't be more than 30 or less then 4.", MinimumLength = 4)]
-        public string? UsernameChange { get; set; }
-
-        [Required]
-        [StringLength(100, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string? PasswordChange { get; set; }
-
-        [Required]
-        [Compare(nameof(PasswordChange))]
-        public string? PasswordChange2 { get; set; }
-    }
-
-    private void OnValidSubmitChange(EditContext context)
-    {
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), _changeUserPasswordForm.UsernameChange!, "", false);
-        if (info.UserId != _changeUserPasswordForm.UsernameChange)
-        {
-            ChangeErrors = $"User {_changeUserPasswordForm.UsernameChange} already exist ";
-            return;
-        }
-        ChangeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), _changeUserPasswordForm.UsernameChange!, _changeUserPasswordForm.PasswordChange!);
-        if (!ChangeSuccess)
-        {
-            ChangeErrors = $"Changing Password {_addUserForm.UsernameAdd} failed";
-            return;
-        }
-        _changeUserPasswordForm.UsernameChange = "";
-        _changeUserPasswordForm.PasswordChange = "";
-        _changeUserPasswordForm.PasswordChange2 = "";
-        StateHasChanged();
-    }
-
-}
-
-@code
-{
-    MudMessageBox? DelBox { get; set; }
-
-    private async void OnButtonClicked(string userid)
-    {
-        SelectedUserId = userid;
-        await DelBox!.Show();
-        StateHasChanged();
-    }
-
-    MudMessageBox? ChangeBox { get; set; }
-
-    private async void OnChangeButtonClicked(string userid, string password)
-    {
-        SelectedUserId = userid;
-        NewPassword = password;
-        await ChangeBox!.Show();
-        StateHasChanged();
-    }
-}
-
-
-@code
-{
-    private void Delete(string userid)
-    {
-        if (userid == "")
-        {
-            _editEvents.Add("No User Selected");
-            return;
-        }
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), userid, "", false);
-        if (info.UserId != userid)
-        {
-            AddErrors = $"User '{userid}' does not exist";
-            return;
-        }
-
-        Success = UserService.DeleteUser(_stateService.GetAppInfo(), userid);
-        if (!Success)
-        {
-            AddErrors = $"Deleting User {userid} failed";
-            return;
-        }
-
-        _editEvents.Add($"User {userid} is deleted");
-        FillTable();
-        StateHasChanged();
-    }
-}
-
-@code {
-
-}
-
-@code {
-
-    public List<string> AllUserRoles = new List<string>
-    {
-        "SuperAdmin",
-        "GroupAdmin",
-        "Reporter"
-    };
-
-
-    public bool Label_CheckBox1 = true;
-    public bool Label_CheckBox2;
-    public bool Label_CheckBox3;
 
 }

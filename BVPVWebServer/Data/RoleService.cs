@@ -69,8 +69,7 @@ public class RoleService
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
-        var result = db.ExecQueryAsync($"select `RoleID` from Roles order by `RoleLevel`, `RoleID`");
-        var rdr = result.Result;
+        var rdr = db.ExecQuery($"select `RoleID` from Roles order by `RoleLevel`, `RoleID`");
         if (!rdr!.HasRows) return allRoleIds;
         while (rdr.Read())
         {

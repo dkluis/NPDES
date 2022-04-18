@@ -25,8 +25,8 @@
         <NavMenu></NavMenu>
     </MudDrawer>
     <!--  Future implementation MAYBE
-    <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
-    <MudThemeManager Open="ThemeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
+    <MudThemeManagerButton OnClick="@() => OpenThemeManager(true)" />
+    <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
     -->
     <MudMainContent>
         @Body
@@ -42,12 +42,12 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
-    public bool ThemeManagerOpen;
+    private ThemeManagerTheme _themeManager = new();
+    private bool _themeManagerOpen;
 
     void OpenThemeManager(bool value)
     {
-        ThemeManagerOpen = value;
+        _themeManagerOpen = value;
     }
 
     void UpdateTheme(ThemeManagerTheme value)

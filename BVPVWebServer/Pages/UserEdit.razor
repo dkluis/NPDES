@@ -1,9 +1,9 @@
 @page "/useredit/{PassedUserId?}"
 
-
 @inject NavigationManager _navMgr
 
 @using Severity = MudBlazor.Severity
+@inject ISnackbar _snackbar
 
 @inject ProtectedSessionStorage _sessionStore
 @inject StateService _stateService
@@ -12,6 +12,7 @@
 <PageTitle>User @PassedUserId</PageTitle>
 
 @{
+    
     if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/");
@@ -31,7 +32,7 @@
                     <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
                 </MudButtonGroup>
             </MudItem>
-
+            
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
                     <div style="max-width: 400px;">
@@ -55,52 +56,44 @@
                                     </MudItem>
                                 </MudGrid>
                             </EditForm>
-                            <MudText Color="Color.Error" Align="Align.Center">@ChangeErrors</MudText>
                         </MudCard>
                     </div>
                 </MudExpansionPanel>
-
                 <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
-                    <MudText Typo="Typo.h6">All Roles available to @PassedUserId:</MudText>
-                    <MudChipSet @bind-SelectedChips="_selectedMudChips" MultiSelection="true">
-                        @{
-                            foreach (var role in AllUserRoles)
-                            {
-                                if (AssignedRoles.Contains(role))
+                    <MudText Typo="Typo.h6">Current Roles of @PassedUserId:</MudText>
+                    <MudItem>
+                        
+                        <MudChipSet AllClosable="true" OnClose="RemoveRoleChip">
+                            @{
+                                foreach (var role in _assignedRoles)
                                 {
-                                    <MudChip Color="Color.Info" Text="@role" Default="true"></MudChip>
-                                }
-                                else
-                                {
-                                    <MudChip Color="Color.Info" Text="@role"></MudChip>
+                                    <MudChip Text="@role"></MudChip>
                                 }
                             }
+                        </MudChipSet>
+                        
+                        <MudText Typo="Typo.h6">Add the appropriate Role(s):</MudText>
+                        @{
+                            foreach (var role in _allUserRoles)
+                            {
+                                <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Variant="Variant.Filled"
+                                           Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">@role</MudButton>
+                            }
                         }
-                    </MudChipSet>
-
-                    <div class="d-flex flex-column">
-                        @if (_selectedMudChips is {Length: > 0 })
-                        {
-                            <MudText Typo="Typo.h6">@PassedUserId's new Role(s) are: @string.Join(" & ", _selectedMudChips.Select(chip => chip.Text)).</MudText>
-                        }
-                        else
-                        {
-                            <MudText Typo="Typo.h6" Color="Color.Error">No Role(s) Assigned Yet</MudText>
-                        }
-                    </div>
-                    <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled">Submit Role Update</MudButton>
-
-
+                        
+                    </MudItem>
+                    <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
                 </MudExpansionPanel>
 
             </MudExpansionPanels>
+            
         }
     }
 }
 
 <MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
     <MessageContent>
-        Deleting User: @SelectedUserId
+        Deleting User: @_selectedUserId
         <b>
             <i>can not</i>
         </b> be undone!
@@ -113,20 +106,13 @@
 @code
 {
     // For Page specific code
-    public string? Errors;
-    public List<string> AllUserRoles = new List<string>();
-    public List<string> AssignedRoles = new List<string>();
-
-    MudChip[]? _selectedMudChips;
-
-
+    private List<string> _allUserRoles = new();
+    private List<string> _assignedRoles = new();
+    private List<string> _originalAssignedRoles = new();
+    
     [Parameter]
     public string? PassedUserId { get; set; }
-
-    protected override void OnInitialized()
-    {
-        PassedUserId = PassedUserId ?? "No User";
-    }
+    
 }
 
 @code
@@ -135,8 +121,33 @@
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-        AllUserRoles = RoleService.GetAllRoleIds();
-        AssignedRoles = UserService.AllAssignedRoles(PassedUserId!);
+
+        PassedUserId ??= "No User";
+        
+        _allUserRoles = RoleService.GetAllRoleIds();
+        _assignedRoles = UserService.AllAssignedRoles(PassedUserId!);
+        _originalAssignedRoles = _assignedRoles.ToList();
+        
+        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        _snackbar.Configuration.NewestOnTop = true;
+        _snackbar.Configuration.VisibleStateDuration = 5000;
+    }
+}
+
+@code
+{
+    private void RemoveRoleChip(MudChip chip) => _assignedRoles.Remove(chip.Text);
+
+    private void AddRoleChip(string role)
+    {
+        if (!_assignedRoles.Contains(role))
+        {
+            _assignedRoles.Add(role);
+        }
+        else
+        {
+            _snackbar.Add($"Role {role} is already assigned", Severity.Warning);
+        }
     }
 }
 
@@ -144,14 +155,12 @@
 {
     // ReSharper disable once CollectionNeverQueried.Local
     private readonly List<string> _editEvents = new();
-    public string? SelectedUserId;
-    public string? NewPassword;
+    private string? _selectedUserId;
 }
 
 @code {
-    readonly ChangePasswordForm _changeUserPasswordForm = new ChangePasswordForm();
-    public bool ChangeSuccess;
-    public string? ChangeErrors;
+    readonly ChangePasswordForm _changeUserPasswordForm = new();
+    private bool _changeSuccess;
 
     public class ChangePasswordForm
     {
@@ -169,17 +178,18 @@
         var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
-            ChangeErrors = $"User {PassedUserId} does not exist";
+            _snackbar.Add($"User {PassedUserId} does not exist", Severity.Error);
             return;
         }
-        ChangeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId!, _changeUserPasswordForm.PasswordChange!);
-        if (!ChangeSuccess)
+        _changeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId!, _changeUserPasswordForm.PasswordChange!);
+        if (!_changeSuccess)
         {
-            ChangeErrors = $"Changing Password {PassedUserId} failed";
+            _snackbar.Add($"Changing Password {PassedUserId} failed", Severity.Error);
             return;
         }
         _changeUserPasswordForm.PasswordChange = "";
         _changeUserPasswordForm.PasswordChange2 = "";
+        _snackbar.Add($"Password for {PassedUserId} has been changed", Severity.Info);
         StateHasChanged();
     }
 
@@ -191,20 +201,8 @@
 
     private async void OnButtonClicked()
     {
-        SelectedUserId = PassedUserId;
+        _selectedUserId = PassedUserId;
         await DelBox!.Show();
-        StateHasChanged();
-    }
-
-    // ReSharper disable once UnusedAutoPropertyAccessor.Local
-    MudMessageBox? ChangeBox { get; set; }
-
-    // ReSharper disable once UnusedMember.Local
-    private async void OnChangeButtonClicked(string userid, string password)
-    {
-        SelectedUserId = userid;
-        NewPassword = password;
-        await ChangeBox!.Show();
         StateHasChanged();
     }
 }
@@ -217,27 +215,56 @@
         if (PassedUserId == "")
         {
             _editEvents.Add("No User Passed");
+            _snackbar.Add("No User was passed into this page, returned to User Page.", Severity.Error);
+            _navMgr.NavigateTo("/users");
             return;
         }
         var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
-            Errors = $"User '{PassedUserId}' does not exist";
+            _snackbar.Add($"User '{PassedUserId}' does not exist", Severity.Error);
             return;
         }
 
         var success = UserService.DeleteUser(_stateService.GetAppInfo(), PassedUserId!);
         if (!success)
         {
-            Errors = $"Deleting User {PassedUserId} failed";
+            _snackbar.Add($"Deleting User {PassedUserId} failed", Severity.Error);
             return;
         }
 
-        _editEvents.Add($"User {PassedUserId} is deleted");
+        _snackbar.Add($"User {PassedUserId} is deleted", Severity.Info);
+        StateHasChanged();
         _navMgr.NavigateTo("/users");
     }
 }
 
 @code {
 
+    
+    private void UpdateRoles()
+    {
+        var rolesToDel = _originalAssignedRoles.Where(originalRole => !_assignedRoles.Contains(originalRole)).ToList();
+        var rolesToAdd = _assignedRoles.Where(newRole => !_originalAssignedRoles.Contains(newRole)).ToList();
+        
+        var successDel = true;
+        var successAdd = true;
+        if (rolesToAdd.Count > 0)
+        {
+            successAdd = UserService.AddUserRoles(_stateService.GetAppInfo(), PassedUserId!, rolesToAdd);
+            if (!successAdd) _snackbar.Add($"User {PassedUserId} add roles error", Severity.Error);
+        }
+        if (rolesToDel.Count > 0)
+        {
+            successDel = UserService.DeleteUserRoles(_stateService.GetAppInfo(), PassedUserId!, rolesToDel);
+            if (!successDel) _snackbar.Add($"User {PassedUserId} delete roles error", Severity.Error);
+        }
+        if (rolesToAdd.Count > 0 || rolesToDel.Count > 0)
+        {
+            if (successAdd && successDel) _snackbar.Add($"User {PassedUserId} roles are updated", Severity.Info);
+        }
+        StateHasChanged();
+        _navMgr.NavigateTo("/users");
+    }
+    
 }

@@ -36,15 +36,12 @@ public class UserService
         db.Close();
         user.ValidUser = true;
         var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
-        if ((encryptedPassword != storedPassword) && !checkPw)
+        if (encryptedPassword != storedPassword && !checkPw)
         {
             return user;
         }
-        else
-        {
-            user.ValidPassword = true;
-        }
 
+        user.ValidPassword = true;
         db.Open();
         rdr = db.ExecQuery(
             $"select * from UserRolesView where `User` = '{user.UserId}' order by `Role Level` Limit 1;");
@@ -77,7 +74,7 @@ public class UserService
         var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(appInfo);
         db.Open();
-        string sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
+        var sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
         db.ExecNonQuery(sql, true);
         success = db.Success;
         db.Close();
@@ -86,14 +83,13 @@ public class UserService
     
     public static bool ChangePassword(AppInfo appInfo, string userName, string password)
     {
-        var success = false;
         var mySalt = BCrypt.Net.BCrypt.GenerateSalt();
         var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(appInfo);
         db.Open();
-        string sql = $"update Users set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
+        var sql = $"update Users set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
         db.ExecNonQuery(sql, true);
-        success = db.Success;
+        var success = db.Success;
         db.Close();
         return success;
     }
@@ -112,7 +108,7 @@ public class UserService
         
         using var db = new MariaDb(appInfo);
         db.Open();
-        string sql = $"delete from Users where `UserID` = '{userName}';";
+        var sql = $"delete from Users where `UserID` = '{userName}';";
         db.ExecNonQuery(sql, true);
         success = db.Success;
         db.Close();
@@ -120,14 +116,30 @@ public class UserService
     }
     
 
-    public bool AddUserRoles(AppInfo appInfo, string userName, string[] userRoles)
+    public static bool AddUserRoles(AppInfo appInfo, string userName, List<string> userRoles)
     {
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
         foreach (var role in userRoles)
         {
-            string sql = $"insert into UserRoles values ('{userName}', '{role}');";
+            var sql = $"insert into UserRoles values ('{userName}', '{role}');";
+            db.ExecNonQuery(sql, true);
+            if (!db.Success) success = false;
+        }
+
+        db.Close();
+        return success;
+    }
+    
+    public static bool DeleteUserRoles(AppInfo appInfo, string userName, List<string> userRoles)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        foreach (var role in userRoles)
+        {
+            string sql = $"delete from UserRoles where `UserId`= '{userName}' and `RoleID` = '{role}';";
             db.ExecNonQuery(sql, true);
             if (!db.Success) success = false;
         }
@@ -164,14 +176,14 @@ public class UserService
         return success;
     }
 
-    public static List<UserElement> GetUsers(AppInfo appInfo, string searchString)
+    public static IEnumerable<UserElement> GetUsers(AppInfo appInfo, string searchString)
     { 
         var ue = new List<UserElement>();
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from Users where `UserID` like '{searchString}'";
         var rdr = db.ExecQuery(sql);
-        if (rdr!.HasRows == true)
+        if (rdr!.HasRows)
         {
             while (rdr.Read())
             {

@@ -10,7 +10,8 @@ public class MariaDb : IDisposable
         private bool _connOpen;
         private MySqlDataReader? _rdr;
 
-        private int _rows;
+        public Task<int>? TaskRows;
+        public int Rows;
         public bool Success;
 
         public MariaDb(AppInfo appInfo)
@@ -85,40 +86,6 @@ public class MariaDb : IDisposable
             }
         }
 
-        public MySqlDataReader? ExecQuery()
-        {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rdr = _cmd.ExecuteReader();
-                return _rdr;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", "", 0);
-                Success = false;
-                return _rdr;
-            }
-        }
-        
-        public async Task<MySqlDataReader?> ExecQueryAsync()
-        {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rdr = await _cmd.ExecuteReaderAsync();
-                return _rdr;
-            }
-            catch (Exception e)
-            {
-                _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message}", "", 0);
-                Success = false;
-                return _rdr;
-            }
-        }
-
         public MySqlDataReader? ExecQuery(string sql)
         {
             _cmd = Command(sql);
@@ -155,24 +122,6 @@ public class MariaDb : IDisposable
             }
         }
 
-        public int ExecNonQuery(bool ignore = false)
-        {
-            Success = true;
-            try
-            {
-                if (!_connOpen) Open();
-                _rows = _cmd.ExecuteNonQuery();
-                if (_rows > 0) Success = false;
-                return _rows;
-            }
-            catch (Exception e)
-            {
-                if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message}", "", 0);
-                Success = false;
-                return _rows;
-            }
-        }
-
         public int ExecNonQuery(string sql, bool ignore = false)
         {
             _cmd = Command(sql);
@@ -180,15 +129,15 @@ public class MariaDb : IDisposable
             try
             {
                 if (!_connOpen) Open();
-                _rows = _cmd.ExecuteNonQuery();
-                if (_rows == 0) Success = false;
-                return _rows;
+                Rows = _cmd.ExecuteNonQuery();
+                if (Rows == 0) Success = false;
+                return Rows;
             }
             catch (Exception e)
             {
                 if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", "", 0);
                 Success = false;
-                return _rows;
+                return Rows;
             }
         }
     }
