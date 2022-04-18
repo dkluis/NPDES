@@ -1,5 +1,6 @@
 @page "/"
 @page "/Index"
+@using Severity = MudBlazor.Severity
 
 @inject NavigationManager _navMgr
 
@@ -44,6 +45,9 @@ else
             _stateService.InitSystemState(result.Value);
             _stateService.IsLoggedIn = true;
         }
+        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        _snackbar.Configuration.NewestOnTop = true;
+        _snackbar.Configuration.VisibleStateDuration = 5000;
     }
 
     private async Task DoTheLogin()
@@ -78,12 +82,17 @@ else
         _userInfo = UserService.LoadUser(_stateService.GetAppInfo(), _model.Username!, _model.Password!, false);
         if (!_userInfo.ValidUser)
         {
-            _snackbar.Add($"Username is {_userInfo.ValidUser}");
+            _snackbar.Add($"Username is wrong", Severity.Error);
+            return;
+        }
+        if (!_userInfo.Enabled)
+        {
+            _snackbar.Add($"This user is not Enabled.  Contact your system administrator", Severity.Error);
             return;
         }
         if (!_userInfo.ValidPassword)
         {
-            _snackbar.Add($"Password is {_userInfo.ValidPassword}");
+            _snackbar.Add($"Password is wrong", Severity.Error);
             return;
         }
         StateHasChanged();
