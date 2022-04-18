@@ -12,7 +12,6 @@
 <PageTitle>User @PassedUserId</PageTitle>
 
 @{
-    
     if (!_stateService.IsLoggedIn)
     {
         _navMgr.NavigateTo("/");
@@ -26,14 +25,27 @@
         else
         {
             <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
-            
-            <MudItem>
-                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="margin-bottom: 20px; margin-left: 20px;">
-                    <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
-                </MudButtonGroup>
-            </MudItem>
-            
+
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete">
+                    <MudGrid>
+                        <MudItem>
+                            <MudText Style="margin-top: 13px;" Typo="Typo.h6">Enabled is: @(_isEnabled ? "On" : "Off")</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudToggleIconButton Toggled="_isEnabled" ToggledChanged="EnableChange" ToggledSize="Size.Large" Size="Size.Large"
+                                                 Icon="@Icons.Material.Filled.ToggleOff" Color="Color.Warning" Title="Disabled"
+                                                 ToggledIcon="@Icons.Material.Filled.ToggleOn" ToggledColor="Color.Info" ToggledTitle="Enabled">
+                            </MudToggleIconButton>
+                        </MudItem>
+                        <MudItem>
+                            <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
+                                <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
+                            </MudButtonGroup>
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+
                 <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
                     <div style="max-width: 400px;">
                         <MudCard Outlined="true">
@@ -62,7 +74,7 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
                     <MudText Typo="Typo.h6">Current Roles of @PassedUserId:</MudText>
                     <MudItem>
-                        
+
                         <MudChipSet AllClosable="true" OnClose="RemoveRoleChip">
                             @{
                                 foreach (var role in _assignedRoles)
@@ -71,32 +83,31 @@
                                 }
                             }
                         </MudChipSet>
-                        
+
                         <MudText Typo="Typo.h6">Add the appropriate Role(s):</MudText>
                         @{
                             foreach (var role in _allUserRoles)
                             {
                                 <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Variant="Variant.Filled"
-                                           Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">@role</MudButton>
+                                           Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">
+                                    @role
+                                </MudButton>
                             }
                         }
-                        
+
                     </MudItem>
                     <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
                 </MudExpansionPanel>
 
             </MudExpansionPanels>
-            
         }
     }
 }
 
 <MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
     <MessageContent>
-        Deleting User: @_selectedUserId
-        <b>
-            <i>can not</i>
-        </b> be undone!
+        <MudText Color="Color.Error">Deleting User: @_selectedUserId CANNOT be undone!!!</MudText>
+        <MudText Color="Color.Warning">Consider Setting User Enabled to Off</MudText>
     </MessageContent>
     <YesButton>
         <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
@@ -109,10 +120,12 @@
     private List<string> _allUserRoles = new();
     private List<string> _assignedRoles = new();
     private List<string> _originalAssignedRoles = new();
-    
+    private bool _isEnabled;
+    private User? _currentUser;
+
     [Parameter]
     public string? PassedUserId { get; set; }
-    
+
 }
 
 @code
@@ -123,11 +136,14 @@
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
 
         PassedUserId ??= "No User";
-        
+
+        _currentUser = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        _isEnabled = _currentUser.Enabled;
+
         _allUserRoles = RoleService.GetAllRoleIds();
         _assignedRoles = UserService.AllAssignedRoles(PassedUserId!);
         _originalAssignedRoles = _assignedRoles.ToList();
-        
+
         _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         _snackbar.Configuration.NewestOnTop = true;
         _snackbar.Configuration.VisibleStateDuration = 5000;
@@ -241,12 +257,11 @@
 
 @code {
 
-    
     private void UpdateRoles()
     {
         var rolesToDel = _originalAssignedRoles.Where(originalRole => !_assignedRoles.Contains(originalRole)).ToList();
         var rolesToAdd = _assignedRoles.Where(newRole => !_originalAssignedRoles.Contains(newRole)).ToList();
-        
+
         var successDel = true;
         var successAdd = true;
         if (rolesToAdd.Count > 0)
@@ -263,8 +278,22 @@
         {
             if (successAdd && successDel) _snackbar.Add($"User {PassedUserId} roles are updated", Severity.Info);
         }
+    }
+
+    private void EnableChange(bool toggle)
+    {
+        _isEnabled = !_isEnabled;
+        var success = UserService.ChangeEnabled(_stateService.GetAppInfo(), PassedUserId!, _isEnabled);
+        if (!success)
+        {
+            _snackbar.Add($"Failed to update user enablement", Severity.Error);
+        }
+        else
+        {
+            _snackbar.Add(_isEnabled ? $"User {PassedUserId} is set to Enabled" : $"User {PassedUserId} is set to Disabled", Severity.Info);
+        }
         StateHasChanged();
         _navMgr.NavigateTo("/users");
     }
-    
+
 }

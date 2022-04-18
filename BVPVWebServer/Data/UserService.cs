@@ -11,7 +11,8 @@ public class UserService
             ValidPassword = false,
             ValidUser = false,
             HighestRoleId = string.Empty,
-            UserId = username
+            UserId = username,
+            Enabled = true
         };
 
         using var db = new MariaDb(appInfo);
@@ -21,6 +22,7 @@ public class UserService
         {
             user.ValidUser = false;
             user.UserId = string.Empty;
+            user.Enabled = false;
             db.Close();
             return user;
         }
@@ -29,12 +31,14 @@ public class UserService
         var storedSalt = string.Empty;
         while (rdr != null && rdr.Read())
         {
-            storedPassword = rdr[1].ToString() ?? string.Empty;
-            storedSalt = rdr[2].ToString() ?? string.Empty;
+            storedPassword = rdr["Password"].ToString() ?? string.Empty;
+            storedSalt = rdr["Salt"].ToString() ?? string.Empty;
+            user.Enabled = (bool) rdr["Enabled"];
         }
-
+        
         db.Close();
         user.ValidUser = true;
+
         var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(unencryptedPassword, storedSalt);
         if (encryptedPassword != storedPassword && !checkPw)
         {
@@ -58,7 +62,7 @@ public class UserService
         return user;
     }
 
-    public static bool AddUser(AppInfo appInfo, string userName, string password)
+    public static bool AddUser(AppInfo appInfo, string userName, string password, bool enabled = true)
     {
         var user = new User();
         LoadUser(appInfo, userName, password, false);
@@ -74,8 +78,8 @@ public class UserService
         var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}');";
-        db.ExecNonQuery(sql, true);
+        var sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}', {enabled});";
+        db.ExecNonQuery(sql);
         success = db.Success;
         db.Close();
         return success;
@@ -88,7 +92,20 @@ public class UserService
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"update Users set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
-        db.ExecNonQuery(sql, true);
+        db.ExecNonQuery(sql);
+        var success = db.Success;
+        db.Close();
+        return success;
+    }
+    
+    public static bool ChangeEnabled(AppInfo appInfo, string userName, bool enabled)
+    {
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var dbEnabled = 0;
+        if (enabled) dbEnabled = 1;
+        var sql = $"update Users set `Enabled` = '{dbEnabled}' where `UserID` = '{userName}';";
+        db.ExecNonQuery(sql);
         var success = db.Success;
         db.Close();
         return success;
@@ -109,7 +126,7 @@ public class UserService
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"delete from Users where `UserID` = '{userName}';";
-        db.ExecNonQuery(sql, true);
+        db.ExecNonQuery(sql);
         success = db.Success;
         db.Close();
         return success;
@@ -192,7 +209,8 @@ public class UserService
                 {
                     UserId = (string) rdr["UserID"],
                     Password = (string) rdr["Password"],
-                    Salt = (string) rdr["Salt"]
+                    Salt = (string) rdr["Salt"],
+                    Enabled = (bool) rdr["Enabled"]
                 };
                 ue.Add(rec);
             }
@@ -208,6 +226,7 @@ public class User
     public string? HighestRoleId { get; set; }
     public bool ValidUser { get; set; }
     public bool ValidPassword { get; set; }
+    public bool Enabled { get; set; }
     
 }
 
@@ -218,10 +237,12 @@ public class UserElement
         UserId = string.Empty;
         Password = string.Empty;
         Salt = string.Empty;
+        Enabled = true;
     }
 
     public string? UserId { get; set; }
     public string Password { get; set; }
     public string Salt { get; set; }
+    public bool Enabled { get; set; }
         
 }
