@@ -40,11 +40,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is {Length: >= 1 })
+        if (_stateService.UserId != "Init")
         {
-            _stateService.InitSystemState(result.Value);
-            _stateService.IsLoggedIn = true;
+            var result = await _sessionStore.GetAsync<string>("User");
+            if (result.Value is {Length: >= 1 })
+            {
+                _stateService.InitSystemState(result.Value);
+                _stateService.IsLoggedIn = true;
+            }
         }
         _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         _snackbar.Configuration.NewestOnTop = true;

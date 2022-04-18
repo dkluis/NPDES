@@ -17,6 +17,11 @@
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer/>
+        @{
+            var user = "";
+            if (_stateService.UserId != "Init") { user = @_stateService.UserId; }
+            <MudText>@user</MudText>
+        }
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.End" OnClick="Logout"></MudIconButton>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="_themeManager.DrawerClipMode" Elevation="_themeManager.DrawerElevation">
@@ -60,7 +65,7 @@
     protected override async Task OnInitializedAsync()
     {
         var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is  {Length: > 1 })
+        if (result.Value is {Length: > 1 })
         {
             _stateService.InitUserInfo(result.Value);
             _stateService.IsLoggedIn = true;
@@ -72,7 +77,7 @@
     {
         var result = _sessionStore.DeleteAsync("User");
         _stateService.IsLoggedIn = false;
-        _navMgr.NavigateTo("/");
+        _navMgr.NavigateTo("/", forceLoad: true);
     }
-    
+
 }
