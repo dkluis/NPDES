@@ -218,6 +218,35 @@ public class UserService
         db.Close();
         return ue;
     }
+
+    public List<AppsByUser> GetAppsByUser(AppInfo appInfo, string userid)
+    {
+        var result = new List<AppsByUser>();
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"select * from AppsByUserView where `User` = '{userid}'";
+        var rdr = db.ExecQuery(sql);
+        if (rdr!.HasRows)
+        {
+            while (rdr.Read())
+            {
+                if (rdr["User"].ToString() == "Init") continue;
+                var rec = new AppsByUser
+                {
+                    User = (string) rdr["User"],
+                    Role = (string) rdr["Role"],
+                    ReadOnly = (bool) rdr["ReadOnly"],
+                    RoleLevel = (int) rdr["Role Level"],
+                    App = (string) rdr["App"],
+                    Report = (bool) rdr["Report"],
+                    Function = (string) rdr["Function"]
+                };
+                result.Add(rec);
+            }
+        }
+        db.Close();
+        return result;
+    }
 }
 
 public class User
@@ -245,4 +274,26 @@ public class UserElement
     public string Salt { get; set; }
     public bool Enabled { get; set; }
         
+}
+
+public class AppsByUser
+{
+    public AppsByUser()
+    {
+        User = string.Empty;
+        Role = string.Empty;
+        ReadOnly = false;
+        RoleLevel = 99;
+        App = string.Empty;
+        Report = true;
+        Function = string.Empty;
+    }
+    
+    public string User { get; set; }
+    public string Role { get; set; }
+    public bool ReadOnly { get; set; }
+    public int RoleLevel { get; set; }
+    public string App { get; set; }
+    public bool Report { get; set; }
+    public string Function { get; set; }
 }

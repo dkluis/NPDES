@@ -18,15 +18,15 @@
 }
 else
 {
-    <div style="max-width: 400px;">
+    <div style="max-width: 400px; margin-left: 15px; margin-top: 15px">
         <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
+            <DataAnnotationsValidator/>
             <MudCard>
                 <MudCardContent>
                     <MudTextField Label="Username"
-                                  @bind-Value="_model.Username" For="@(() => _model.Username)" />
+                                  @bind-Value="_model.Username" For="@(() => _model.Username)"/>
                     <MudTextField Label="Password" Class="mt-3"
-                                  @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password" />
+                                  @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>

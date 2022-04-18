@@ -99,6 +99,46 @@
                     <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
                 </MudExpansionPanel>
 
+                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User">
+                    <MudTable Items="@_appsByUsers" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                              Breakpoint="Breakpoint.Sm" @ref="_mudTableAppsByUsers">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">@PassedUserId's Apps by Role</MudText>
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>Username</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<AppsByUser, object?>(x => x.Role)">Role</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppsByUser, object?>(x => x.App)">App</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Function</MudTh>
+                            <MudTh>Report</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                            <MudTd DataLabel="Username">@context!.User</MudTd>
+                            <MudTd DataLabel="Role">@context.Role</MudTd>
+                            <MudTd DataLabel="App">@context.App</MudTd>
+                            <MudTd DataLabel="App">@context.Function</MudTd>
+                            <MudTd DataLabel="App">@context.Report</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+
             </MudExpansionPanels>
         }
     }
@@ -120,6 +160,8 @@
     private List<string> _allUserRoles = new();
     private List<string> _assignedRoles = new();
     private List<string> _originalAssignedRoles = new();
+    private List<AppsByUser> _appsByUsers = new();
+    private MudTable<AppsByUser>? _mudTableAppsByUsers;
     private bool _isEnabled;
     private User? _currentUser;
 
@@ -143,6 +185,7 @@
         _allUserRoles = RoleService.GetAllRoleIds();
         _assignedRoles = UserService.AllAssignedRoles(PassedUserId!);
         _originalAssignedRoles = _assignedRoles.ToList();
+        _appsByUsers = _userService.GetAppsByUser(_stateService.GetAppInfo(), PassedUserId);
 
         _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         _snackbar.Configuration.NewestOnTop = true;
