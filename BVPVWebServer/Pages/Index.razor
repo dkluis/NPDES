@@ -2,19 +2,17 @@
 @page "/Index"
 @using Severity = MudBlazor.Severity
 
-@inject NavigationManager _navMgr
+@inject NavigationManager NavMgr
 
-@inject ProtectedSessionStorage _sessionStore
+@inject ProtectedSessionStorage SessionStore
 
-@inject ISnackbar _snackbar
+@inject ISnackbar Snackbar
 
-@inject StateService _stateService
-@inject UserService _userService
+@inject StateService StateService
 
-
-@if (_stateService.IsLoggedIn)
+@if (StateService.IsLoggedIn)
 {
-    _navMgr.NavigateTo("/Home");
+    NavMgr.NavigateTo("/Home");
 }
 else
 {
@@ -43,30 +41,32 @@ else
     protected override async Task OnInitializedAsync()
     {
         EntryPage = "/Home";
-        var entry = await _sessionStore.GetAsync<string>("EntryPage");
+        var entry = await SessionStore.GetAsync<string>("EntryPage");
         if (entry.Value is {Length: >= 1}) EntryPage = entry.Value;
+        await SessionStore.DeleteAsync("EntryPage");
 
-        if (_stateService.UserId != "Init")
+        if (StateService.UserId != "Init")
         {
-            var result = await _sessionStore.GetAsync<string>("User");
+            var result = await SessionStore.GetAsync<string>("User");
             if (result.Value is {Length: >= 1 })
             {
-                _stateService.InitSystemState(result.Value);
-                _stateService.IsLoggedIn = true;
+                StateService.InitSystemState(result.Value);
+                StateService.IsLoggedIn = true;
             }
         }
-        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        _snackbar.Configuration.NewestOnTop = true;
-        _snackbar.Configuration.VisibleStateDuration = 5000;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
     }
 
     private async Task DoTheLogin()
     {
-        await _sessionStore.SetAsync("User", _model.Username!);
+        await SessionStore.SetAsync("User", _model.Username!);
         StateHasChanged();
-        _stateService.InitSystemState(_model.Username!);
-        _stateService.IsLoggedIn = true;
-        _navMgr.NavigateTo(EntryPage == ""? "/Home" : EntryPage!);
+        StateService.InitSystemState(_model.Username!);
+        StateService.IsLoggedIn = true;
+        NavMgr.NavigateTo(EntryPage == "" ? "/Home" : EntryPage!);
+        EntryPage = string.Empty;
     }
 
 }
@@ -89,20 +89,20 @@ else
     
     private void OnValidSubmit(EditContext context)
     {
-        _userInfo = UserService.LoadUser(_stateService.GetAppInfo(), _model.Username!, _model.Password!, false);
+        _userInfo = UserService.LoadUser(StateService.GetAppInfo(), _model.Username!, _model.Password!, false);
         if (!_userInfo.ValidUser)
         {
-            _snackbar.Add($"Username is wrong", Severity.Error);
+            Snackbar.Add($"Username is wrong", Severity.Error);
             return;
         }
         if (!_userInfo.Enabled)
         {
-            _snackbar.Add($"This user is not Enabled.  Contact your system administrator", Severity.Error);
+            Snackbar.Add($"This user is not Enabled.  Contact your system administrator", Severity.Error);
             return;
         }
         if (!_userInfo.ValidPassword)
         {
-            _snackbar.Add($"Password is wrong", Severity.Error);
+            Snackbar.Add($"Password is wrong", Severity.Error);
             return;
         }
         StateHasChanged();
