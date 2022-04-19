@@ -1,0 +1,43 @@
+@page "/apps/{PassedApp?}"
+
+@using Severity = MudBlazor.Severity
+@inject ISnackbar Snackbar
+
+@inject NavigationManager NavMgr
+@inject ProtectedSessionStorage SessionStore
+@inject StateService StateService
+@inject UserService UserService
+
+<PageTitle>App @PassedApp</PageTitle>
+
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudText Typo="Typo.h4" Align="Align.Center">Editing App: @PassedApp</MudText>
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public string? PassedApp { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        PassedApp ??= "No App";
+        await SessionStore.SetAsync("EntryPage", $"/apps/{PassedApp}");
+    }
+
+}

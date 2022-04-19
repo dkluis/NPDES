@@ -45,7 +45,7 @@
                 </ToolBarContent>
                 <ColGroup>
                     <col style="width: 30px;"/>
-                    <col style="width: 30px;"/>
+                    <col style="width: 50px;"/>
                     <col style="width: 20px;"/>
                     <col/>
                     <col/>
@@ -66,7 +66,10 @@
                 </GroupHeaderTemplate>
                 <RowTemplate>
                     @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd DataLabel="App">@context!.AppId</MudTd>
+                                        <MudTd DataLabel="App">
+                                            @{ _linkedContext = $"/apps/{context.AppId}";}
+                                            <MudLink Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
+                                        </MudTd>
                     <MudTd DataLabel="Function">@context.FunctionId</MudTd>
                     <MudTd DataLabel="Report">@context.ReportApp</MudTd>
                 </RowTemplate>
@@ -85,6 +88,7 @@
 {
     private MudTable<App>? _mudTableApps;
     private List<App> _allApps = new();
+    private string _linkedContext;
 
 
     protected override async Task OnInitializedAsync()

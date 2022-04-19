@@ -11,6 +11,7 @@ public class StateService
     public AppState? AppState;
     public string? UserId;
     public bool IsLoggedIn;
+    public bool IsEnabled;
 
     public readonly string ApiServerBase;
 

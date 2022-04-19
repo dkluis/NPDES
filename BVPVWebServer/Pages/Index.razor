@@ -95,6 +95,7 @@ else
             Snackbar.Add($"Username is wrong", Severity.Error);
             return;
         }
+        StateService.IsEnabled = _userInfo.Enabled;
         if (!_userInfo.Enabled)
         {
             Snackbar.Add($"This user is not Enabled.  Contact your system administrator", Severity.Error);
