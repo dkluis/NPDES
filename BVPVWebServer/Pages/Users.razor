@@ -1,27 +1,26 @@
 @page "/users"
 
-@inject NavigationManager _navMgr
+@inject NavigationManager NavMgr
 
-@inject ISnackbar _snackbar
+@inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
 
 
-@inject ProtectedSessionStorage _sessionStore
-@inject StateService _stateService
-@inject UserService _userService
+@inject ProtectedSessionStorage SessionStore
+@inject StateService StateService
 
 <PageTitle>Users</PageTitle>
 
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
         {
-            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
@@ -76,9 +75,8 @@
                     <MudText Typo="Typo.h6">Users Information</MudText>
                 </ToolBarContent>
                 <ColGroup>
-                    <col style="width: 125px;"/>
                     <col style="width: 50px;"/>
-                    <col/>
+                    <col style="width: 20px;"/>
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>
@@ -87,21 +85,11 @@
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<UserElement, object?>(x => x.Enabled)">Enabled</MudTableSortLabel>
                     </MudTh>
-                    <MudTh>
-                        <MudText>Actions</MudText>
-                    </MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd DataLabel="Username">@context!.UserId</MudTd>
+                    <MudTd Style="color: darkblue; text-decoration: underline; " DataLabel="Username"><a href="/useredit/@context!.UserId">@context.UserId</a></MudTd>
                     <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
-                    <MudTd>
-                        <div style="font-weight: bold;">
-                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
-                                <Mudbutton @onclick="() => RedirectToUserEdit(context!.UserId!)">&#8942;</Mudbutton>
-                            </MudButtonGroup>
-                        </div>
-                    </MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager PageSizeOptions="new []{25, 50, 100}"/>
@@ -118,7 +106,7 @@
 
     private void RedirectToUserEdit(string userid)
     {
-        _navMgr.NavigateTo($"useredit/{userid}");
+        NavMgr.NavigateTo($"useredit/{userid}");
     }
 }
 
@@ -126,18 +114,18 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        _snackbar.Configuration.NewestOnTop = true;
-        _snackbar.Configuration.VisibleStateDuration = 5000;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
         FillTable();
     }
 
     private void FillTable()
     {
         if (_username is null or "") _username = "%";
-        _userElements = UserService.GetUsers(_stateService.GetAppInfo(), _username!);
+        _userElements = UserService.GetUsers(StateService.GetAppInfo(), _username!);
         _username = string.Empty;
     }
 }
@@ -169,21 +157,21 @@
 
     private void OnValidSubmitAdd(EditContext context)
     {
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), _addUserForm.UsernameAdd!, "", false);
+        var info = UserService.LoadUser(StateService.GetAppInfo(), _addUserForm.UsernameAdd!, "", false);
         if (info.UserId == _addUserForm.UsernameAdd)
         {
-            _snackbar.Add($"User {_addUserForm.UsernameAdd} already exist", Severity.Error);
+            Snackbar.Add($"User {_addUserForm.UsernameAdd} already exist", Severity.Error);
             return;
         }
-        _success = UserService.AddUser(_stateService.GetAppInfo(), _addUserForm.UsernameAdd!, _addUserForm.Password!);
+        _success = UserService.AddUser(StateService.GetAppInfo(), _addUserForm.UsernameAdd!, _addUserForm.Password!);
         if (!_success)
         {
 
-            _snackbar.Add($"Adding User {_addUserForm.UsernameAdd} has been changed", Severity.Error);
+            Snackbar.Add($"Adding User {_addUserForm.UsernameAdd} has been changed", Severity.Error);
             return;
         }
-        _snackbar.Add($"User {_addUserForm.UsernameAdd} has been added", Severity.Info);
-        _navMgr.NavigateTo($"/useredit/{_addUserForm.UsernameAdd}");
+        Snackbar.Add($"User {_addUserForm.UsernameAdd} has been added", Severity.Info);
+        NavMgr.NavigateTo($"/useredit/{_addUserForm.UsernameAdd}");
         _addUserForm.UsernameAdd = "";
         _addUserForm.Password = "";
         _addUserForm.Password2 = "";
