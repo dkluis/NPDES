@@ -182,8 +182,8 @@
     {
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-
         PassedUserId ??= "No User";
+        await _sessionStore.SetAsync("EntryPage", $"/useredit/{PassedUserId}");
 
         _currentUser = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
         _isEnabled = _currentUser.Enabled;

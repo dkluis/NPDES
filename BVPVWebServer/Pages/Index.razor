@@ -38,8 +38,14 @@ else
 
 @code {
 
+    public string? EntryPage;
+
     protected override async Task OnInitializedAsync()
     {
+        EntryPage = "/Home";
+        var entry = await _sessionStore.GetAsync<string>("EntryPage");
+        if (entry.Value is {Length: >= 1}) EntryPage = entry.Value;
+
         if (_stateService.UserId != "Init")
         {
             var result = await _sessionStore.GetAsync<string>("User");
@@ -60,7 +66,7 @@ else
         StateHasChanged();
         _stateService.InitSystemState(_model.Username!);
         _stateService.IsLoggedIn = true;
-        _navMgr.NavigateTo("/Home");
+        _navMgr.NavigateTo(EntryPage == ""? "/Home" : EntryPage!);
     }
 
 }
