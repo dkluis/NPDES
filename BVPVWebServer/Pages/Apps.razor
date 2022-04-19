@@ -1,38 +1,119 @@
 @page "/apps"
 
-@inject ProtectedSessionStorage _sessionStore
+@inject ProtectedSessionStorage SessionStore
 
-@inject StateService _stateService
-@inject NavigationManager _navMgr
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
+@using App = BVPVWebServer.Data.App
 
-@inject RoleService _roleService
+@inject StateService StateService
+@inject NavigationManager NavMgr
+@inject AppService AppService
 
 
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
         {
-            <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
-            <PageTitle>Roles</PageTitle>
+            <PageTitle>Apps NPDES</PageTitle>
+ 
+            <MudText Typo="Typo.h4" Align="Align.Center">App Management</MudText>
 
-            <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
+            <MudTable Items="@_allApps" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                      Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
+                      Filter="new Func<App, bool>(FilterFunc1)"
+                      GroupBy="@_appGroup"
+                      GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                      GroupFooterClass="mb-4">
+
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">All Apps (WebPages)</MudText>
+                    <MudSpacer></MudSpacer>
+                    <MudTextField @bind-Value="_searchApps" Placeholder="Search"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium" Class="mt-0">
+                    </MudTextField>
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width: 20px"/>
+                    <col style="width: 40px"/>
+                    <col/>
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>Report</MudTh>
+                </HeaderContent>
+                <GroupHeaderTemplate>
+                    <MudTh Class="mud-table-cell-custom-group" colspan="2">@($"Functional Area: {context.Key}")</MudTh>
+                </GroupHeaderTemplate>
+                <RowTemplate>
+                    @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                    <MudTd DataLabel="App">@context!.AppId</MudTd>
+                    <MudTd DataLabel="Function">@context.FunctionId</MudTd>
+                    <MudTd DataLabel="Report">@context.ReportApp</MudTd>
+                </RowTemplate>
+                <GroupFooterTemplate>
+                    <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="2"></MudTh>
+                </GroupFooterTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                </PagerContent>
+            </MudTable>
         }
     }
 }
-          
+
 @code
 {
+    private MudTable<App>? _mudTableApps;
+    private List<App> _allApps = new();
+
+
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        _allApps = AppService.GetAllApps(StateService.GetAppInfo());
+    }
+}
+
+@code
+{
+    private readonly TableGroupDefinition<App> _appGroup = new()
+    {
+        GroupName = "Functional Area",
+        Indentation = true,
+        Expandable = true,
+        IsInitiallyExpanded = true,
+        Selector = (e) => e.FunctionId
+    };
+
+    private string _searchApps = string.Empty;
+
+    private bool FilterFunc1(App apps) => FilterFunc(apps, _searchApps);
+
+    private static bool FilterFunc(App apps, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (apps.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (apps.FunctionId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
     }
 }

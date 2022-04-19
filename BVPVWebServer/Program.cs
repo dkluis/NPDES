@@ -12,6 +12,7 @@ builder.Services.AddScoped<WeatherForecastService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<StateService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AppService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();

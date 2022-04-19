@@ -1,13 +1,12 @@
-@page "/useredit/{PassedUserId?}"
-
-@inject NavigationManager _navMgr
+@page "/users/{PassedUserId?}"
 
 @using Severity = MudBlazor.Severity
-@inject ISnackbar _snackbar
+@inject ISnackbar Snackbar
 
-@inject ProtectedSessionStorage _sessionStore
-@inject StateService _stateService
-@inject UserService _userService
+@inject NavigationManager NavMgr
+@inject ProtectedSessionStorage SessionStore
+@inject StateService StateService
+@inject UserService UserService
 
 <style>
     .mud-table-cell-custom-group {
@@ -23,15 +22,15 @@
 <PageTitle>User @PassedUserId</PageTitle>
 
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
         {
-            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
@@ -201,22 +200,22 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         PassedUserId ??= "No User";
-        await _sessionStore.SetAsync("EntryPage", $"/useredit/{PassedUserId}");
+        await SessionStore.SetAsync("EntryPage", $"/users/{PassedUserId}");
 
-        _currentUser = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId, "", false);
+        _currentUser = UserService.LoadUser(StateService.GetAppInfo(), PassedUserId, "", false);
         _isEnabled = _currentUser.Enabled;
 
         _allUserRoles = RoleService.GetAllRoleIds();
         _assignedRoles = UserService.AllAssignedRoles(PassedUserId!);
         _originalAssignedRoles = _assignedRoles.ToList();
-        _appsByUsers = _userService.GetAppsByUser(_stateService.GetAppInfo(), PassedUserId);
+        _appsByUsers = UserService.GetAppsByUser(StateService.GetAppInfo(), PassedUserId);
 
-        _snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        _snackbar.Configuration.NewestOnTop = true;
-        _snackbar.Configuration.VisibleStateDuration = 5000;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
     }
 }
 
@@ -232,7 +231,7 @@
         }
         else
         {
-            _snackbar.Add($"Role {role} is already assigned", Severity.Warning);
+            Snackbar.Add($"Role {role} is already assigned", Severity.Warning);
         }
     }
 }
@@ -261,21 +260,21 @@
 
     private void OnValidSubmitChange(EditContext context)
     {
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
+        var info = UserService.LoadUser(StateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
-            _snackbar.Add($"User {PassedUserId} does not exist", Severity.Error);
+            Snackbar.Add($"User {PassedUserId} does not exist", Severity.Error);
             return;
         }
-        _changeSuccess = UserService.ChangePassword(_stateService.GetAppInfo(), PassedUserId!, _changeUserPasswordForm.PasswordChange!);
+        _changeSuccess = UserService.ChangePassword(StateService.GetAppInfo(), PassedUserId!, _changeUserPasswordForm.PasswordChange!);
         if (!_changeSuccess)
         {
-            _snackbar.Add($"Changing Password {PassedUserId} failed", Severity.Error);
+            Snackbar.Add($"Changing Password {PassedUserId} failed", Severity.Error);
             return;
         }
         _changeUserPasswordForm.PasswordChange = "";
         _changeUserPasswordForm.PasswordChange2 = "";
-        _snackbar.Add($"Password for {PassedUserId} has been changed", Severity.Info);
+        Snackbar.Add($"Password for {PassedUserId} has been changed", Severity.Info);
         StateHasChanged();
     }
 
@@ -301,28 +300,28 @@
         if (PassedUserId == "")
         {
             _editEvents.Add("No User Passed");
-            _snackbar.Add("No User was passed into this page, returned to User Page.", Severity.Error);
-            _navMgr.NavigateTo("/users");
+            Snackbar.Add("No User was passed into this page, returned to User Page.", Severity.Error);
+            NavMgr.NavigateTo("/users");
             return;
         }
-        var info = UserService.LoadUser(_stateService.GetAppInfo(), PassedUserId!, "", false);
+        var info = UserService.LoadUser(StateService.GetAppInfo(), PassedUserId!, "", false);
         if (info.UserId != PassedUserId)
         {
-            _snackbar.Add($"User '{PassedUserId}' does not exist", Severity.Error);
+            Snackbar.Add($"User '{PassedUserId}' does not exist", Severity.Error);
             return;
         }
 
-        var success = UserService.DeleteUser(_stateService.GetAppInfo(), PassedUserId!);
+        var success = UserService.DeleteUser(StateService.GetAppInfo(), PassedUserId!);
         if (!success)
         {
-            _snackbar.Add($"Deleting User {PassedUserId} failed", Severity.Error);
+            Snackbar.Add($"Deleting User {PassedUserId} failed", Severity.Error);
             return;
         }
 
-        _snackbar.Add($"User {PassedUserId} is deleted", Severity.Info);
+        Snackbar.Add($"User {PassedUserId} is deleted", Severity.Info);
 
         StateHasChanged();
-        _navMgr.NavigateTo("/users");
+        NavMgr.NavigateTo("/users");
     }
 }
 
@@ -337,36 +336,36 @@
         var successAdd = true;
         if (rolesToAdd.Count > 0)
         {
-            successAdd = UserService.AddUserRoles(_stateService.GetAppInfo(), PassedUserId!, rolesToAdd);
-            if (!successAdd) _snackbar.Add($"User {PassedUserId} add roles error", Severity.Error);
+            successAdd = UserService.AddUserRoles(StateService.GetAppInfo(), PassedUserId!, rolesToAdd);
+            if (!successAdd) Snackbar.Add($"User {PassedUserId} add roles error", Severity.Error);
         }
         if (rolesToDel.Count > 0)
         {
-            successDel = UserService.DeleteUserRoles(_stateService.GetAppInfo(), PassedUserId!, rolesToDel);
-            if (!successDel) _snackbar.Add($"User {PassedUserId} delete roles error", Severity.Error);
+            successDel = UserService.DeleteUserRoles(StateService.GetAppInfo(), PassedUserId!, rolesToDel);
+            if (!successDel) Snackbar.Add($"User {PassedUserId} delete roles error", Severity.Error);
         }
         if (rolesToAdd.Count > 0 || rolesToDel.Count > 0)
         {
-            if (successAdd && successDel) _snackbar.Add($"User {PassedUserId} roles are updated", Severity.Info);
+            if (successAdd && successDel) Snackbar.Add($"User {PassedUserId} roles are updated", Severity.Info);
         }
-        _appsByUsers = _userService.GetAppsByUser(_stateService.GetAppInfo(), PassedUserId!);
+        _appsByUsers = UserService.GetAppsByUser(StateService.GetAppInfo(), PassedUserId!);
         StateHasChanged();
     }
 
     private void EnableChange(bool toggle)
     {
         _isEnabled = !_isEnabled;
-        var success = UserService.ChangeEnabled(_stateService.GetAppInfo(), PassedUserId!, _isEnabled);
+        var success = UserService.ChangeEnabled(StateService.GetAppInfo(), PassedUserId!, _isEnabled);
         if (!success)
         {
-            _snackbar.Add($"Failed to update user enablement", Severity.Error);
+            Snackbar.Add($"Failed to update user enablement", Severity.Error);
         }
         else
         {
-            _snackbar.Add(_isEnabled ? $"User {PassedUserId} is set to Enabled" : $"User {PassedUserId} is set to Disabled", Severity.Info);
+            Snackbar.Add(_isEnabled ? $"User {PassedUserId} is set to Enabled" : $"User {PassedUserId} is set to Disabled", Severity.Info);
         }
         StateHasChanged();
-        _navMgr.NavigateTo("/users");
+        NavMgr.NavigateTo("/users");
     }
 
 }

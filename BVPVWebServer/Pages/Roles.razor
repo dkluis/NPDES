@@ -1,23 +1,24 @@
 @page "/roles"
 
-@inject ProtectedSessionStorage _sessionStore
+@inject NavigationManager NavMgr
+@inject ProtectedSessionStorage SessionStore
 
-@inject StateService _stateService
-@inject NavigationManager _navMgr
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
 
-@inject RoleService _roleService
-
+@inject StateService StateService
+@inject RoleService RoleService
 
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
         {
-            <MudAlert Severity="MudBlazor.Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="MudBlazor.Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
@@ -153,8 +154,8 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
     }
 
     // Table Handling Code

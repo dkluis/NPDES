@@ -1,12 +1,11 @@
 @page "/users"
 
 @inject NavigationManager NavMgr
+@inject ProtectedSessionStorage SessionStore
 
 @inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
 
-
-@inject ProtectedSessionStorage SessionStore
 @inject StateService StateService
 
 <PageTitle>Users</PageTitle>
@@ -88,7 +87,7 @@
                 </HeaderContent>
                 <RowTemplate>
                     @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd Style="color: darkblue; text-decoration: underline; " DataLabel="Username"><a href="/useredit/@context!.UserId">@context.UserId</a></MudTd>
+                    <MudTd Style="color: darkblue; text-decoration: underline; " DataLabel="Username"><a href="/users/@context!.UserId">@context.UserId</a></MudTd>
                     <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -103,11 +102,6 @@
 {
     // For Page specific code
     private string? _username;
-
-    private void RedirectToUserEdit(string userid)
-    {
-        NavMgr.NavigateTo($"useredit/{userid}");
-    }
 }
 
 @code
@@ -171,7 +165,7 @@
             return;
         }
         Snackbar.Add($"User {_addUserForm.UsernameAdd} has been added", Severity.Info);
-        NavMgr.NavigateTo($"/useredit/{_addUserForm.UsernameAdd}");
+        NavMgr.NavigateTo($"/users/{_addUserForm.UsernameAdd}");
         _addUserForm.UsernameAdd = "";
         _addUserForm.Password = "";
         _addUserForm.Password2 = "";
