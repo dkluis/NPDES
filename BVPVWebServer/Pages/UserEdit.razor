@@ -101,11 +101,17 @@
 
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User">
                     <MudTable Items="@_appsByUsers" Dense="true" Hover="true" FixedHeader="true" Height="375px"
-                              Breakpoint="Breakpoint.Sm" @ref="_mudTableAppsByUsers">
+                              Breakpoint="Breakpoint.Sm" @ref="_mudTableAppsByUsers" RowsPerPage=25
+                              Filter="new Func<AppsByUser,bool>(FilterFunc1)">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">@PassedUserId's Apps by Role</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchAppsByRole" Placeholder="Search" 
+                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                                          IconSize="Size.Medium" Class="mt-0"></MudTextField>
                         </ToolBarContent>
                         <ColGroup>
+                            <col/>
                             <col/>
                             <col/>
                             <col/>
@@ -130,8 +136,8 @@
                             <MudTd DataLabel="Username">@context!.User</MudTd>
                             <MudTd DataLabel="Role">@context.Role</MudTd>
                             <MudTd DataLabel="App">@context.App</MudTd>
-                            <MudTd DataLabel="App">@context.Function</MudTd>
-                            <MudTd DataLabel="App">@context.Report</MudTd>
+                            <MudTd DataLabel="Function">@context.Function</MudTd>
+                            <MudTd DataLabel="Report">@context.Report</MudTd>
                         </RowTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
@@ -293,6 +299,7 @@
         }
 
         _snackbar.Add($"User {PassedUserId} is deleted", Severity.Info);
+
         StateHasChanged();
         _navMgr.NavigateTo("/users");
     }
@@ -321,6 +328,8 @@
         {
             if (successAdd && successDel) _snackbar.Add($"User {PassedUserId} roles are updated", Severity.Info);
         }
+        _appsByUsers = _userService.GetAppsByUser(_stateService.GetAppInfo(), PassedUserId!);
+        StateHasChanged();
     }
 
     private void EnableChange(bool toggle)
@@ -338,5 +347,24 @@
         StateHasChanged();
         _navMgr.NavigateTo("/users");
     }
+}
 
+@code
+{
+    private string _searchAppsByRole = string.Empty;
+    
+    private bool FilterFunc1(AppsByUser appsByUser) => FilterFunc(appsByUser, _searchAppsByRole);
+
+    private bool FilterFunc(AppsByUser appsByUser, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (appsByUser.Role.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (appsByUser.App.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (appsByUser.Function.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
 }
