@@ -9,6 +9,17 @@
 @inject StateService _stateService
 @inject UserService _userService
 
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
+
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
+
 <PageTitle>User @PassedUserId</PageTitle>
 
 @{
@@ -102,13 +113,17 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User">
                     <MudTable Items="@_appsByUsers" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableAppsByUsers" RowsPerPage=25
-                              Filter="new Func<AppsByUser,bool>(FilterFunc1)">
+                              GroupBy="@_roleGroup"
+                              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                              GroupFooterClass="mb-4"
+                              Filter="new Func<AppsByUser, bool>(FilterFunc1)">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">@PassedUserId's Apps by Role</MudText>
                             <MudSpacer></MudSpacer>
-                            <MudTextField @bind-Value="_searchAppsByRole" Placeholder="Search" 
-                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
-                                          IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                            <MudTextField @bind-Value="_searchAppsByRole" Placeholder="Search"
+                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
                         </ToolBarContent>
                         <ColGroup>
                             <col/>
@@ -131,6 +146,9 @@
                             <MudTh>Function</MudTh>
                             <MudTh>Report</MudTh>
                         </HeaderContent>
+                        <GroupHeaderTemplate>
+                            <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"Role: {context.Key}")</MudTh>
+                        </GroupHeaderTemplate>
                         <RowTemplate>
                             @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                             <MudTd DataLabel="Username">@context!.User</MudTd>
@@ -347,15 +365,25 @@
         StateHasChanged();
         _navMgr.NavigateTo("/users");
     }
+
 }
 
 @code
 {
+    private readonly TableGroupDefinition<AppsByUser> _roleGroup = new()
+    {
+        GroupName = "Roles",
+        Indentation = true,
+        Expandable = true,
+        IsInitiallyExpanded = true,
+        Selector = (e) => e.Role
+    };
+
     private string _searchAppsByRole = string.Empty;
-    
+
     private bool FilterFunc1(AppsByUser appsByUser) => FilterFunc(appsByUser, _searchAppsByRole);
 
-    private bool FilterFunc(AppsByUser appsByUser, string searchString)
+    private static bool FilterFunc(AppsByUser appsByUser, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
