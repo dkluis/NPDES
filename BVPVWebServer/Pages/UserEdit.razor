@@ -126,7 +126,7 @@
                             </MudTextField>
                         </ToolBarContent>
                         <ColGroup>
-                            <col/>
+                            <col style="width: 10px"/>
                             <col/>
                             <col/>
                             <col/>
@@ -147,7 +147,7 @@
                             <MudTh>Report</MudTh>
                         </HeaderContent>
                         <GroupHeaderTemplate>
-                            <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"Role: {context.Key}")</MudTh>
+                            <MudTh Class="mud-table-cell-custom-group" colspan="1">@($"Role: {context.Key}")</MudTh>
                         </GroupHeaderTemplate>
                         <RowTemplate>
                             @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
@@ -157,6 +157,9 @@
                             <MudTd DataLabel="Function">@context.Function</MudTd>
                             <MudTd DataLabel="Report">@context.Report</MudTd>
                         </RowTemplate>
+                            <GroupFooterTemplate>
+                                <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="1"></MudTh>
+                            </GroupFooterTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
                         </PagerContent>
@@ -375,7 +378,7 @@
         GroupName = "Roles",
         Indentation = true,
         Expandable = true,
-        IsInitiallyExpanded = true,
+        IsInitiallyExpanded = false,
         Selector = (e) => e.Role
     };
 
