@@ -358,7 +358,7 @@
         var success = UserService.ChangeEnabled(StateService.GetAppInfo(), PassedUserId!, _isEnabled);
         if (!success)
         {
-            Snackbar.Add($"Failed to update user enablement", Severity.Error);
+            Snackbar.Add("Failed to update user enablement", Severity.Error);
         }
         else
         {
@@ -378,7 +378,7 @@
         Indentation = true,
         Expandable = true,
         IsInitiallyExpanded = false,
-        Selector = (e) => e.Role
+        Selector = e => e.Role
     };
 
     private string _searchAppsByRole = string.Empty;
@@ -393,6 +393,7 @@
             return true;
         if (appsByUser.App.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
         if (appsByUser.Function.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;

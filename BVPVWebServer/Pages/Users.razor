@@ -5,6 +5,7 @@
 
 @inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
+@using BVPVWebServer.Templates
 
 @inject StateService StateService
 
@@ -76,6 +77,10 @@
                 <ColGroup>
                     <col style="width: 50px;"/>
                     <col style="width: 20px;"/>
+                    <col/>
+                    <col/>
+                    <col/>
+                    <col/>
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>
@@ -87,7 +92,10 @@
                 </HeaderContent>
                 <RowTemplate>
                     @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd Style="color: darkblue; text-decoration: underline; " DataLabel="Username"><a href="/users/@context!.UserId">@context.UserId</a></MudTd>
+                    <MudTd DataLabel="Username">
+                        @{ _linkedContext = $"/users/{context.UserId}";}
+                        <MudLink Href=@_linkedContext Underline="Underline.Always">@context.UserId</MudLink>
+                    </MudTd>
                     <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -128,6 +136,7 @@
 {
     private MudTable<UserElement>? _mudTableUsers;
     private IEnumerable<UserElement> _userElements = new List<UserElement>();
+    private string _linkedContext = string.Empty;
 }
 
 @code {

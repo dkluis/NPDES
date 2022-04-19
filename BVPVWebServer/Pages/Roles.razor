@@ -18,7 +18,7 @@
     {
         if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
         {
-            <MudAlert Severity="MudBlazor.Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
@@ -119,8 +119,8 @@
 @code {
     // Form Handling Code
     MudForm? _form;
-    readonly RoleFluentValidator _roleValidator = new RoleFluentValidator();
-    readonly Role _role = new Role();
+    readonly RoleFluentValidator _roleValidator = new();
+    readonly Role _role = new();
 
     private async Task Submit()
     {
@@ -194,6 +194,7 @@
             return true;
         if (role.RoleId!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
         if ($"{role.RoleId}".Contains(_searchString))
             return true;
         return false;
