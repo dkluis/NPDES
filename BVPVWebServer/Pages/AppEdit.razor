@@ -72,7 +72,7 @@
         PassedApp ??= "No App";
         await SessionStore.SetAsync("EntryPage", $"/apps/{PassedApp}");
 
-        _allUserRoles = RoleService.GetAllRoleIds();
+        _allUserRoles = RoleService.GetAllRoleIds(StateService.GetAppInfo());
         _assignedRoles = AppService.GetAllAssignedRoles(StateService.GetAppInfo(), PassedApp);
         _originalAssignedRoles = _assignedRoles.ToList();
 

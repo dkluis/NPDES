@@ -4,26 +4,18 @@ namespace BVPVWebServer.Services;
 
 public class RoleService
 {
-    public static IEnumerable<Role> GetAllRoles(string searchString = "")
+    public static IEnumerable<Role> GetAllRoles(AppInfo appInfo, string searchString = "")
     {
         var allRoles = new List<Role>();
-        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
-        string sql;
-        if (searchString == "")
+        var sql = searchString switch
         {
-            sql = $"select * from `Roles` where `RoleID` = ' ' order by `RoleLevel`";
-        }
-        else if (searchString == "*")
-        {
-            sql = $"select * from `Roles` order by `RoleLevel`";
-        }
-        else
-        {
-            sql = $"select * from `Roles` where `RoleID` like '%{searchString}%' order by `RoleLevel`";
-        }
-       
+            "" => $"select * from `Roles` where `RoleID` = ' ' order by `RoleLevel`",
+            "*" => $"select * from `Roles` order by `RoleLevel`",
+            _ => $"select * from `Roles` where `RoleID` like '%{searchString}%' order by `RoleLevel`"
+        };
+
         var rdr = db.ExecQuery(sql);
         if (!rdr!.HasRows) return allRoles;
         while (rdr.Read())
@@ -41,10 +33,9 @@ public class RoleService
         return allRoles;
     }
     
-    public static List<string> GetAllRoleIds()
+    public static List<string> GetAllRoleIds(AppInfo appInfo)
     {
         var allRoleIds = new List<string>();
-        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select `RoleID` from Roles order by `RoleLevel`, `RoleID`");
@@ -58,9 +49,20 @@ public class RoleService
         return allRoleIds;
     }
 
-    public static bool DoesRoleExist(string role)
+    public static bool AddRole(AppInfo appInfo, Role role)
     {
-        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"insert into `Roles` values ('{role.RoleId}', {role.RoleLevel}, {role.ReadOnly});";
+        db.ExecNonQuery(sql, true);
+        if (!db.Success) success = false;
+        db.Close();
+        return success;
+    }
+
+    public static bool DoesRoleExist(AppInfo appInfo,string role)
+    {
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `Roles` where `RoleID` = '{role}'");

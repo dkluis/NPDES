@@ -5,8 +5,6 @@
 
 @inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
-@using BVPVWebServer.Templates
-@using BVPVWebServer.Services
 
 @inject StateService StateService
 
@@ -19,7 +17,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Users") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }

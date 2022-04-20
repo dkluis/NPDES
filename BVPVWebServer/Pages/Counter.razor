@@ -14,7 +14,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "Counter") == false)
         {
             <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
