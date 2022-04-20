@@ -38,6 +38,10 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">All Apps (WebPages)</MudText>
                     <MudSpacer></MudSpacer>
+                    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                    <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppFunctionTable">Refresh</MudButton>
+                    </MudButtonGroup>
+                    <MudSpacer></MudSpacer>
                     <MudTextField @bind-Value="_searchApps" Placeholder="Search"
                                   Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                   IconSize="Size.Medium" Class="mt-0">
@@ -88,13 +92,18 @@
 {
     private MudTable<App>? _mudTableApps;
     private List<App> _allApps = new();
-    private string _linkedContext;
+    private string _linkedContext = string.Empty;
 
 
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        FillAppFunctionTable();
+    }
+
+    void FillAppFunctionTable()
+    {
         _allApps = AppService.GetAllApps(StateService.GetAppInfo());
     }
 }

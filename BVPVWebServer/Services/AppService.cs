@@ -43,6 +43,27 @@ public class AppService
 
     }
 
+    public static List<AppRole> GetAllAppRoles(AppInfo appInfo)
+    {
+        var allAppRoles = new List<AppRole>();
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from AppRoles order by `AppID`, `RoleID`;");
+        if (!rdr!.HasRows) return allAppRoles;
+        while (rdr.Read())
+        {
+            if ((string) rdr["AppID"] == "None") continue;
+            var rec = new AppRole()
+            {
+                AppId = (string) rdr["AppID"],
+                RoleId = (string) rdr["RoleID"]
+            };
+            allAppRoles.Add(rec);
+        }
+
+        return allAppRoles;
+    }
+
     public static List<string> GetAllAssignedRoles(AppInfo appInfo, string appid)
     {
         var allApps = new List<string>();
@@ -58,6 +79,37 @@ public class AppService
         return allApps;
     }
     
+    public static bool AddAppRoles(AppInfo appInfo, string app, List<string> appRoles)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        foreach (var role in appRoles)
+        {
+            var sql = $"insert into AppRoles values ('{app}', '{role}');";
+            db.ExecNonQuery(sql, true);
+            if (!db.Success) success = false;
+        }
+
+        db.Close();
+        return success;
+    }
+    
+    public static bool DeleteAppRoles(AppInfo appInfo, string app, List<string> appRoles)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        foreach (var role in appRoles)
+        {
+            string sql = $"delete from AppRoles where `AppID`= '{app}' and `RoleID` = '{role}';";
+            db.ExecNonQuery(sql, true);
+            if (!db.Success) success = false;
+        }
+
+        db.Close();
+        return success;
+    }
 }
 
 public class App
@@ -72,4 +124,16 @@ public class App
     public string AppId { get; set; }
     public string FunctionId { get; set; }
     public bool ReportApp { get; set; }
+}
+
+public class AppRole
+{
+    public AppRole()
+    {
+        AppId = string.Empty;
+        RoleId = string.Empty;
+    }
+    
+    public string AppId { get; set; }
+    public string RoleId { get; set; }
 }
