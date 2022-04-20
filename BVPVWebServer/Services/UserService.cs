@@ -175,7 +175,7 @@ public class UserService
         if (!rdr!.HasRows) return assignedRoles;
         while (rdr.Read())
         {
-            if ((string) rdr["RoleId"] == "None") continue;
+            if ((string) rdr[$"RoleId"] == "None" || (string) rdr["RoleId"] == "SuperAdmin") continue;
             assignedRoles.Add((string) rdr["RoleID"]);
         }
         return assignedRoles;
