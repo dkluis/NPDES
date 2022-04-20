@@ -1,12 +1,12 @@
 @page "/apps/{PassedApp?}"
 
 @using Severity = MudBlazor.Severity
-@inject ISnackbar Snackbar
+@inject ISnackbar Alerts
 
 @inject NavigationManager NavMgr
 @inject ProtectedSessionStorage SessionStore
 @inject StateService StateService
-@inject UserService UserService
+@inject AppService AppService
 
 <PageTitle>App @PassedApp</PageTitle>
 
@@ -23,7 +23,36 @@
         }
         else
         {
-            <MudText Typo="Typo.h4" Align="Align.Center">Editing App: @PassedApp</MudText>
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudText Typo="Typo.h4" Align="Align.Center">Assigning Roles to appliation/webpage: @PassedApp</MudText>
+                <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
+                    <MudText Typo="Typo.h6">Current Roles of @PassedApp:</MudText>
+                    <MudItem>
+
+                        <MudChipSet AllClosable="true" OnClose="RemoveRoleChip">
+                            @{
+                                foreach (var role in _assignedRoles)
+                                {
+                                    <MudChip Text="@role"></MudChip>
+                                }
+                            }
+                        </MudChipSet>
+
+                        <MudText Typo="Typo.h6">Add the appropriate Role(s):</MudText>
+                        @{
+                            foreach (var role in _allUserRoles)
+                            {
+                                <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Variant="Variant.Filled"
+                                           Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">
+                                    @role
+                                </MudButton>
+                            }
+                        }
+
+                    </MudItem>
+                    <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
     }
 }
@@ -31,6 +60,10 @@
 @code {
     [Parameter]
     public string? PassedApp { get; set; }
+    
+    private List<string> _allUserRoles = new();
+    private List<string> _assignedRoles = new();
+    private List<string> _originalAssignedRoles = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,6 +71,57 @@
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         PassedApp ??= "No App";
         await SessionStore.SetAsync("EntryPage", $"/apps/{PassedApp}");
-    }
+        
+        _allUserRoles = RoleService.GetAllRoleIds();
+        _assignedRoles = AppService.GetAllAssignedRoles(StateService.GetAppInfo(), PassedApp);
+        _originalAssignedRoles = _assignedRoles.ToList();
 
+        Alerts.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Alerts.Configuration.NewestOnTop = true;
+        Alerts.Configuration.VisibleStateDuration = 5000;
+    }
+    
+
+}
+
+@code
+{
+    private void UpdateRoles()
+    {
+        var rolesToDel = _originalAssignedRoles.Where(originalRole => !_assignedRoles.Contains(originalRole)).ToList();
+        var rolesToAdd = _assignedRoles.Where(newRole => !_originalAssignedRoles.Contains(newRole)).ToList();
+
+        var successDel = true;
+        var successAdd = true;
+        if (rolesToAdd.Count > 0)
+        {
+            //successAdd = UserService.AddUserRoles(StateService.GetAppInfo(), PassedUserId!, rolesToAdd);
+            if (!successAdd) Alerts.Add($"App: {PassedApp} has add roles error", Severity.Error);
+        }
+        if (rolesToDel.Count > 0)
+        {
+            //successDel = UserService.DeleteUserRoles(StateService.GetAppInfo(), PassedUserId!, rolesToDel);
+            if (!successDel) Alerts.Add($"App: {PassedApp} has delete roles error", Severity.Error);
+        }
+        if (rolesToAdd.Count > 0 || rolesToDel.Count > 0)
+        {
+            if (successAdd && successDel) Alerts.Add($"App: {PassedApp} roles are updated", Severity.Info);
+        }
+        //_appsByUsers = UserService.GetAppsByUser(StateService.GetAppInfo(), PassedUserId!);
+        StateHasChanged();
+    }
+    
+    private void RemoveRoleChip(MudChip chip) => _assignedRoles.Remove(chip.Text);
+
+    private void AddRoleChip(string role)
+    {
+        if (!_assignedRoles.Contains(role))
+        {
+            _assignedRoles.Add(role);
+        }
+        else
+        {
+            Alerts.Add($"Role {role} is already assigned", Severity.Warning);
+        }
+    }
 }

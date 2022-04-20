@@ -42,6 +42,21 @@ public class AppService
         return allApps;
 
     }
+
+    public static List<string> GetAllAssignedRoles(AppInfo appInfo, string appid)
+    {
+        var allApps = new List<string>();
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select `RoleID` from AppRoles where `AppID` = '{appid}' order by `RoleID`;");
+        if (!rdr!.HasRows) return allApps;
+        while (rdr.Read())
+        {
+            allApps.Add((string) rdr["RoleID"]);
+        }
+
+        return allApps;
+    }
     
 }
 
@@ -50,7 +65,7 @@ public class App
     public App()
     {
         AppId = string.Empty;
-        FunctionId = String.Empty;
+        FunctionId = string.Empty;
         ReportApp = false;
     }
 
