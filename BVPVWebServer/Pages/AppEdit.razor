@@ -1,7 +1,6 @@
 @page "/apps/{PassedApp?}"
 
 @using Severity = MudBlazor.Severity
-@using BVPVWebServer.Services
 @inject ISnackbar Alerts
 
 @inject NavigationManager NavMgr
@@ -52,57 +51,6 @@
                     <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
                 </MudExpansionPanel>
             </MudExpansionPanels>
-
-            <MudTable Items="@_allAppRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
-                      Breakpoint="Breakpoint.Sm" @ref="_mudTableAppRoles" RowsPerPage=25
-                      Filter="new Func<AppRole, bool>(FilterFunc1)"
-                      GroupBy="@_appRoleGroup"
-                      GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
-                      GroupFooterClass="mb-4">
-
-                <ToolBarContent>
-                    <MudText Typo="Typo.h6">All Apps (WebPages)</MudText>
-                    <MudSpacer></MudSpacer>
-                    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
-                        <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppRoleTable">Refresh</MudButton>
-                    </MudButtonGroup>
-                    <MudSpacer></MudSpacer>
-                    <MudTextField @bind-Value="_searchAppRoles" Placeholder="Search"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
-                                  IconSize="Size.Medium" Class="mt-0">
-                    </MudTextField>
-                </ToolBarContent>
-                <ColGroup>
-                    <col style="width: 30px;"/>
-                    <col style="width: 50px;"/>
-                    <col/>
-                    <col/>
-                    <col/>
-                    <col/>
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<AppRole, object?>(x => x.AppId)">App</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRole, object?>(x => x.AppId)">Functional Area</MudTableSortLabel>
-                    </MudTh>
-                </HeaderContent>
-                <GroupHeaderTemplate>
-                    <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"App: {context.Key}")</MudTh>
-                </GroupHeaderTemplate>
-                <RowTemplate>
-                    @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd DataLabel="App">@context.AppId</MudTd>
-                    <MudTd DataLabel="Function">@context.RoleId</MudTd>
-                </RowTemplate>
-                <GroupFooterTemplate>
-                    <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="3"></MudTh>
-                </GroupFooterTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
-                </PagerContent>
-            </MudTable>
         }
     }
 }
@@ -117,9 +65,6 @@
     private List<string> _assignedRoles = new();
     private List<string> _originalAssignedRoles = new();
 
-    private List<AppRole> _allAppRoles = new();
-    private MudTable<AppRole>? _mudTableAppRoles;
-
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
@@ -130,16 +75,10 @@
         _allUserRoles = RoleService.GetAllRoleIds();
         _assignedRoles = AppService.GetAllAssignedRoles(StateService.GetAppInfo(), PassedApp);
         _originalAssignedRoles = _assignedRoles.ToList();
-        FillAppRoleTable();
 
         Alerts.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Alerts.Configuration.NewestOnTop = true;
         Alerts.Configuration.VisibleStateDuration = 5000;
-    }
-
-    private void FillAppRoleTable()
-    {
-        _allAppRoles = AppService.GetAllAppRoles(StateService.GetAppInfo());
     }
 
 }
@@ -163,11 +102,8 @@
             successDel = AppService.DeleteAppRoles(StateService.GetAppInfo(), PassedApp!, rolesToDel);
             if (!successDel) Alerts.Add($"App: {PassedApp} has delete roles error", Severity.Error);
         }
-        if (rolesToAdd.Count > 0 || rolesToDel.Count > 0)
-        {
-            if (successAdd || successDel) Alerts.Add($"App: {PassedApp} roles are updated", Severity.Info);
-        }
-        StateHasChanged();
+        if (successAdd || successDel) Alerts.Add($"App: {PassedApp} roles are updated", Severity.Info);
+        NavMgr.NavigateTo("/Apps");
     }
 
     private void RemoveRoleChip(MudChip chip) => _assignedRoles.Remove(chip.Text);
@@ -182,31 +118,5 @@
         {
             Alerts.Add($"Role {role} is already assigned", Severity.Warning);
         }
-    }
-}
-
-@code
-{
-    private readonly TableGroupDefinition<AppRole> _appRoleGroup = new()
-    {
-        GroupName = "App",
-        Indentation = true,
-        Expandable = true,
-        IsInitiallyExpanded = false,
-        Selector = (e) => e.AppId
-    };
-
-    private string _searchAppRoles = string.Empty;
-    private bool FilterFunc1(AppRole appRoles) => FilterFunc(appRoles, _searchAppRoles);
-
-    private static bool FilterFunc(AppRole appRoles, string searchString)
-    {
-        if (string.IsNullOrWhiteSpace(searchString))
-            return true;
-        if (appRoles.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (appRoles.RoleId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        return false;
     }
 }

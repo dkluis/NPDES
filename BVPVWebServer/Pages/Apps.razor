@@ -2,14 +2,11 @@
 
 @inject ProtectedSessionStorage SessionStore
 
-@inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
 @using App = BVPVWebServer.Services.App
-@using BVPVWebServer.Services
 
 @inject StateService StateService
 @inject NavigationManager NavMgr
-@inject AppService AppService
 
 
 @{
@@ -29,62 +26,118 @@
 
             <MudText Typo="Typo.h4" Align="Align.Center">App Management</MudText>
 
-            <MudTable Items="@_allApps" Dense="true" Hover="true" FixedHeader="true" Height="375px"
-                      Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
-                      Filter="new Func<App, bool>(FilterFunc1)"
-                      GroupBy="@_appGroup"
-                      GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
-                      GroupFooterClass="mb-4">
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Function" IsInitiallyExpanded="true">
+                    <MudTable Items="@_allApps" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                              Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
+                              Filter="new Func<App, bool>(FilterFunc1)"
+                              GroupBy="@_appGroup"
+                              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                              GroupFooterClass="mb-4">
 
-                <ToolBarContent>
-                    <MudText Typo="Typo.h6">All Apps (WebPages)</MudText>
-                    <MudSpacer></MudSpacer>
-                    <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
-                    <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppFunctionTable">Refresh</MudButton>
-                    </MudButtonGroup>
-                    <MudSpacer></MudSpacer>
-                    <MudTextField @bind-Value="_searchApps" Placeholder="Search"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
-                                  IconSize="Size.Medium" Class="mt-0">
-                    </MudTextField>
-                </ToolBarContent>
-                <ColGroup>
-                    <col style="width: 30px;"/>
-                    <col style="width: 50px;"/>
-                    <col style="width: 20px;"/>
-                    <col/>
-                    <col/>
-                    <col/>
-                    <col/>
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>Report</MudTh>
-                </HeaderContent>
-                <GroupHeaderTemplate>
-                    <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"Functional Area: {context.Key}")</MudTh>
-                </GroupHeaderTemplate>
-                <RowTemplate>
-                    @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                                        <MudTd DataLabel="App">
-                                            @{ _linkedContext = $"/apps/{context.AppId}";}
-                                            <MudLink Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
-                                        </MudTd>
-                    <MudTd DataLabel="Function">@context.FunctionId</MudTd>
-                    <MudTd DataLabel="Report">@context.ReportApp</MudTd>
-                </RowTemplate>
-                <GroupFooterTemplate>
-                    <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="3"></MudTh>
-                </GroupFooterTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
-                </PagerContent>
-            </MudTable>
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">All Apps (Function View)</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppFunctionTable">Refresh</MudButton>
+                            </MudButtonGroup>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchApps" Placeholder="Search"
+                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col style="width: 30px;"/>
+                            <col style="width: 50px;"/>
+                            <col style="width: 20px;"/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Report</MudTh>
+                        </HeaderContent>
+                        <GroupHeaderTemplate>
+                            <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"Functional Area: {context.Key}")</MudTh>
+                        </GroupHeaderTemplate>
+                        <RowTemplate>
+                            @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                            <MudTd DataLabel="App">
+                                @{ _linkedContext = $"/apps/{context.AppId}"; }
+                                <MudLink Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
+                            </MudTd>
+                            <MudTd DataLabel="Function">@context.FunctionId</MudTd>
+                            <MudTd DataLabel="Report">@context.ReportApp</MudTd>
+                        </RowTemplate>
+                        <GroupFooterTemplate>
+                            <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="3"></MudTh>
+                        </GroupFooterTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Role" IsInitiallyExpanded="true">
+                <MudTable Items="@_allAppRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                          Breakpoint="Breakpoint.Sm" @ref="_mudTableAppRoles" RowsPerPage=25
+                          Filter="new Func<AppRole, bool>(FilterAppRolesFunc)"
+                          GroupBy="@_appRoleGroup"
+                          GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                          GroupFooterClass="mb-4">
+
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">All Apps (Roles View)</MudText>
+                        <MudSpacer></MudSpacer>
+                        <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                            <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppRoleTable">Refresh</MudButton>
+                        </MudButtonGroup>
+                        <MudSpacer></MudSpacer>
+                        <MudTextField @bind-Value="_searchAppRoles" Placeholder="Search"
+                                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                      IconSize="Size.Medium" Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 30px;"/>
+                        <col style="width: 50px;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AppRole, object?>(x => x.AppId)">App</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRole, object?>(x => x.RoleId)">Role</MudTableSortLabel>
+                        </MudTh>
+                    </HeaderContent>
+                    <GroupHeaderTemplate>
+                        <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"App: {context.Key}")</MudTh>
+                    </GroupHeaderTemplate>
+                    <RowTemplate>
+                        @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                        <MudTd DataLabel="App">@context.AppId</MudTd>
+                        <MudTd DataLabel="Function">@context.RoleId</MudTd>
+                    </RowTemplate>
+                    <GroupFooterTemplate>
+                        <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="3"></MudTh>
+                    </GroupFooterTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                    </PagerContent>
+                </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
     }
 }
@@ -94,6 +147,8 @@
     private MudTable<App>? _mudTableApps;
     private List<App> _allApps = new();
     private string _linkedContext = string.Empty;
+    private List<AppRole> _allAppRoles = new();
+    private MudTable<AppRole>? _mudTableAppRoles;
 
 
     protected override async Task OnInitializedAsync()
@@ -101,11 +156,17 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         FillAppFunctionTable();
+        FillAppRoleTable();
     }
 
     void FillAppFunctionTable()
     {
         _allApps = AppService.GetAllApps(StateService.GetAppInfo());
+    }
+
+    private void FillAppRoleTable()
+    {
+        _allAppRoles = AppService.GetAllAppRoles(StateService.GetAppInfo());
     }
 }
 
@@ -130,6 +191,32 @@
         if (apps.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (apps.FunctionId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+}
+
+@code
+{
+    private readonly TableGroupDefinition<AppRole> _appRoleGroup = new()
+    {
+        GroupName = "App",
+        Indentation = true,
+        Expandable = true,
+        IsInitiallyExpanded = false,
+        Selector = (e) => e.AppId
+    };
+
+    private string _searchAppRoles = string.Empty;
+    private bool FilterAppRolesFunc(AppRole appRoles) => FilterAppRoleMainFunc(appRoles, _searchAppRoles);
+
+    private static bool FilterAppRoleMainFunc(AppRole appRoles, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (appRoles.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (appRoles.RoleId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }
