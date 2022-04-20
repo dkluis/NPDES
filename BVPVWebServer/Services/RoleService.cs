@@ -1,6 +1,6 @@
 using Libraries;
 
-namespace BVPVWebServer.Data;
+namespace BVPVWebServer.Services;
 
 public class RoleService
 {
@@ -28,6 +28,7 @@ public class RoleService
         if (!rdr!.HasRows) return allRoles;
         while (rdr.Read())
         {
+            if ((string) rdr["RoleId"] == "None" || (string) rdr["RoleId"] =="SuperAdmin") continue;
             var role = new Role
             {
                 RoleId = rdr["RoleID"].ToString(),
@@ -50,7 +51,7 @@ public class RoleService
         if (!rdr!.HasRows) return allRoleIds;
         while (rdr.Read())
         {
-            if ((string) rdr["RoleId"] == "None") continue;
+            if ((string) rdr["RoleId"] == "None" || (string) rdr["RoleId"] =="SuperAdmin") continue;
             allRoleIds.Add((string) rdr["RoleID"]);
         }
 

@@ -4,7 +4,8 @@
 
 @inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
-@using App = BVPVWebServer.Data.App
+@using App = BVPVWebServer.Services.App
+@using BVPVWebServer.Services
 
 @inject StateService StateService
 @inject NavigationManager NavMgr
@@ -18,7 +19,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Apps") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }

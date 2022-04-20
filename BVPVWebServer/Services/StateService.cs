@@ -1,6 +1,6 @@
 using Libraries;
 
-namespace BVPVWebServer.Data;
+namespace BVPVWebServer.Services;
 
 public class StateService
 {

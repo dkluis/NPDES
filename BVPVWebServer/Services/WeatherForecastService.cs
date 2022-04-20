@@ -1,4 +1,4 @@
-namespace BVPVWebServer.Data;
+namespace BVPVWebServer.Services;
 
 public class WeatherForecastService
 {

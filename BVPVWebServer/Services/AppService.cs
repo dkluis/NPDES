@@ -1,6 +1,6 @@
 using Libraries;
 
-namespace BVPVWebServer.Data;
+namespace BVPVWebServer.Services;
 
 public class AppService
 {
@@ -52,7 +52,7 @@ public class AppService
         if (!rdr!.HasRows) return allAppRoles;
         while (rdr.Read())
         {
-            if ((string) rdr["AppID"] == "None") continue;
+            if ((string) rdr["AppID"] == "None" || (string) rdr["RoleID"] == "SuperAdmin") continue;
             var rec = new AppRole()
             {
                 AppId = (string) rdr["AppID"],
@@ -73,6 +73,7 @@ public class AppService
         if (!rdr!.HasRows) return allApps;
         while (rdr.Read())
         {
+            if ((string) rdr["RoleID"] == "SuperAdmin") continue;
             allApps.Add((string) rdr["RoleID"]);
         }
 

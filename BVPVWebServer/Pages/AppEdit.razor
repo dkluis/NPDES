@@ -1,6 +1,7 @@
 @page "/apps/{PassedApp?}"
 
 @using Severity = MudBlazor.Severity
+@using BVPVWebServer.Services
 @inject ISnackbar Alerts
 
 @inject NavigationManager NavMgr
@@ -15,7 +16,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Apps") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
