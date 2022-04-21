@@ -21,6 +21,7 @@
         }
         else
         {
+            <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudText Typo="Typo.h4" Align="Align.Center">Assigning Roles to appliation/webpage: @PassedApp</MudText>
                 <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">

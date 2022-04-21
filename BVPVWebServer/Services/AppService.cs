@@ -88,7 +88,7 @@ public class AppService
         foreach (var role in appRoles)
         {
             var sql = $"insert into AppRoles values ('{app}', '{role}');";
-            db.ExecNonQuery(sql, true);
+            db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
 
@@ -104,7 +104,7 @@ public class AppService
         foreach (var role in appRoles)
         {
             string sql = $"delete from AppRoles where `AppID`= '{app}' and `RoleID` = '{role}';";
-            db.ExecNonQuery(sql, true);
+            db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
 

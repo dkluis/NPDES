@@ -5,10 +5,10 @@
 @using Severity = MudBlazor.Severity
 @using BVPVWebServer.Services
 
-@inject RoleService _roleService
-@inject UserService _userService
-@inject NavigationManager _navMgr
-@inject StateService _stateService
+@inject StateService StateService
+@inject NavigationManager NavMgr
+
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
 
 <PageTitle>Home Styropek ES</PageTitle>
 
@@ -20,8 +20,8 @@
 </MudPaper>
 
 <MudAlert Severity="Severity.Info">
-    NPDES user logged in is @_stateService.UserId, Dark Theme: @_stateService!.SystemState!.DarkTheme
-    and LastPage: @_stateService.SystemState.LastPage
+    NPDES user logged in is @StateService.UserId, Dark Theme: @StateService!.SystemState!.DarkTheme
+    and LastPage: @StateService.SystemState.LastPage
 </MudAlert>
 
 
@@ -29,19 +29,19 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (_stateService.IsLoggedIn && _stateService.UserId != "Init")
+        if (StateService.IsLoggedIn && StateService.UserId != "Init")
         {
             return;
         }
         var result = await _sessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 })
         {
-            _navMgr.NavigateTo("/");
+            NavMgr.NavigateTo("/");
         }
         else
         {
-            _stateService.InitUserInfo(result.Value);
-            _stateService.IsLoggedIn = true;
+            StateService.InitUserInfo(result.Value);
+            StateService.IsLoggedIn = true;
         }
     }
 

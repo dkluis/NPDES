@@ -80,8 +80,10 @@ public class StateService
     {
     }
 
-    public void UpdateSystemState()
+    public  void UpdateSystemStateDarkMode(bool dm)
     {
+        SystemState!.DarkTheme = dm;
+        InitSystemState(UserId!);
     }
 
     public void UpdateAppState()
@@ -103,7 +105,7 @@ public class SystemState
 
     public SystemState()
     {
-        DarkTheme = true;
+        DarkTheme = false;
         LastPage = "";
     }
 }

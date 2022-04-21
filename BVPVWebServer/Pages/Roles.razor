@@ -21,6 +21,7 @@
         }
         else
         {
+            <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <PageTitle>Roles</PageTitle>
 
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
@@ -102,6 +103,7 @@
     private static bool _valid;
     private string _linkedContext = string.Empty;
 
+
     private async Task Submit()
     {
         await _form!.Validate();
@@ -118,7 +120,7 @@
             }
             else
             {
-                Snackbar.Add($"Adding Role: {_role.RoleId} gave an error", Severity.Error);
+                Snackbar.Add($"Adding Role: {_role.RoleId} already exists", Severity.Error);
             }
         }
     }
@@ -154,6 +156,9 @@
     {
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
         ProcessTableFill();
     }
 

@@ -55,7 +55,7 @@ public class RoleService
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"insert into `Roles` values ('{role.RoleId}', {role.RoleLevel}, {role.ReadOnly});";
-        db.ExecNonQuery(sql, true);
+        db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();
         return success;

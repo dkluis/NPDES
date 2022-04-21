@@ -1,9 +1,12 @@
 ﻿@using BVPVWebServer.Services
-@inject StateService _stateService
+@using _Imports = MudBlazor.ThemeManager._Imports
+
+@inject StateService StateService
+
 @{
-    if (_stateService.UserId == null)
+    if (StateService.UserId == null)
     {
-        _stateService.InitUserInfo("Init");
+        StateService.InitUserInfo("Init");
     }
 }
 
@@ -34,7 +37,7 @@
     <MudDivider Class="my-2"/>
     <MudNavGroup Title="Mode" Expanded="false">
         <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
-        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Lite/Dark"/>
+        <MudSwitch @onclick="UpdateUserProfileDarkMode" @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Lite/Dark"/>
     </MudNavGroup>
 
     @code{
@@ -55,4 +58,13 @@
 
     private MudTheme _theme = new();
     private bool _isDarkMode;
+    
+}
+
+@code{
+
+    private void UpdateUserProfileDarkMode()
+    {
+        StateService.UpdateSystemStateDarkMode(_isDarkMode);
+    }
 }

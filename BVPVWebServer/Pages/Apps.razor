@@ -9,6 +9,7 @@
 @inject NavigationManager NavMgr
 
 
+
 @{
     if (!StateService.IsLoggedIn)
     {
@@ -22,6 +23,7 @@
         }
         else
         {
+            <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <PageTitle>Apps NPDES</PageTitle>
 
             <MudText Typo="Typo.h4" Align="Align.Center">App Management</MudText>

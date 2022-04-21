@@ -113,21 +113,11 @@ public class UserService
 
     public static bool DeleteUser(AppInfo appInfo, string userName)
     {
-        var user = new User();
-        LoadUser(appInfo, userName, "", false);
-        var success = false;
-        if (user.ValidUser)
-        {
-            appInfo.TxtFile.Write($"Error adding user: {userName}",
-                "UserLib-Add", 0);
-            return success;
-        }
-        
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"delete from Users where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
-        success = db.Success;
+        var success = db.Success;
         db.Close();
         return success;
     }
@@ -141,7 +131,7 @@ public class UserService
         foreach (var role in userRoles)
         {
             var sql = $"insert into UserRoles values ('{userName}', '{role}');";
-            db.ExecNonQuery(sql, true);
+            db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
 
@@ -157,7 +147,7 @@ public class UserService
         foreach (var role in userRoles)
         {
             string sql = $"delete from UserRoles where `UserId`= '{userName}' and `RoleID` = '{role}';";
-            db.ExecNonQuery(sql, true);
+            db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
 

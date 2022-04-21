@@ -17,7 +17,6 @@ public class MariaDb : IDisposable
         public MariaDb(AppInfo appInfo)
         {
             _mDbLog = appInfo.TxtFile;
-
             _conn = new MySqlConnection();
             _cmd = new MySqlCommand();
 
