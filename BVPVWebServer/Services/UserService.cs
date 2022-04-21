@@ -10,7 +10,6 @@ public class UserService
         {
             ValidPassword = false,
             ValidUser = false,
-            HighestRoleId = string.Empty,
             UserId = username,
             Enabled = true
         };
@@ -46,19 +45,7 @@ public class UserService
         }
 
         user.ValidPassword = true;
-        db.Open();
-        rdr = db.ExecQuery(
-            $"select * from UserRolesView where `User` = '{user.UserId}' order by `Role Level` Limit 1;");
-        if (rdr is {HasRows: true})
-        {
-            while (rdr.Read())
-            {
-                user.HighestRoleId = (string) rdr["Role"];
-            }
-        }
-
-        db.Close();
-        
+       
         return user;
     }
 
@@ -198,7 +185,7 @@ public class UserService
         {
             while (rdr.Read())
             {
-                if (rdr["UserID"].ToString() == "Init") continue;
+                if ((string) rdr["UserID"] == "Init" || (string) rdr["UserID"] == "SuperAdmin") continue;
                 var rec = new UserElement
                 {
                     UserId = (string) rdr["UserID"],
@@ -224,7 +211,7 @@ public class UserService
         {
             while (rdr.Read())
             {
-                if (rdr["User"].ToString() == "Init") continue;
+                if ((string) rdr["UserID"] == "Init" || (string) rdr["UserID"] == "SuperAdmin") continue;
                 var rec = new AppsByUser
                 {
                     User = (string) rdr["User"],
@@ -246,7 +233,6 @@ public class UserService
 public class User
 {
     public string? UserId { get; set; }
-    public string? HighestRoleId { get; set; }
     public bool ValidUser { get; set; }
     public bool ValidPassword { get; set; }
     public bool Enabled { get; set; }

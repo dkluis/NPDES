@@ -1,10 +1,64 @@
 @page "/Users/Profile/{PasseduserID?}"
 
+@using Severity = MudBlazor.Severity
+@inject ISnackbar Snackbar
 
-<h3>UserSystemState</h3>
-<h5>Not implemented yet</h5>
+@inject NavigationManager NavMgr
+@inject StateService StateService
+
+<PageTitle>User Profile NPDES</PageTitle>
+
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Users") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete" IsExpanded="true">
+                    <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+                    <MudText Typo="Typo.h5" Align="Align.Center">Updating @PassedUserId's Profile</MudText>
+
+                    <MudGrid>
+                        <MudItem>
+                            <MudText Style="margin-top: 13px;" Typo="Typo.h6">Dark Theme is: @(_isEnabled ? "On" : "Off")</MudText>
+                        </MudItem>
+                        <MudItem>
+                            <MudToggleIconButton Toggled="_isEnabled" ToggledChanged="EnableToggleChange" ToggledSize="Size.Large" Size="Size.Large"
+                                                 Icon="@Icons.Material.Filled.ToggleOff" Color="Color.Warning" Title="Disabled"
+                                                 ToggledIcon="@Icons.Material.Filled.ToggleOn" ToggledColor="Color.Info" ToggledTitle="Enabled">
+                            </MudToggleIconButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+}
+
 
 @code {
+
     [Parameter]
     public string? PassedUserId { get; set; }
+
+    bool _isEnabled = false;
+    
+}
+
+@code {
+
+    private void EnableToggleChange()
+    {
+        _isEnabled = !_isEnabled;
+        StateService.ReloadSystemState();
+    }
+
 }
