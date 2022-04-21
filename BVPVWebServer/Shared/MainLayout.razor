@@ -1,5 +1,4 @@
-﻿@using BVPVWebServer.Services
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
@@ -8,6 +7,8 @@
 <PageTitle>Home NPDES</PageTitle>
 
 <MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
     <MudAppBar Elevation="_themeManager.AppBarElevation">
