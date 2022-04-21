@@ -101,6 +101,17 @@ public class UserService
         db.Close();
         return success;
     }
+    
+    public static bool ChangeDarkTheme(AppInfo appInfo, string userName, bool darkTheme)
+    {
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"update UserSystemState set `DarkTheme` = {darkTheme} where `UserID` = '{userName}';";
+        db.ExecNonQuery(sql);
+        var success = db.Success;
+        db.Close();
+        return success;
+    }
 
     public static bool DeleteUser(AppInfo appInfo, string userName)
     {
@@ -211,7 +222,7 @@ public class UserService
         {
             while (rdr.Read())
             {
-                if ((string) rdr["UserID"] == "Init" || (string) rdr["UserID"] == "SuperAdmin") continue;
+                if ((string) rdr["User"] == "Init" || (string) rdr["User"] == "SuperAdmin") continue;
                 var rec = new AppsByUser
                 {
                     User = (string) rdr["User"],

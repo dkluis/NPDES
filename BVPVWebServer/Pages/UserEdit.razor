@@ -1,10 +1,11 @@
 @page "/users/{PassedUserId?}"
 
+@inject ProtectedSessionStorage SessionStore
+
 @using Severity = MudBlazor.Severity
 @inject ISnackbar Snackbar
 
 @inject NavigationManager NavMgr
-@inject ProtectedSessionStorage SessionStore
 @inject StateService StateService
 @inject UserService UserService
 

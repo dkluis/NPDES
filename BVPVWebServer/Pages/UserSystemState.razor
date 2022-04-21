@@ -1,5 +1,7 @@
 @page "/Users/Profile/{PasseduserID?}"
 
+@inject ProtectedSessionStorage SessionStore
+
 @using Severity = MudBlazor.Severity
 @inject ISnackbar Snackbar
 
@@ -15,32 +17,26 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Users") == false)
-        {
-            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
-        }
-        else
-        {
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete" IsExpanded="true">
-                    <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-                    <MudText Typo="Typo.h5" Align="Align.Center">Updating @PassedUserId's Profile</MudText>
+        <MudExpansionPanels Style="flex: 1;" Elevation="4">
+            <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete" IsExpanded="true">
+                <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+                <MudText Typo="Typo.h5" Align="Align.Center">Updating @PassedUserId's Profile</MudText>
 
-                    <MudGrid>
-                        <MudItem>
-                            <MudText Style="margin-top: 13px;" Typo="Typo.h6">Dark Theme is: @(_isEnabled ? "On" : "Off")</MudText>
-                        </MudItem>
-                        <MudItem>
-                            <MudToggleIconButton Toggled="_isEnabled" ToggledChanged="EnableToggleChange" ToggledSize="Size.Large" Size="Size.Large"
-                                                 Icon="@Icons.Material.Filled.ToggleOff" Color="Color.Warning" Title="Disabled"
-                                                 ToggledIcon="@Icons.Material.Filled.ToggleOn" ToggledColor="Color.Info" ToggledTitle="Enabled">
-                            </MudToggleIconButton>
-                        </MudItem>
-                    </MudGrid>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        }
+                <MudGrid>
+                    <MudItem>
+                        <MudText Style="margin-top: 13px;" Typo="Typo.h6">Dark Theme is: @(_isDarkThemeEnabled ? "On" : "Off")</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudToggleIconButton Toggled="_isDarkThemeEnabled" ToggledChanged="EnableToggleChange" ToggledSize="Size.Large" Size="Size.Large"
+                                             Icon="@Icons.Material.Filled.ToggleOff" Color="Color.Warning" Title="Disabled"
+                                             ToggledIcon="@Icons.Material.Filled.ToggleOn" ToggledColor="Color.Info" ToggledTitle="Enabled">
+                        </MudToggleIconButton>
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
     }
+}
 }
 
 
@@ -49,16 +45,37 @@
     [Parameter]
     public string? PassedUserId { get; set; }
 
-    bool _isEnabled = false;
-    
+    bool _isDarkThemeEnabled;
+
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        PassedUserId ??= "No User";
+
+        await SessionStore.SetAsync("EntryPage", $"/users/{PassedUserId}/profile");
+
+        _isDarkThemeEnabled = StateService!.SystemState!.DarkTheme;
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Configuration.NewestOnTop = true;
+        Snackbar.Configuration.VisibleStateDuration = 5000;
+    }
+
 }
 
 @code {
 
     private void EnableToggleChange()
     {
-        _isEnabled = !_isEnabled;
+        _isDarkThemeEnabled = !_isDarkThemeEnabled;
+        UserService.ChangeDarkTheme(StateService.GetAppInfo(), StateService!.UserId!, _isDarkThemeEnabled);
         StateService.ReloadSystemState();
+        Snackbar.Add($"Dark Theme enabled is now set to: {_isDarkThemeEnabled}", Severity.Info);
     }
 
 }
