@@ -78,7 +78,10 @@
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Role">@context.RoleId</MudTd>
+                    <MudTd DataLabel="Role">
+                        @{ _linkedContext = $"/Roles/{context.RoleId}"; }
+                        <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.RoleId</MudLink>
+                    </MudTd>
                     <MudTd DataLabel="Level">@context.RoleLevel</MudTd>
                     <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
                 </RowTemplate>
@@ -97,7 +100,8 @@
     readonly RoleFluentValidator _roleValidator = new();
     readonly Role _role = new();
     private static bool _valid;
-    
+    private string _linkedContext = string.Empty;
+
     private async Task Submit()
     {
         await _form!.Validate();
@@ -109,14 +113,17 @@
                 _role.RoleId = "";
                 _role.RoleLevel = 0;
                 _role.ReadOnly = false;
-                Snackbar.Add($"Role: {_role.RoleId} is added");
+                Snackbar.Add($"Role: {_role.RoleId} is added", Severity.Info);
                 NavMgr.NavigateTo($"/RoleEdit/{_role.RoleId}");
             }
-            Snackbar.Add($"Adding Role: {_role.RoleId} gave an error");
+            else
+            {
+                Snackbar.Add($"Adding Role: {_role.RoleId} gave an error", Severity.Error);
+            }
         }
     }
-    
-    
+
+
     // Validation Code
     public class RoleFluentValidator : AbstractValidator<Role>
     {

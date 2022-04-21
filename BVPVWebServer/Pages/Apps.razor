@@ -128,7 +128,7 @@
                             @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                             <MudTd DataLabel="App">
                                 @{ _linkedContext = $"/apps/{context.AppId}"; }
-                                <MudLink Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
+                                <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
                             </MudTd>
                             <MudTd DataLabel="Function">@context.RoleId</MudTd>
                         </RowTemplate>
