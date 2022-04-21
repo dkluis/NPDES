@@ -34,12 +34,6 @@
         <MudNavLink Href="/apps" Match="NavLinkMatch.Prefix">Apps</MudNavLink>
     </MudNavGroup>
 
-    <MudDivider Class="my-2"/>
-    <MudNavGroup Title="Mode" Expanded="false">
-        <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme"/>
-        <MudSwitch @onclick="UpdateUserProfileDarkMode" @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Lite/Dark"/>
-    </MudNavGroup>
-
     @code{
 
     }
@@ -59,12 +53,4 @@
     private MudTheme _theme = new();
     private bool _isDarkMode;
     
-}
-
-@code{
-
-    private void UpdateUserProfileDarkMode()
-    {
-        StateService.UpdateSystemStateDarkMode(_isDarkMode);
-    }
 }

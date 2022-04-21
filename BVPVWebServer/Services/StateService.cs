@@ -76,16 +76,15 @@ public class StateService
         _db.Close();
     }
 
-    public void UpdateAll()
+    public void ReloadSystemState()
     {
-    }
-
-    public  void UpdateSystemStateDarkMode(bool dm)
-    {
-        SystemState!.DarkTheme = dm;
         InitSystemState(UserId!);
     }
 
+    public void UpdateAll()
+    {
+    }
+    
     public void UpdateAppState()
     {
     }

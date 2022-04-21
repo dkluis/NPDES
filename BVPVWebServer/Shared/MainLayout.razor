@@ -16,8 +16,11 @@
         <MudSpacer/>
         @{
             var user = "";
-            if (StateService.UserId != "Init") { user = StateService.UserId; }
-            <MudText>@user</MudText>
+            if (StateService.UserId != "Init")
+            {
+                user = StateService.UserId;
+                <MudButton Size="Size.Large" StartIcon="@Icons.Material.Filled.PersonPin" Color="Color.Inherit" Edge="Edge.End" OnClick="UserSystemState">@user</MudButton>
+            }
         }
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" Edge="Edge.End" OnClick="Logout"></MudIconButton>
     </MudAppBar>
@@ -72,6 +75,12 @@
         SessionStore.DeleteAsync("EntryPage");
         StateService.IsLoggedIn = false;
         NavMgr.NavigateTo("/", forceLoad: true);
+    }
+
+    private void UserSystemState()
+    {
+        var navTo = $"/Users/Profile/{StateService.UserId}";
+        NavMgr.NavigateTo(navTo);
     }
 
 }

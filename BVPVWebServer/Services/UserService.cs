@@ -80,6 +80,10 @@ public class UserService
         db.Open();
         var sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}', {enabled});";
         db.ExecNonQuery(sql);
+        db.Close();
+        db.Open();
+        sql = $"insert into UserSystemState value ('{userName}', false, '/');";
+        db.ExecNonQuery(sql);
         success = db.Success;
         db.Close();
         return success;
