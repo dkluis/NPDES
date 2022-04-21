@@ -116,7 +116,7 @@
                 _role.RoleLevel = 0;
                 _role.ReadOnly = false;
                 Snackbar.Add($"Role: {_role.RoleId} is added", Severity.Info);
-                NavMgr.NavigateTo($"/RoleEdit/{_role.RoleId}");
+                NavMgr.NavigateTo($"/RolesEdit/{_role.RoleId}");
             }
             else
             {
