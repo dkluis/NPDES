@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using BVPVWebServer.Dialogs
+@inherits LayoutComponentBase
+
+@inject IDialogService DialogService
 
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
@@ -13,6 +16,8 @@
 <MudLayout>
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+        <MudSpacer></MudSpacer>
+        <MudIconButton Icon="@Icons.Material.Filled.HelpCenter" Color="Color.Inherit" OnClick="Help"></MudIconButton>
         <MudSpacer/>
         @{
             var user = "";
@@ -73,6 +78,7 @@
     {
         SessionStore.DeleteAsync("User");
         SessionStore.DeleteAsync("EntryPage");
+        SessionStore.DeleteAsync("CurrentAPP");
         StateService.IsLoggedIn = false;
         NavMgr.NavigateTo("/", forceLoad: true);
     }
@@ -83,4 +89,18 @@
         NavMgr.NavigateTo(navTo);
     }
 
+}
+
+@code 
+{
+
+    private async Task Help()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, Position = DialogPosition.BottomRight};
+        var result = await SessionStore.GetAsync<string>("CurrentApp");
+        var currentApp = result.Value;
+        var parameters = new DialogParameters {["CurrentApp"] = currentApp};
+        DialogService.Show<DialogExample>("Help (Markdown coming) Example", parameters, options);
+        StateHasChanged();
+    }
 }

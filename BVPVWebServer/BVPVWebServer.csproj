@@ -9,15 +9,12 @@
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="10.4.0" />
       <PackageReference Include="MudBlazor" Version="6.0.9" />
+      <PackageReference Include="MudBlazor.Markdown" Version="0.0.9" />
       <PackageReference Include="MudBlazor.ThemeManager" Version="1.0.6" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Libraries\Libraries.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Dialogs" />
     </ItemGroup>
 
 </Project>

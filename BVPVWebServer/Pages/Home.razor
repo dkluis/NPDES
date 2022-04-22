@@ -1,6 +1,6 @@
 @page "/Home"
 
-@inject ProtectedSessionStorage _sessionStore
+@inject ProtectedSessionStorage SessionStore
 
 @using Severity = MudBlazor.Severity
 @using BVPVWebServer.Services
@@ -29,11 +29,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await SessionStore.SetAsync("CurrentApp", "NPDES Home");
         if (StateService.IsLoggedIn && StateService.UserId != "Init")
         {
             return;
         }
-        var result = await _sessionStore.GetAsync<string>("User");
+        var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 })
         {
             NavMgr.NavigateTo("/");
