@@ -3,12 +3,18 @@
         <MudContainer Style="max-height: 400px; max-width: available; overflow-y: scroll">
             <MudText Typo="Typo.h5">@CurrentApp</MudText>
             @{
+                var numLines = 0;
                 foreach (var line in HelpContent)
                 {
                     <MudMarkdown Value="@line"></MudMarkdown>
+                    numLines++;
+                }
+                while (numLines < 15)
+                {
+                    <MudText>ㅤ</MudText>
+                    numLines++;
                 }
             }
-            <MudText>End-of-Help</MudText>
         </MudContainer>
     </DialogContent>
     <DialogActions>
@@ -25,54 +31,6 @@
 
     [Parameter]
     public List<string> HelpContent { get; set; } = new ();
-
-
+    
     void Cancel() => MudDialog.Cancel();
-}
-
-@code
-{
-    private string fakecontent = "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog " +                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog " +                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog " +                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog " +                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ContentDialog Content Dialog ContentDialog ContentDialog ContentDialog " +
-                                 "ContentDialog ContentDialog ContentDialog ";
 }

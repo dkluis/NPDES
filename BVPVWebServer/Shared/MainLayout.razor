@@ -6,12 +6,11 @@
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
-@inject MarkdownService MarkdownService
 
 <PageTitle>Home NPDES</PageTitle>
 
 <MudThemeProvider/>
-<MudDialogProvider/>
+<MudDialogProvider FullWidth="true" NoHeader="true" Position="DialogPosition.TopRight" CloseOnEscapeKey="true" MaxWidth="MaxWidth.Medium"></MudDialogProvider>
 <MudSnackbarProvider/>
 
 <MudLayout>
@@ -19,7 +18,6 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
         <MudSpacer></MudSpacer>
         <MudIconButton Icon="@Icons.Material.Filled.HelpCenter" Color="Color.Inherit" OnClick="Help"></MudIconButton>
-        <MudSpacer/>
         @{
             var user = "";
             if (StateService.UserId != "Init")
@@ -97,7 +95,6 @@
 
     private async Task Help()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, Position = DialogPosition.BottomRight};
         var result = await SessionStore.GetAsync<string>("CurrentApp");
         var currentApp = result.Value;
         var help = MarkdownService.GetMarkDownFile(StateService.GetAppInfo(), $"{currentApp}.md");
@@ -107,7 +104,7 @@
             {"HelpContent", help}
         };
 
-        DialogService.Show<HelpDialog>("Help (Markdown coming) Example", parameters, options);
+        DialogService.Show<HelpDialog>("Help (Markdown coming) Example", parameters);
         StateHasChanged();
     }
 }
