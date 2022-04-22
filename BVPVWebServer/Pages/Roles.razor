@@ -26,6 +26,7 @@
 
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
+
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Add Role" IsInitiallyExpanded="false">
                     <div style="max-width: 400px;">
@@ -115,6 +116,7 @@
                 _role.RoleId = "";
                 _role.RoleLevel = 0;
                 _role.ReadOnly = false;
+                _role.Enabled = true;
                 Snackbar.Add($"Role: {_role.RoleId} is added", Severity.Info);
                 NavMgr.NavigateTo($"/Roles/{_role.RoleId}");
             }
@@ -201,8 +203,18 @@
             return true;
         if (role.RoleId!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        var searchLevel = int.Parse(_searchString);
-        if (role.RoleLevel.Equals(searchLevel))
+        int number;
+        try
+        {
+            number = int.Parse(_searchString);
+        }
+#pragma warning disable CS0168
+        catch (Exception e)
+#pragma warning restore CS0168
+        {
+            number = 99999;
+        }
+        if (role.RoleLevel.Equals(number))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if ($"{role.RoleId}".Contains(_searchString))

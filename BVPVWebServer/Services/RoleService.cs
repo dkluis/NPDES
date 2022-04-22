@@ -61,9 +61,23 @@ public class RoleService
             gottenRole.RoleId = (string) rdr["RoleID"];
             gottenRole.RoleLevel = (int) rdr["RoleLevel"];
             gottenRole.ReadOnly = (bool) rdr["ReadOnly"];
+            gottenRole.Enabled = (bool) rdr["Enabled"];
         }
 
         return gottenRole;
+    }
+
+    public static bool ChangeRole(AppInfo appInfo, Role role)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        
+        var sql = $"update `Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly} where `RoleID` = '{role.RoleId}';";
+        db.ExecNonQuery(sql);
+        if (!db.Success) success = false;
+        db.Close();
+        return success;
     }
 
     public static bool AddRole(AppInfo appInfo, Role role)
@@ -72,7 +86,7 @@ public class RoleService
         using var db = new MariaDb(appInfo);
         db.Open();
         
-        var sql = $"update `Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly} where `RoleID` = '{role.RoleId}';";
+        var sql = $"insert into `Roles` values ('{role.RoleId}', {role.RoleLevel}, {role.ReadOnly}, {role.Enabled});";
         db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();
@@ -92,5 +106,7 @@ public class Role
 {
     public string? RoleId { get; set; }
     public int RoleLevel { get; set; }
-    public bool ReadOnly{ get; set; }
+    public bool ReadOnly { get; set; }
+    
+    public bool Enabled { get; set; }
 }
