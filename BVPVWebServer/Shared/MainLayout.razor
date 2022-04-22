@@ -100,7 +100,7 @@
         var result = await SessionStore.GetAsync<string>("CurrentApp");
         var currentApp = result.Value;
         var parameters = new DialogParameters {["CurrentApp"] = currentApp};
-        DialogService.Show<DialogExample>("Help (Markdown coming) Example", parameters, options);
+        DialogService.Show<HelpDialog>("Help (Markdown coming) Example", parameters, options);
         StateHasChanged();
     }
 }
