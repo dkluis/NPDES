@@ -156,6 +156,7 @@
     {
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "Roles");
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;

@@ -55,6 +55,7 @@
         PassedUserId ??= "No User";
 
         await SessionStore.SetAsync("EntryPage", $"/users/{PassedUserId}/profile");
+        await SessionStore.SetAsync("CurrentApp", "User Profile Settings");
 
         _isDarkThemeEnabled = StateService!.SystemState!.DarkTheme;
 

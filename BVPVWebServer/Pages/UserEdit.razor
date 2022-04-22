@@ -206,6 +206,7 @@
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         PassedUserId ??= "No User";
         await SessionStore.SetAsync("EntryPage", $"/users/{PassedUserId}");
+        await SessionStore.SetAsync("CurrentApp", "User Details");
 
         _currentUser = UserService.LoadUser(StateService.GetAppInfo(), PassedUserId, "", false);
         _isEnabled = _currentUser.Enabled;

@@ -10,13 +10,14 @@ public class AppInfo
     public readonly string Program;
     public readonly string ApiServerBase;
 
-    public readonly string FullConfigPath;
+    public readonly string? FullConfigPath;
     public readonly string ConfigPath;
     public readonly string FileName;
     public readonly string FilePath;
     public readonly string WorkingDir;
     public readonly int LogLevel;
     public readonly string SystemUserName;
+    public readonly string HelpFilesPath;
 
     public readonly TextFileHandler TxtFile;
 
@@ -34,6 +35,7 @@ public class AppInfo
             Environment.Exit(666);
         }
         ConfigPath = new BaseConfig().ConfigPath;
+        HelpFilesPath = new BaseConfig().HelpFilesPath;
 
         WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
         ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");
@@ -239,7 +241,7 @@ public static class ConvertJsonTxt
 
 public class ReadKeyFromFile
 {
-    public string FindInArray(string fullPath, string find)
+    public string FindInArray(string? fullPath, string find)
     {
         if (!File.Exists(fullPath)) return "";
         var fileText = File.ReadAllText(fullPath);

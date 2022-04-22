@@ -6,6 +6,7 @@
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
+@inject MarkdownService MarkdownService
 
 <PageTitle>Home NPDES</PageTitle>
 
@@ -99,7 +100,13 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, Position = DialogPosition.BottomRight};
         var result = await SessionStore.GetAsync<string>("CurrentApp");
         var currentApp = result.Value;
-        var parameters = new DialogParameters {["CurrentApp"] = currentApp};
+        var help = MarkdownService.GetMarkDownFile(StateService.GetAppInfo(), $"{currentApp}.md");
+        var parameters = new DialogParameters
+        {
+            {"CurrentApp", currentApp},
+            {"HelpContent", help}
+        };
+
         DialogService.Show<HelpDialog>("Help (Markdown coming) Example", parameters, options);
         StateHasChanged();
     }

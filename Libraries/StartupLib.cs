@@ -4,10 +4,15 @@ public class BaseConfig
 {
     public readonly string FullConfigPath;
     public readonly string ConfigPath;
+    public readonly string BasePath;
+    public readonly string HelpFilesPath;
 
     public BaseConfig()
     {
+        BasePath = string.Empty;
+        HelpFilesPath = string.Empty;
         ConfigPath = string.Empty;
+        FullConfigPath = string.Empty;
         var os = Environment.OSVersion;
         var pid = os.Platform;
         switch (pid)
@@ -16,24 +21,25 @@ public class BaseConfig
             case PlatformID.Win32S:
             case PlatformID.Win32Windows:
             case PlatformID.WinCE:
-                ConfigPath = "C:/Users/Dick/NPDES-System/ConfigData";
-                FullConfigPath = $"{ConfigPath}/NPDES-Complete.cnf";
+                BasePath = "C:/Users/Dick/NPDES-System/";
                 break;
             case PlatformID.Unix:
-                ConfigPath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
-                    ? "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/ConfigData"
-                    : "/home/dick/NPDES-System/ConfigData";
-                FullConfigPath = $"{ConfigPath}/NPDES-Complete.cnf";
+                BasePath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
+                    ? "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/"
+                    : "/home/dick/NPDES-System/";
                 break;
             case PlatformID.MacOSX:
-                ConfigPath = $"/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/ConfigData";
-                FullConfigPath = $"{ConfigPath}/NPDES-Complete.cnf";
+                BasePath = "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/";
                 break;
             case PlatformID.Xbox:
             case PlatformID.Other:
             default:
-                FullConfigPath = string.Empty;
+                BasePath = string.Empty;
                 break;
         }
+        
+        ConfigPath = BasePath + "ConfigData";
+        FullConfigPath = ConfigPath + "/NPDES-Complete.cnf";
+        HelpFilesPath = BasePath + "HelpFiles";
     }
 }

@@ -67,7 +67,7 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         PassedRoleId ??= "No Role";
-
+        await SessionStore.SetAsync("CurrentApp", "Role Details");
         await SessionStore.SetAsync("EntryPage", $"/Roles/{PassedRoleId}");
         _role = RoleService.GetRole(StateService.GetAppInfo(), PassedRoleId);
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;

@@ -2,10 +2,13 @@
     <DialogContent>
         <MudContainer Style="max-height: 400px; max-width: available; overflow-y: scroll">
             <MudText Typo="Typo.h5">@CurrentApp</MudText>
-            @if (CurrentApp != "Login")
-            {
-                <MudText>@fakecontent</MudText>
+            @{
+                foreach (var line in HelpContent)
+                {
+                    <MudMarkdown Value="@line"></MudMarkdown>
+                }
             }
+            <MudText>End-of-Help</MudText>
         </MudContainer>
     </DialogContent>
     <DialogActions>
@@ -17,7 +20,12 @@
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
 
-    [Parameter] public string CurrentApp { get; set; } = "";
+    [Parameter] 
+    public string CurrentApp { get; set; } = "";
+
+    [Parameter]
+    public List<string> HelpContent { get; set; } = new ();
+
 
     void Cancel() => MudDialog.Cancel();
 }
