@@ -2,26 +2,25 @@
 @using Severity = MudBlazor.Severity
 @using BVPVWebServer.Services
 
-@inject ProtectedSessionStorage _sessionStore
+@inject ProtectedSessionStorage SessionStore
 
-@inject StateService _stateService
-@inject UserService _userService
-@inject NavigationManager _navMgr
+@inject StateService StateService
+@inject NavigationManager NavMgr
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
-        if (UserService.CanUserUseApp(_stateService.GetAppInfo(), _stateService.UserId, "Counter") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Counter") == false)
         {
-            <MudAlert Severity="Severity.Error">User @_stateService.UserId cannot use this App based on your Role profile.</MudAlert>
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
             <PageTitle>Counter</PageTitle>
-
+            <MudThemeProvider IsDarkMode="StateService.SystemState!.DarkTheme"></MudThemeProvider>
             <h1>Counter</h1>
 
             <p role="status">Current count: @_currentCount</p>
@@ -35,8 +34,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
     }
 
     private int _currentCount;

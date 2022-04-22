@@ -49,12 +49,30 @@ public class RoleService
         return allRoleIds;
     }
 
+    public static Role GetRole(AppInfo appInfo, string role)
+    {
+        var gottenRole = new Role();
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from Roles where `RoleID` = '{role}'");
+        if (!rdr!.HasRows) return gottenRole;
+        while (rdr.Read())
+        {
+            gottenRole.RoleId = (string) rdr["RoleID"];
+            gottenRole.RoleLevel = (int) rdr["RoleLevel"];
+            gottenRole.ReadOnly = (bool) rdr["ReadOnly"];
+        }
+
+        return gottenRole;
+    }
+
     public static bool AddRole(AppInfo appInfo, Role role)
     {
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"insert into `Roles` values ('{role.RoleId}', {role.RoleLevel}, {role.ReadOnly});";
+        
+        var sql = $"update `Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly} where `RoleID` = '{role.RoleId}';";
         db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();

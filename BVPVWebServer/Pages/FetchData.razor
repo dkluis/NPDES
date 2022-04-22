@@ -1,21 +1,21 @@
 ﻿@page "/fetchdata"
-@using BVPVWebServer.Services
 
-@inject ProtectedSessionStorage _sessionStore
 
-@inject HttpClient _httpClient
+@inject ProtectedSessionStorage SessionStore
+@inject HttpClient HttpClient
 
-@inject StateService _stateService
-@inject NavigationManager _navMgr
+@inject StateService StateService
+@inject NavigationManager NavMgr
 @{
-    if (!_stateService.IsLoggedIn)
+    if (!StateService.IsLoggedIn)
     {
-        _navMgr.NavigateTo("/");
+        NavMgr.NavigateTo("/");
     }
     else
     {
         <PageTitle>Weather forecast</PageTitle>
-
+        <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+        
         <MudText Align="Align.Center" Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
         <MudText Align="Align.Center" Class="mb-8" >This component demonstrates fetching data from the API server.</MudText>
         @if (_forecasts == null)
@@ -59,8 +59,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await _sessionStore.GetAsync<string>("User");
-        if (result.Value is not {Length: > 1 }) _navMgr.NavigateTo("/");
-        _forecasts = await _httpClient.GetFromJsonAsync<WeatherForecast[]>(_stateService.ApiServerBase + "weatherforecast");
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        _forecasts = await HttpClient.GetFromJsonAsync<WeatherForecast[]>(StateService.ApiServerBase + "weatherforecast");
     }
 }

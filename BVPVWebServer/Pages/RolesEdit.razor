@@ -8,8 +8,6 @@
 @inject NavigationManager NavMgr
 @inject StateService StateService
 
-<PageTitle>Role @PassedRoleId</PageTitle>
-
 @{
     if (!StateService.IsLoggedIn)
     {
@@ -23,8 +21,31 @@
         }
         else
         {
-            <h3>RolesEdit</h3>
-            <p>>building Role Delete and Role Change(s)</p>
+            <PageTitle>Role @PassedRoleId</PageTitle>
+            <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+            
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Change Role" IsInitiallyExpanded="true">
+                    <div style="max-width: 400px;">
+                        <MudCard Outlined="true">
+                            <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Change Role @_role.RoleId</MudText>
+                            <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                                <MudCardContent>
+                                    <MudNumericField @bind-Value="_role.RoleLevel"
+                                                     For="@(() => _role.RoleLevel)"
+                                                     Immediate="true"
+                                                     Label="Enter Role Level">
+                                    </MudNumericField>
+                                    <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
+                                </MudCardContent>
+                            </MudForm>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
     }
 }
@@ -39,6 +60,8 @@
 
 @code {
 
+    private Role _role = new();
+
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
@@ -46,10 +69,68 @@
         PassedRoleId ??= "No Role";
 
         await SessionStore.SetAsync("EntryPage", $"/Roles/{PassedRoleId}");
-
+        _role = RoleService.GetRole(StateService.GetAppInfo(), PassedRoleId);
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
+    }
+
+}
+
+@code
+{
+
+}
+
+@code {
+    // Form Handling Code
+    MudForm? _form;
+    readonly RoleFluentValidator _roleValidator = new();
+
+    private static bool _valid;
+
+
+    private async Task Submit()
+    {
+        await _form!.Validate();
+        if (_valid)
+        {
+            var success = RoleService.AddRole(StateService.GetAppInfo(), _role);
+            if (success)
+            {
+                _role.RoleId = "";
+                _role.RoleLevel = 0;
+                _role.ReadOnly = false;
+                Snackbar.Add($"Role: {_role.RoleId} is changed", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"Changing Role: {_role.RoleId} failed", Severity.Error);
+            }
+        }
+    }
+
+
+    // Validation Code
+    public class RoleFluentValidator : AbstractValidator<Role>
+    {
+        public RoleFluentValidator()
+        {
+            RuleFor(x => x.RoleId)
+                .NotEmpty()
+                .Length(1, 15);
+
+            RuleFor(x => x.RoleLevel)
+                .GreaterThan(0)
+                .LessThan(100);
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
+            _valid = result.IsValid;
+            return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
+        };
     }
 
 }
