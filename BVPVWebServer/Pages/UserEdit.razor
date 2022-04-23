@@ -37,27 +37,22 @@
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
-            
+
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete">
                     <MudGrid>
                         <MudItem>
-                            <MudText Style="margin-top: 13px;" Typo="Typo.h6">Enabled is: @(_isEnabled ? "On" : "Off")</MudText>
+                            <MudCheckBox T="bool" @bind-Checked="_isEnabled" @onclick="EnableChange" Color="Color.Primary">@PassedUserId Enabled</MudCheckBox>
                         </MudItem>
                         <MudItem>
-                            <MudToggleIconButton Toggled="_isEnabled" ToggledChanged="EnableChange" ToggledSize="Size.Large" Size="Size.Large"
-                                                 Icon="@Icons.Material.Filled.ToggleOff" Color="Color.Warning" Title="Disabled"
-                                                 ToggledIcon="@Icons.Material.Filled.ToggleOn" ToggledColor="Color.Info" ToggledTitle="Enabled">
-                            </MudToggleIconButton>
-                        </MudItem>
-                        <MudItem>
-                            <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
+                            <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 5px; margin-left: 20px;">
                                 <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
                             </MudButtonGroup>
                         </MudItem>
                     </MudGrid>
                 </MudExpansionPanel>
-
+            </MudExpansionPanels>
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
                     <div style="max-width: 400px;">
                         <MudCard Outlined="true">
@@ -83,6 +78,8 @@
                         </MudCard>
                     </div>
                 </MudExpansionPanel>
+            </MudExpansionPanels>
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
                     <MudText Typo="Typo.h6">Current Roles of @PassedUserId:</MudText>
                     <MudItem>
@@ -110,8 +107,9 @@
                     </MudItem>
                     <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
                 </MudExpansionPanel>
-
-                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User">
+            </MudExpansionPanels>
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User" IsInitiallyExpanded="true">
                     <MudTable Items="@_appsByUsers" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableAppsByUsers" RowsPerPage=25
                               GroupBy="@_roleGroup"
@@ -158,15 +156,14 @@
                             <MudTd DataLabel="Function">@context.Function</MudTd>
                             <MudTd DataLabel="Report">@context.Report</MudTd>
                         </RowTemplate>
-                            <GroupFooterTemplate>
-                                <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="1"></MudTh>
-                            </GroupFooterTemplate>
+                        <GroupFooterTemplate>
+                            <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="1"></MudTh>
+                        </GroupFooterTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
                         </PagerContent>
                     </MudTable>
                 </MudExpansionPanel>
-
             </MudExpansionPanels>
         }
     }
@@ -355,7 +352,7 @@
         StateHasChanged();
     }
 
-    private void EnableChange(bool toggle)
+    private void EnableChange()
     {
         _isEnabled = !_isEnabled;
         var success = UserService.ChangeEnabled(StateService.GetAppInfo(), PassedUserId!, _isEnabled);
@@ -368,7 +365,6 @@
             Snackbar.Add(_isEnabled ? $"User {PassedUserId} is set to Enabled" : $"User {PassedUserId} is set to Disabled", Severity.Info);
         }
         StateHasChanged();
-        NavMgr.NavigateTo("/users");
     }
 
 }

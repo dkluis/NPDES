@@ -26,7 +26,6 @@
 
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
-
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Add Role" IsInitiallyExpanded="false">
                     <div style="max-width: 400px;">
@@ -78,6 +77,9 @@
                     <MudTh>
                         <MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
                     </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.Enabled)">Enabled</MudTableSortLabel>
+                    </MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Role">
@@ -86,6 +88,7 @@
                     </MudTd>
                     <MudTd DataLabel="Level">@context.RoleLevel</MudTd>
                     <MudTd DataLabel="ReadOnly">@context.ReadOnly</MudTd>
+                    <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager PageSizeOptions="new[] {10, 25}"/>

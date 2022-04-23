@@ -10,10 +10,10 @@ public class AccessDb
         OdbcConnection con =
             new OdbcConnection(
                 "Driver={Microsoft Access Driver(*.mdb, *.accdb)}; DBQ=/media/psf/Styropek/NPDES-System/WASTEEMS.accdb;");
-        OdbcCommand command = new OdbcCommand("select * from table");
+        //OdbcCommand command = new OdbcCommand("select * from table");
 
-        command.Connection = con;
+        //command.Connection = con;
         con.Open();
-        var reader = command.ExecuteReader();
+        //var reader = command.ExecuteReader();
     }
 }

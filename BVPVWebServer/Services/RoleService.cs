@@ -23,9 +23,10 @@ public class RoleService
             if ((string) rdr["RoleId"] == "None" || (string) rdr["RoleId"] =="SuperAdmin") continue;
             var role = new Role
             {
-                RoleId = rdr["RoleID"].ToString(),
-                RoleLevel = int.Parse(rdr["RoleLevel"].ToString()!),
-                ReadOnly = bool.Parse(rdr["ReadOnly"].ToString()!)
+                RoleId = (string) rdr["RoleID"],
+                RoleLevel = (int) rdr["RoleLevel"],
+                ReadOnly = (bool) rdr["ReadOnly"],
+                Enabled = (bool) rdr["Enabled"]
             };
             allRoles.Add(role);
         }
