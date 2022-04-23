@@ -66,13 +66,23 @@
     }
 }
 
+        <MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
+            <MessageContent>
+                <MudText Color="Color.Error">Deleting Role: @PassedRoleId CANNOT be undone!!!</MudText>
+                <MudText Color="Color.Warning">Consider seting @PassedRoleId enabled to Off</MudText>
+                <MudText Color="Color.Info">See Help for Enabled versus Delete explanation</MudText>
+            </MessageContent>
+            <YesButton>
+                <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
+            </YesButton>
+        </MudMessageBox>
+
 
 @code {
 
     [Parameter]
     public string? PassedRoleId { get; set; }
-
-
+    
 }
 
 @code {
@@ -96,14 +106,35 @@
 
 @code
 {
-    private void OnButtonDeleteClicked()
+    MudMessageBox? DelBox { get; set; }
+    
+    private async void OnButtonDeleteClicked()
     {
+        await DelBox!.Show();
+        StateHasChanged();
     }
 }
-
 @code
 {
+    private void Delete()
+    {
+        if (PassedRoleId == "")
+        {
+            Snackbar.Add("No User was passed into this page, returned to User Page.", Severity.Error);
+            NavMgr.NavigateTo("/users");
+            return;
+        }
+        
+        var success = RoleService.DeleteRole(StateService.GetAppInfo(), PassedRoleId!);
+        if (!success)
+        {
+            Snackbar.Add($"Deleting Role {PassedRoleId} failed", Severity.Error);
+            return;
+        }
 
+        Snackbar.Add($"Role {PassedRoleId} is deleted", Severity.Info);
+        NavMgr.NavigateTo("/Roles");
+    }
 }
 
 @code {

@@ -93,6 +93,19 @@ public class RoleService
         db.Close();
         return success;
     }
+    
+    public static bool DeleteRole(AppInfo appInfo, string roleId)
+    {
+        var success = true;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        
+        var sql = $"delete from `Roles` where `RoleID` = '{roleId}';";
+        db.ExecNonQuery(sql);
+        if (!db.Success) success = false;
+        db.Close();
+        return success;
+    }
 
     public static bool DoesRoleExist(AppInfo appInfo,string role)
     {
