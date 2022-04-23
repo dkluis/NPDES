@@ -178,7 +178,7 @@ public class UserService
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"select `App` from AppsByUserView where `User` = '{userid}' and `App` = '{app}'";
+        var sql = $"select `App` from AppsByUserView where `User` = '{userid}' and `App` = '{app}' and `Role Enabled` = true";
         var rdr = db.ExecQuery(sql);
         if (rdr!.HasRows == false) success = false;
         db.Close();
@@ -229,6 +229,7 @@ public class UserService
                     Role = (string) rdr["Role"],
                     ReadOnly = (bool) rdr["ReadOnly"],
                     RoleLevel = (int) rdr["Role Level"],
+                    RoleEnabled = (bool) rdr["Role Enabled"],
                     App = (string) rdr["App"],
                     Report = (bool) rdr["Report"],
                     Function = (string) rdr["Function"]
@@ -275,6 +276,7 @@ public class AppsByUser
         Role = string.Empty;
         ReadOnly = false;
         RoleLevel = 99;
+        RoleEnabled = true;
         App = string.Empty;
         Report = true;
         Function = string.Empty;
@@ -284,6 +286,7 @@ public class AppsByUser
     public string Role { get; set; }
     public bool ReadOnly { get; set; }
     public int RoleLevel { get; set; }
+    public bool RoleEnabled { get; set; }
     public string App { get; set; }
     public bool Report { get; set; }
     public string Function { get; set; }

@@ -74,7 +74,7 @@ public class RoleService
         using var db = new MariaDb(appInfo);
         db.Open();
         
-        var sql = $"update `Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly} where `RoleID` = '{role.RoleId}';";
+        var sql = $"update `Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly}, `Enabled` = {role.Enabled} where `RoleID` = '{role.RoleId}';";
         db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();

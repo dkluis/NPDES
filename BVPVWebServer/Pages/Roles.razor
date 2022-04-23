@@ -36,12 +36,14 @@
                                     <MudTextField @bind-Value="_role.RoleId"
                                                   For="@(() => _role.RoleId)"
                                                   Immediate="true"
-                                                  Label="Enter Role">
+                                                  Label="Enter Role"
+                                                  HelperText="Role: Max. 15 characters">
                                     </MudTextField>
                                     <MudNumericField @bind-Value="_role.RoleLevel"
                                                      For="@(() => _role.RoleLevel)"
                                                      Immediate="true"
-                                                     Label="Enter Role Level">
+                                                     Label="Enter Role Level"
+                                                     HelperText="Role Level: between 1 and 99">
                                     </MudNumericField>
                                     <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
                                 </MudCardContent>
@@ -142,7 +144,7 @@
 
             RuleFor(x => x.RoleLevel)
                 .GreaterThan(0)
-                .LessThan(100);
+                .LessThan(99);
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>

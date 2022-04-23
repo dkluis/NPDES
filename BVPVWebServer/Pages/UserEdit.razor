@@ -39,7 +39,7 @@
             <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
 
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete">
+                <MudExpansionPanel Style="font-weight: bold" Text="Enable/Disable or Delete">
                     <MudGrid>
                         <MudItem>
                             <MudCheckBox T="bool" @bind-Checked="_isEnabled" @onclick="EnableChange" Color="Color.Primary">@PassedUserId Enabled</MudCheckBox>
@@ -133,12 +133,14 @@
                             <col/>
                             <col/>
                             <col/>
+                            <col/>
                         </ColGroup>
                         <HeaderContent>
                             <MudTh>Username</MudTh>
                             <MudTh>
                                 <MudTableSortLabel SortBy="new Func<AppsByUser, object?>(x => x.Role)">Role</MudTableSortLabel>
                             </MudTh>
+                            <MudTh>Role Enabled</MudTh>
                             <MudTh>
                                 <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppsByUser, object?>(x => x.App)">App</MudTableSortLabel>
                             </MudTh>
@@ -146,12 +148,13 @@
                             <MudTh>Report</MudTh>
                         </HeaderContent>
                         <GroupHeaderTemplate>
-                            <MudTh Class="mud-table-cell-custom-group" colspan="1">@($"Role: {context.Key}")</MudTh>
+                            <MudTh Class="mud-table-cell-custom-group" colspan="6">@($"Role: {context.Key}")</MudTh>
                         </GroupHeaderTemplate>
                         <RowTemplate>
                             @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                             <MudTd DataLabel="Username">@context!.User</MudTd>
                             <MudTd DataLabel="Role">@context.Role</MudTd>
+                            <MudTd DataLabel="Role Enabled">@context.RoleEnabled</MudTd>
                             <MudTd DataLabel="App">@context.App</MudTd>
                             <MudTd DataLabel="Function">@context.Function</MudTd>
                             <MudTd DataLabel="Report">@context.Report</MudTd>
@@ -173,6 +176,7 @@
     <MessageContent>
         <MudText Color="Color.Error">Deleting User: @_selectedUserId CANNOT be undone!!!</MudText>
         <MudText Color="Color.Warning">Consider Setting User Enabled to Off</MudText>
+        <MudText Color="Color.Info">See Help for Enabled versus Delete explanation</MudText>
     </MessageContent>
     <YesButton>
         <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
@@ -376,7 +380,7 @@
         GroupName = "Roles",
         Indentation = true,
         Expandable = true,
-        IsInitiallyExpanded = true,
+        IsInitiallyExpanded = false,
         Selector = e => e.Role
     };
 
@@ -397,4 +401,9 @@
             return true;
         return false;
     }
+}
+
+@code
+{
+
 }

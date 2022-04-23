@@ -1,12 +1,12 @@
 <MudDialog>
     <DialogContent>
-        <MudContainer Style="max-height: 400px; max-width: available; overflow-y: scroll">
+        <MudContainer Style="max-height: 450px; max-width: available; overflow-y: scroll">
             @{
                 var numLines = 0;
                 foreach (var line in HelpContent)
                 {
                     <MudMarkdown Value="@line"></MudMarkdown>
-                    numLines++;
+                    if (line != "" && line !="<br/>") numLines++;
                 }
                 while (numLines < 15)
                 {

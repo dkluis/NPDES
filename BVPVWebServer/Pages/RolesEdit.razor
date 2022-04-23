@@ -99,22 +99,6 @@
     private void OnButtonDeleteClicked()
     {
     }
-
-    private void EnableChange(bool toggle)
-    {
-        _role.Enabled = !_role.Enabled;
-        var success = RoleService.ChangeRole(StateService.GetAppInfo(), _role);
-        if (!success)
-        {
-            Snackbar.Add("Failed to update user enablement", Severity.Error);
-        }
-        else
-        {
-            Snackbar.Add(_role.Enabled ? $"User {PassedRoleId} is set to Enabled" : $"User {PassedRoleId} is set to Disabled", Severity.Info);
-        }
-        StateHasChanged();
-        NavMgr.NavigateTo("/Roles");
-    }
 }
 
 @code
@@ -142,6 +126,7 @@
                 _role.ReadOnly = false;
                 _role.Enabled = true;
                 Snackbar.Add($"Role: {_role.RoleId} is changed", Severity.Info);
+                NavMgr.NavigateTo("/Roles");
             }
             else
             {
