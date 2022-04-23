@@ -18,7 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\General" />
       <Folder Include="Pages\Potable" />
       <Folder Include="Pages\Waste" />
       <Folder Include="Pages\Water" />

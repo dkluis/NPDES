@@ -1,4 +1,5 @@
 ﻿using Libraries;
+using GemBox.Spreadsheet;
 
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
 
@@ -14,6 +15,14 @@ using var prodDb = new MariaDb(applicationInfo);
     Console.WriteLine($"DB Close success {prodDb.Success}");
 }
 
+SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
+var excelfile = new Excel(applicationInfo, "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/ExcelData/Background_Files_Test.xlsx");
+Console.WriteLine($"Sheet Name is {excelfile.ActiveSheet.Name}");
+foreach (var sheet in excelfile.Sheets)
+{
+    Console.WriteLine(sheet.Name);
+}
+
 logFile.Stop();
 
 /*
@@ -22,8 +31,8 @@ Console.WriteLine($"The user is: {userInfo.firstName} {userInfo.lastName}, has s
 Console.WriteLine($"His roles are {userInfo.userRoles} and special functions are {userInfo.userApps}");
 Console.WriteLine();
 
-var excelInfo = new ExcelControl("/media/psf/BVPV/BVPV/Data/Background_Files.xlsx", "Constituents");
-//var excelInfo = new ExcelControl("X:/BVPV/Data/Background_Files.xlsx", "Cost_Centers");
+var excelInfo = new IronSoftExcelControl("/media/psf/BVPV/BVPV/Data/Background_Files.xlsx", "Constituents");
+//var excelInfo = new IronSoftExcelControl("X:/BVPV/Data/Background_Files.xlsx", "Cost_Centers");
 
 //Validate that this worksheet still has the right header info and that nothing has changed.
 Console.WriteLine($"The Data Validation result is: {excelInfo.ValidateHeader()}");
@@ -49,13 +58,13 @@ Console.ReadLine();
 //  **************** Comment Section for Tryout Code
 
 //Open Excel file and its default worksheet
-//var excelInfo = new ExcelControl("X:/BVPV/NPDES Supporting Docs/NPDES - 201118, 180-113797-1 (NPDES).xlsx");
+//var excelInfo = new IronSoftExcelControl("X:/BVPV/NPDES Supporting Docs/NPDES - 201118, 180-113797-1 (NPDES).xlsx");
 
 //Open an Excel and a specific Worksheet
-//var excelInfo = new ExcelLib.ExcelControl("z:/Menu/Audiobook Lib.xlsx", "Audiobook 1 Lib");
+//var excelInfo = new ExcelLib.IronSoftExcelControl("z:/Menu/Audiobook Lib.xlsx", "Audiobook 1 Lib");
 
 //Open an Excel and create a new worksheet
-//var excelInfo = new ExcelLib.ExcelControl("z:/Menu/Audiobook Lib.xlsx", "New 1 Tab", true);
+//var excelInfo = new ExcelLib.IronSoftExcelControl("z:/Menu/Audiobook Lib.xlsx", "New 1 Tab", true);
 //excelInfo.Save();
 
 //Validate the HeaderLine of a specific excel

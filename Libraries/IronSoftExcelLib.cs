@@ -1,8 +1,9 @@
-﻿using IronXL;
+﻿/*
+using IronXL;
 
 namespace Libraries;
 
-public class ExcelControl : IDisposable
+public class IronSoftExcelControl : IDisposable
 {
     private readonly WorkBook _wb;
     public readonly WorkSheet Ws;
@@ -18,7 +19,7 @@ public class ExcelControl : IDisposable
         Environment.Exit(999);
     }
 
-    public ExcelControl(string file, string worksheet, bool create = false)
+    public IronSoftExcelControl(string file, string worksheet, bool create = false)
     {
         ExcelLicense();
         _wb = LoadWorkBook(file);
@@ -34,7 +35,7 @@ public class ExcelControl : IDisposable
 
     }
 
-    public ExcelControl(string file)
+    public IronSoftExcelControl(string file)
     {
         ExcelLicense();
         _wb = LoadWorkBook(file);
@@ -172,3 +173,4 @@ public class ExcelControl : IDisposable
         GC.SuppressFinalize(this);
     }
 }
+*/
