@@ -13,12 +13,14 @@ public class MariaDb : IDisposable
         public Task<int>? TaskRows;
         public int Rows;
         public bool Success;
+        public string ErrorMessage;
 
         public MariaDb(AppInfo appInfo)
         {
             _mDbLog = appInfo.TxtFile;
             _conn = new MySqlConnection();
             _cmd = new MySqlCommand();
+            ErrorMessage = string.Empty;
 
             Success = false;
             try
@@ -29,6 +31,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class Connection Error: {e.Message}", "", 0);
+                ErrorMessage = $"MariaDB Class Connection Error: {e.Message}";
             }
         }
 
@@ -49,6 +52,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class Open Error: {e.Message}", "", 0);
+                ErrorMessage = $"MariaDB Class Open Error: {e.Message}";
                 Success = false;
             }
         }
@@ -64,6 +68,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class Close Error: {e.Message}", "", 0);
+                ErrorMessage = $"MariaDB Class Close Error: {e.Message}";
                 Success = false;
             }
         }
@@ -80,6 +85,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class Command Error: {e.Message} for {sql}", "", 0);
+                ErrorMessage = $"MariaDB Class Command Error: {e.Message}";
                 Success = false;
                 return _cmd;
             }
@@ -98,6 +104,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "", 0);
+                ErrorMessage = $"MariaDB Class Query Error: {e.Message}";
                 Success = false;
                 return _rdr;
             }
@@ -116,6 +123,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 _mDbLog.Write($"MariaDB Class ExecQuery Error: {e.Message} for {sql}", "", 0);
+                ErrorMessage = $"MariaDB Class Query Async Error: {e.Message}";
                 Success = false;
                 return _rdr;
             }
@@ -135,6 +143,7 @@ public class MariaDb : IDisposable
             catch (Exception e)
             {
                 if (!ignore) _mDbLog.Write($"MariaDB Class ExecNonQuery Error: {e.Message} for {sql}", "", 0);
+                ErrorMessage = $"MariaDB Class NonQuery Error: {e.Message}";
                 Success = false;
                 return Rows;
             }

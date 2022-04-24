@@ -28,14 +28,14 @@ public class AppInfo
         SystemUserName = Environment.UserName;
         
         ReadKeyFromFile readKeyFromFile = new();
-        FullConfigPath = new BaseConfig().FullConfigPath;
+        FullConfigPath = BaseConfig.FullConfigPath;
         if (!File.Exists(FullConfigPath))
         {
             Console.WriteLine($"Full Config File Does not Exist {FullConfigPath}");
             Environment.Exit(666);
         }
-        ConfigPath = new BaseConfig().ConfigPath;
-        HelpFilesPath = new BaseConfig().HelpFilesPath;
+        ConfigPath = BaseConfig.ConfigPath;
+        HelpFilesPath = BaseConfig.HelpFilesPath;
 
         WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
         ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");

@@ -1,13 +1,19 @@
 namespace Libraries;
 
-public class BaseConfig
+public static class BaseConfig
 {
-    public readonly string FullConfigPath;
-    public readonly string ConfigPath;
-    public readonly string BasePath;
-    public readonly string HelpFilesPath;
+    public static readonly string FullConfigPath;
+    public static readonly string ConfigPath;
+    public static readonly string BasePath;
+    public static readonly string HelpFilesPath;
+    public static readonly string DownloadsPath;
+    public static readonly string ImportedPath;
+    public static readonly string ProcessedPath;
+    public static readonly string ExportedPath;
+    public static readonly string LogsPath;
+    public static readonly string ArchivesPath;
 
-    public BaseConfig()
+    static BaseConfig()
     {
         BasePath = string.Empty;
         HelpFilesPath = string.Empty;
@@ -41,5 +47,11 @@ public class BaseConfig
         ConfigPath = BasePath + "ConfigData";
         FullConfigPath = ConfigPath + "/NPDES-Complete.cnf";
         HelpFilesPath = BasePath + "HelpFiles";
+        DownloadsPath = BasePath + "Downloads";
+        ImportedPath = DownloadsPath + "/Imported";
+        ExportedPath = BasePath + "Exported";
+        ProcessedPath = DownloadsPath + "/Processed";
+        LogsPath = BasePath + "Logs";
+        ArchivesPath = BasePath + "Archives";
     }
 }
