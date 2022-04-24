@@ -4,6 +4,7 @@
 @inject ISnackbar Snackbar
 
 @using Severity = MudBlazor.Severity
+@using Libraries
 
 @inject StateService StateService
 @inject NavigationManager NavMgr
@@ -66,7 +67,7 @@
     }
 }
 
-@if (_files != null)
+@if (_files.Count > 0)
 {
     <MudText Typo="@Typo.h6">@_files.Count() File@(_files.Count() == 1 ? "" : "s"):</MudText>
     <MudList>
@@ -81,6 +82,7 @@
 @code
 {
     readonly IList<IBrowserFile> _files = new List<IBrowserFile>();
+    
     private async void UploadFiles(InputFileChangeEventArgs e)
     {
         foreach (var file in e.GetMultipleFiles())
@@ -89,18 +91,34 @@
         }
         foreach (var file in _files)
         {
-            await using FileStream fs = new($"/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/Imports/{file.Name}", FileMode.Create);
-            await file.OpenReadStream().CopyToAsync(fs);
+            
+            var fh = new FileHandling(StateService.GetAppInfo());
+            var exists = fh.CheckFileExist(file);
+            if (exists)
+            {
+                Snackbar.Add($"File: {file.Name} sized: {file.Size / 1000} KB ALREADY is imported", Severity.Error);
+                continue;
+            }
+            var result = await fh.ImportFile(file);
+            if (result)
+            {
+                Snackbar.Add($"File: {file.Name} sized: {file.Size / 1000} KB is imported", Severity.Info);
+            }
+            else
+            {
+                Snackbar.Add($"File: {file.Name} sized: {file.Size / 1000} KB is NOT imported", Severity.Error);
+            }
         }
+        _files.Clear();
     }
 }
 
 @code {
     
-    private bool _clearing = false;
+    private bool _clearing;
     private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
     private string _dragClass = DefaultDragClass;
-    private readonly List<string> _fileNames = new List<string>();
+    private readonly List<string> _fileNames = new();
 
     private void OnInputFileChanged(InputFileChangeEventArgs e)
     {
