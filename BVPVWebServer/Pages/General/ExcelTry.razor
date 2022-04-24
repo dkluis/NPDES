@@ -25,7 +25,18 @@
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <PageTitle>ExcelTry NPDES</PageTitle>
-
+            
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+            
             <MudText Typo="Typo.h4" Align="Align.Center">Excel Try</MudText>
 
             <InputFile id="fileInput" OnChange="UploadFiles" hidden multiple accept=".xlsx, .xls"/>
@@ -63,13 +74,18 @@
 @code
 {
     private FileHandling? _fileHandling;
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "ExcelTry");
         _fileHandling = new FileHandling(StateService.GetAppInfo());
+        _isProgressOverlayVisible = false;
     }
 }
 
@@ -92,7 +108,8 @@
     
     private async void UploadFiles(InputFileChangeEventArgs e)
     {
-        
+        _progressMessage = "Loading the Files";
+        _isProgressOverlayVisible = true;
         foreach (var file in e.GetMultipleFiles())
         {
             _files.Add(file);
@@ -115,7 +132,10 @@
                 Snackbar.Add($"File: {file.Name} Error: {result.Message}", Severity.Error);
             }
         }
+        _isProgressOverlayVisible = false;
         _files.Clear();
+        StateHasChanged();
+
     }
 }
 
