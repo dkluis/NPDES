@@ -13,8 +13,8 @@ public class FileHandling
     public FileHandling(AppInfo appInfo)
     {
         var basePath = new BaseConfig().BasePath;
-        ImportPath = basePath + "Downloads/Imports/";
-        ProcessedPath = basePath + "DownLoads/Processed/";
+        ImportPath = basePath + "Downloads/Imported";
+        ProcessedPath = basePath + "DownLoads/Processed";
         LogPath = new BaseConfig().ConfigPath;
         ArchivePath = basePath + "Archives";
         _appInfo = appInfo;
