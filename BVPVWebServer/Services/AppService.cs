@@ -63,6 +63,28 @@ public class AppService
 
         return allAppRoles;
     }
+    
+    public static List<App> GetAppsWithoutRoles(AppInfo appInfo)
+    {
+        var allAppsWithoutRoles = new List<App>();
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from AppsWithoutRoles order by `App`;");
+        if (!rdr!.HasRows) return allAppsWithoutRoles;
+        while (rdr.Read())
+        {
+            if ((string) rdr["App"] == "None") continue;
+            var rec = new App()
+            {
+                AppId = (string) rdr["App"],
+                FunctionId = (string) rdr["Function"],
+                ReportApp = (bool) rdr["Report"]
+            };
+            allAppsWithoutRoles.Add(rec);
+        }
+
+        return allAppsWithoutRoles; 
+    }
 
     public static List<string> GetAllAssignedRoles(AppInfo appInfo, string appid)
     {

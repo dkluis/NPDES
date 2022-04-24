@@ -29,6 +29,55 @@
             <MudText Typo="Typo.h4" Align="Align.Center">App Management</MudText>
 
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Apps Without a Role Assigned (Orphans)" IsInitiallyExpanded="false">
+                        <MudTable Items="@_appsWithoutRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                              Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
+                              Filter="new Func<App, bool>(FilterFunc1)">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">All Apps without Roles (Orphans)</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillAppFunctionTable">Refresh</MudButton>
+                            </MudButtonGroup>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchApps" Placeholder="Search"
+                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col style="width: 30px;"/>
+                            <col style="width: 50px;"/>
+                            <col style="width: 20px;"/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Report</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                            <MudTd DataLabel="App">
+                                @{ _linkedContext = $"/apps/{context.AppId}"; }
+                                <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
+                            </MudTd>
+                            <MudTd DataLabel="Function">@context.FunctionId</MudTd>
+                            <MudTd DataLabel="Report">@context.ReportApp</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+                
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Function" IsInitiallyExpanded="false">
                     <MudTable Items="@_allApps" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
@@ -36,7 +85,6 @@
                               GroupBy="@_appGroup"
                               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
                               GroupFooterClass="mb-4">
-
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">All Apps (Function View)</MudText>
                             <MudSpacer></MudSpacer>
@@ -74,7 +122,7 @@
                             @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                             <MudTd DataLabel="App">
                                 @{ _linkedContext = $"/apps/{context.AppId}"; }
-                                <MudLink Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
+                                <MudLink  Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
                             </MudTd>
                             <MudTd DataLabel="Function">@context.FunctionId</MudTd>
                             <MudTd DataLabel="Report">@context.ReportApp</MudTd>
@@ -155,6 +203,7 @@
     private List<App> _allApps = new();
     private string _linkedContext = string.Empty;
     private List<AppRole> _allAppRoles = new();
+    private List<App> _appsWithoutRoles = new();
     private MudTable<AppRole>? _mudTableAppRoles;
 
 
@@ -165,6 +214,7 @@
         await SessionStore.SetAsync("CurrentApp", "Apps");
         FillAppFunctionTable();
         FillAppRoleTable();
+        FillAppsWithoutRoles();
     }
 
     void FillAppFunctionTable()
@@ -175,6 +225,11 @@
     private void FillAppRoleTable()
     {
         _allAppRoles = AppService.GetAllAppRoles(StateService.GetAppInfo());
+    }
+
+    private void FillAppsWithoutRoles()
+    {
+        _appsWithoutRoles = AppService.GetAppsWithoutRoles(StateService.GetAppInfo());
     }
 }
 
