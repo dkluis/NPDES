@@ -9,7 +9,7 @@ public class AppService
         var allAppIds = new List<string>();
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select `AppID` from Apps order by `AppID`;");
+        var rdr = db.ExecQuery($"select `AppID` from `Admin-Apps` order by `AppID`;");
         if (!rdr!.HasRows) return allAppIds;
         while (rdr.Read())
         {
@@ -25,7 +25,7 @@ public class AppService
         var allApps = new List<App>();
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from Apps order by `AppID`;");
+        var rdr = db.ExecQuery($"select * from `Admin-Apps` order by `AppID`;");
         if (!rdr!.HasRows) return allApps;
         while (rdr.Read())
         {
@@ -48,7 +48,7 @@ public class AppService
         var allAppRoles = new List<AppRole>();
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from AppRoles order by `AppID`, `RoleID`;");
+        var rdr = db.ExecQuery($"select * from `Admin-AppRoles` order by `AppID`, `RoleID`;");
         if (!rdr!.HasRows) return allAppRoles;
         while (rdr.Read())
         {
@@ -69,7 +69,7 @@ public class AppService
         var allAppsWithoutRoles = new List<App>();
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from AppsWithoutRoles order by `App`;");
+        var rdr = db.ExecQuery($"select * from `Admin-AppsWithoutRoles` order by `App`;");
         if (!rdr!.HasRows) return allAppsWithoutRoles;
         while (rdr.Read())
         {
@@ -91,7 +91,7 @@ public class AppService
         var allApps = new List<string>();
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select `RoleID` from AppRoles where `AppID` = '{appid}' order by `RoleID`;");
+        var rdr = db.ExecQuery($"select `RoleID` from `Admin-AppRoles` where `AppID` = '{appid}' order by `RoleID`;");
         if (!rdr!.HasRows) return allApps;
         while (rdr.Read())
         {
@@ -109,7 +109,7 @@ public class AppService
         db.Open();
         foreach (var role in appRoles)
         {
-            var sql = $"insert into AppRoles values ('{app}', '{role}');";
+            var sql = $"insert into `Admin-AppRoles` values ('{app}', '{role}');";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
@@ -125,7 +125,7 @@ public class AppService
         db.Open();
         foreach (var role in appRoles)
         {
-            string sql = $"delete from AppRoles where `AppID`= '{app}' and `RoleID` = '{role}';";
+            string sql = $"delete from `Admin-AppRoles` where `AppID`= '{app}' and `RoleID` = '{role}';";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }

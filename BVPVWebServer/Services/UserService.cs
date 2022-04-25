@@ -16,7 +16,7 @@ public class UserService
 
         using var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from Users where `UserID` = '{username}';");
+        var rdr = db.ExecQuery($"select * from `Admin-Users` where `UserID` = '{username}';");
         if (rdr is {HasRows: false})
         {
             user.ValidUser = false;
@@ -65,11 +65,11 @@ public class UserService
         var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"insert into Users values ('{userName}', '{encryptedPasswrd}', '{mySalt}', {enabled});";
+        var sql = $"insert into `Admin-Users` values ('{userName}', '{encryptedPasswrd}', '{mySalt}', {enabled});";
         db.ExecNonQuery(sql);
         db.Close();
         db.Open();
-        sql = $"insert into UserSystemState value ('{userName}', false, '/');";
+        sql = $"insert into `Admin-UserSystemState` value ('{userName}', false, '/');";
         db.ExecNonQuery(sql);
         success = db.Success;
         db.Close();
@@ -82,7 +82,7 @@ public class UserService
         var encryptedPasswrd = BCrypt.Net.BCrypt.HashPassword(password, mySalt);
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"update Users set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
+        var sql = $"update `Admin-Users` set `Password` = '{encryptedPasswrd}', `Salt` ='{mySalt}' where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
         var success = db.Success;
         db.Close();
@@ -95,7 +95,7 @@ public class UserService
         db.Open();
         var dbEnabled = 0;
         if (enabled) dbEnabled = 1;
-        var sql = $"update Users set `Enabled` = '{dbEnabled}' where `UserID` = '{userName}';";
+        var sql = $"update `Admin-Users` set `Enabled` = '{dbEnabled}' where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
         var success = db.Success;
         db.Close();
@@ -106,7 +106,7 @@ public class UserService
     {
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"update UserSystemState set `DarkTheme` = {darkTheme} where `UserID` = '{userName}';";
+        var sql = $"update `Admin-UserSystemState` set `DarkTheme` = {darkTheme} where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
         var success = db.Success;
         db.Close();
@@ -117,7 +117,7 @@ public class UserService
     {
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"delete from Users where `UserID` = '{userName}';";
+        var sql = $"delete from `Admin-Users` where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
         var success = db.Success;
         db.Close();
@@ -132,7 +132,7 @@ public class UserService
         db.Open();
         foreach (var role in userRoles)
         {
-            var sql = $"insert into UserRoles values ('{userName}', '{role}');";
+            var sql = $"insert into `Admin-UserRoles` values ('{userName}', '{role}');";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
@@ -148,7 +148,7 @@ public class UserService
         db.Open();
         foreach (var role in userRoles)
         {
-            string sql = $"delete from UserRoles where `UserId`= '{userName}' and `RoleID` = '{role}';";
+            string sql = $"delete from `Admin-UserRoles` where `UserId`= '{userName}' and `RoleID` = '{role}';";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
@@ -163,7 +163,7 @@ public class UserService
         var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select `RoleID` from `UserRoles` where `UserID` = '{userid} 'order by `RoleID`");
+        var rdr = db.ExecQuery($"select `RoleID` from `Admin-UserRoles` where `UserID` = '{userid} 'order by `RoleID`");
         if (!rdr!.HasRows) return assignedRoles;
         while (rdr.Read())
         {
@@ -178,7 +178,7 @@ public class UserService
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"select `App` from AppsByUserView where `User` = '{userid}' and `App` = '{app}' and `Role Enabled` = true";
+        var sql = $"select `App` from `Admin-AppsByUserView` where `User` = '{userid}' and `App` = '{app}' and `Role Enabled` = true";
         var rdr = db.ExecQuery(sql);
         if (rdr!.HasRows == false) success = false;
         db.Close();
@@ -190,7 +190,7 @@ public class UserService
         var ue = new List<UserElement>();
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"select * from Users where `UserID` like '{searchString}'";
+        var sql = $"select * from `Admin-Users` where `UserID` like '{searchString}'";
         var rdr = db.ExecQuery(sql);
         if (rdr!.HasRows)
         {
@@ -216,7 +216,7 @@ public class UserService
         var result = new List<AppsByUser>();
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"select * from AppsByUserView where `User` = '{userid}'";
+        var sql = $"select * from `Admin-AppsByUserView` where `User` = '{userid}'";
         var rdr = db.ExecQuery(sql);
         if (rdr!.HasRows)
         {

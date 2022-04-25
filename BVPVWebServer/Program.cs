@@ -16,6 +16,7 @@ builder.Services.AddScoped<StateService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AppService>();
 builder.Services.AddScoped<MarkdownService>();
+builder.Services.AddScoped<DownloadService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();

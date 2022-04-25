@@ -8,7 +8,7 @@
 @inject StateService StateService
 @inject NavigationManager NavMgr
 
-
+<PageTitle>Apps NPDES</PageTitle>
 
 @{
     if (!StateService.IsLoggedIn)
@@ -24,10 +24,19 @@
         else
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-            <PageTitle>Apps NPDES</PageTitle>
-
             <MudText Typo="Typo.h4" Align="Align.Center">App Management</MudText>
 
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+            
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Apps Without a Role Assigned (Orphans)" IsInitiallyExpanded="false">
                         <MudTable Items="@_appsWithoutRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
@@ -199,22 +208,29 @@
 
 @code
 {
+    
     private MudTable<App>? _mudTableApps;
     private List<App> _allApps = new();
     private string _linkedContext = string.Empty;
     private List<AppRole> _allAppRoles = new();
     private List<App> _appsWithoutRoles = new();
     private MudTable<AppRole>? _mudTableAppRoles;
+    
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
 
 
     protected override async Task OnInitializedAsync()
     {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "Apps");
         FillAppFunctionTable();
         FillAppRoleTable();
         FillAppsWithoutRoles();
+        _isProgressOverlayVisible = false;
     }
 
     void FillAppFunctionTable()

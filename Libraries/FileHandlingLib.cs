@@ -12,7 +12,7 @@ public class FileHandling
         _appInfo = appInfo;
     }
 
-    public async Task<Result> ImportFile(IBrowserFile file)
+    public async Task<Result> ImportFile(IBrowserFile? file)
     {
         Result result = new()
         {
@@ -32,7 +32,7 @@ public class FileHandling
         return result;
     }
 
-    public static bool CheckFileExist(IBrowserFile file)
+    public static bool CheckFileExist(IBrowserFile? file)
     {
         return File.Exists($"{BaseConfig.ImportedPath}/{file.Name}");
     }

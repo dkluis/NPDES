@@ -22,6 +22,18 @@
         else
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+            
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+            
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudText Typo="Typo.h4" Align="Align.Center">Assigning Roles to appliation/webpage: @PassedApp</MudText>
                 <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
@@ -65,9 +77,14 @@
     private List<string> _allUserRoles = new();
     private List<string> _assignedRoles = new();
     private List<string> _originalAssignedRoles = new();
+    
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        _progressMessage = "Loading the Files";
+        _isProgressOverlayVisible = true;
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         PassedApp ??= "No App";
@@ -81,6 +98,8 @@
         Alerts.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Alerts.Configuration.NewestOnTop = true;
         Alerts.Configuration.VisibleStateDuration = 5000;
+        Alerts.Configuration.MaxDisplayedSnackbars = 15;
+        _isProgressOverlayVisible = false;
     }
 
 }
