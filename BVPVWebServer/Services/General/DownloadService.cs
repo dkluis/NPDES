@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Libraries;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -34,26 +35,68 @@ public class DownloadService
         return result;
     }
 
-    public static (Result, List<DownloadRec>) GetAllDownloadRecs()
+    public static (Result, List<DownloadRec>) GetAllDownloadRecs(AppInfo appInfo)
     {
         var result = new Result() {Success = true};
         var recList = new List<DownloadRec>();
+        
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery($"select * from `General-Download`");
+        result.Success = db.Success;
+        result.Message = db.ErrorMessage;
+        if (rdr!.HasRows)
+        {
+            while (rdr.Read())
+            {
 
+                var function = string.Empty;
+                var validateUser = string.Empty;
+                var processUser = string.Empty;
+                if (! DBNull.Value.Equals(rdr["FunctionID"]))
+                {
+                    function = (string) rdr["FunctionID"];
+                }
+                if (! DBNull.Value.Equals(rdr["ValidateUserID"]))
+                {
+                    validateUser = (string) rdr["ValidateUserID"];
+                }
+                if (! DBNull.Value.Equals(rdr["ProcessUserID"]))
+                {
+                    processUser = (string) rdr["ProcessUserID"];
+                }
+
+                var validateDt = new DateTime();
+                var processDt = new DateTime();
+                if (! DBNull.Value.Equals(rdr["ValidatedDateTime"]))
+                {
+                    validateDt = (DateTime) rdr["ValidatedDateTime"];
+                }
+                if (! DBNull.Value.Equals(rdr["ProcessedDateTime"]))
+                {
+                    processDt = (DateTime) rdr["ProcessedDateTime"];
+                }
+                
+
+                var rec = new DownloadRec()
+                {
+                    User = (string) rdr["UserID"],
+                    FileName = (string) rdr["FileName"],
+                    Function = (string) function,
+                    DownloadDateTime = (DateTime) rdr["DownloadDateTime"],
+                    ValidateUser = validateUser,
+                    ProcessUser = processUser,
+                    ValidateDateTime = validateDt,
+                    ProcessDateTime = processDt,
+                };
+                recList.Add(rec);
+            }
+        }
+
+        return (result, recList);
         
 
         return (result, recList);
     }
 }
 
-public class DownloadRec
-{
-    public string? User { get; set; }
-    public string? FileName { get; set; }
-    public string? OriginalFileName { get; set; }
-    public string? Function { get; set; }
-    public DateTime DownloadDateTime { get; set; }
-    public DateTime ValidateDateTime { get; set; }
-    public string? ValidateUser { get; set; }
-    public DateTime ProcessDateTime { get; set; }
-    public string? ProcessUser { get; set; }
-}

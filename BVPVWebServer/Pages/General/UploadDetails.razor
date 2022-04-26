@@ -1,4 +1,14 @@
-<h3>UploadDetails</h3>
+@page "/Uploads/{PassedFile?}"
+
+
+
+
+@code {
+
+    [Parameter]
+    public string? PassedFile { get; set; }
+    
+}
 
 @code {
     

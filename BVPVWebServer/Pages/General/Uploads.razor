@@ -8,6 +8,7 @@
 @using Severity = MudBlazor.Severity
 
 @using Libraries
+@using System.Globalization
 @inject StateService StateService
 @inject DownloadService DownloadService
 
@@ -20,7 +21,6 @@
     }
     else
     {
-        
         if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Uploads") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
@@ -28,7 +28,7 @@
         else
         {
             //Page Detail
-            
+
             <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
                 <MudGrid>
                     <MudItem>
@@ -51,7 +51,55 @@
                 Upload File
             </MudButton>
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                
+                <MudExpansionPanel Style="font-weight: bold" Text="Downloads Table" IsInitiallyExpanded="true">
+                    <MudTable Items="@_allDownloadRecs" Hover="true" Breakpoint="Breakpoint.Sm" 
+                              Loading="@_loading" LoadingProgressColor="Color.Info"
+                              Dense="true" Striped="true" 
+                              SortLabel="Sort By" Filter="new Func<DownloadRec, bool>(FilterFunc)" 
+                              RowsPerPage=25 FixedHeader="true" Height="500px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Downloads Table</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillDownloads">Refresh</MudButton>
+                            </MudButtonGroup>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search Downloads" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.User!)">User</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh T="int">
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.FileName)">File Name</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.Function)">Function</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.DownloadDateTime)">Download DT</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Validate DT</MudTh>
+                            <MudTh>Process DT</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="User">@context.User</MudTd>
+                            <MudTd DataLabel="File Name">
+                                @{ _linkedContext = $"/Uploads/{context.FileName}"; }
+                                <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.FileName</MudLink>
+                            </MudTd>
+                            <MudTd DataLabel="Function">@context.Function</MudTd>
+                            <MudTd DataLabel="Download Date">@context.DownloadDateTime</MudTd>
+                            <MudTd DataLabel="Validate Date">@context.ValidateDateTime</MudTd>
+                            <MudTd DataLabel="Process Date">@context.ProcessDateTime</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
             </MudExpansionPanels>
         }
     }
@@ -61,6 +109,10 @@
 {
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
+    private bool _loading;
+    private string _searchString = "";
+    private string _linkedContext = string.Empty;
+    private List<DownloadRec> _allDownloadRecs = new List<DownloadRec>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,6 +121,19 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "ExcelTry");
+        FillDownloads();
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private void FillDownloads()
+    {
+        _isProgressOverlayVisible = true;
+        var result = DownloadService.GetAllDownloadRecs(StateService.GetAppInfo());
+        _allDownloadRecs = result.Item2;
+        StateHasChanged();
         _isProgressOverlayVisible = false;
     }
 }
@@ -103,7 +168,7 @@
             FreeUpload();
             return;
         }
-        
+
         var result = await DownloadService.ProcessDownloadAsync(StateService.GetAppInfo(), StateService.UserId!, _fileToUpload!);
         if (result.Success)
         {
@@ -124,6 +189,23 @@
         StateHasChanged();
     }
 }
+
+@code
+{
+    private bool FilterFunc(DownloadRec downloadRec)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (downloadRec.User!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (downloadRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture)!.Contains(_searchString))
+            return true;
+
+        return false;
+    }
+}
+
 
 @code
 {
