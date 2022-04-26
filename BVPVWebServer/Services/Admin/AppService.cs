@@ -1,6 +1,6 @@
 using Libraries;
 
-namespace BVPVWebServer.Services;
+namespace BVPVWebServer.Services.Admin;
 
 public class AppService
 {

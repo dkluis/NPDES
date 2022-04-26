@@ -1,4 +1,6 @@
 using BVPVWebServer.Services;
+using BVPVWebServer.Services.Admin;
+using BVPVWebServer.Services.General;
 using MudBlazor;
 using MudBlazor.Services;
 

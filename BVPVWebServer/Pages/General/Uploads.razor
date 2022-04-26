@@ -11,6 +11,8 @@
 @inject StateService StateService
 @inject DownloadService DownloadService
 
+<PageTitle>Uploads NPDES</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
 @{
     if (!StateService.IsLoggedIn)
     {
@@ -18,15 +20,15 @@
     }
     else
     {
+        
         if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Uploads") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
-            <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-            <PageTitle>Uploads NPDES</PageTitle>
-
+            //Page Detail
+            
             <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
                 <MudGrid>
                     <MudItem>
@@ -41,7 +43,6 @@
             <MudText Typo="Typo.h4" Align="Align.Center">Uploads</MudText>
 
             <InputFile id="fileInput" OnChange="UploadFiles" hidden accept=".xlsx, .xls"/>
-
             <MudButton HtmlTag="label"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -50,6 +51,7 @@
                 Upload File
             </MudButton>
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                
             </MudExpansionPanels>
         }
     }
