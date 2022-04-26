@@ -98,7 +98,7 @@ create table UserSystemState
 )
     engine = InnoDB;
 
-create or replace definer = dick@`%` view AppsByUserView as
+create or replace view AppsByUserView as
 select `ur`.`UserID`    AS `User`,
        `ur`.`RoleID`    AS `Role`,
        `r`.`ReadOnly`   AS `ReadOnly`,
@@ -106,11 +106,11 @@ select `ur`.`UserID`    AS `User`,
        `ar`.`AppID`     AS `App`,
        `a`.`ReportApp`  AS `Report`,
        `a`.`FunctionID` AS `Function`
-from (((`NPDES`.`UserRoles` `ur` join `NPDES`.`Roles` `r` on (`ur`.`RoleID` = `r`.`RoleID`)) join `NPDES`.`AppRoles` `ar` on (`ur`.`RoleID` = `ar`.`RoleID`))
-    join `NPDES`.`Apps` `a` on (`ar`.`AppID` = `a`.`AppID`))
+from (((`UserRoles` `ur` join `Roles` `r` on (`ur`.`RoleID` = `r`.`RoleID`)) join `AppRoles` `ar` on (`ur`.`RoleID` = `ar`.`RoleID`))
+    join `Apps` `a` on (`ar`.`AppID` = `a`.`AppID`))
 order by `ur`.`UserID`, `r`.`RoleLevel`, `ar`.`AppID`;
 
-create or replace definer = dick@`%` view UserRolesView as
+create or replace view UserRolesView as
 select `ur`.`UserID`    AS `User`,
        `ur`.`RoleID`    AS `Role`,
        `r`.`ReadOnly`   AS `ReadOnly`,
@@ -118,7 +118,7 @@ select `ur`.`UserID`    AS `User`,
        `ar`.`AppID`     AS `App`,
        `a`.`ReportApp`  AS `Report`,
        `a`.`FunctionID` AS `Function`
-from (((`NPDES`.`UserRoles` `ur` join `NPDES`.`Roles` `r` on (`ur`.`RoleID` = `r`.`RoleID`)) join `NPDES`.`AppRoles` `ar` on (`ur`.`RoleID` = `ar`.`RoleID`))
-    join `NPDES`.`Apps` `a` on (`ar`.`AppID` = `a`.`AppID`))
+from (((`UserRoles` `ur` join `Roles` `r` on (`ur`.`RoleID` = `r`.`RoleID`)) join `AppRoles` `ar` on (`ur`.`RoleID` = `ar`.`RoleID`))
+    join `Apps` `a` on (`ar`.`AppID` = `a`.`AppID`))
 order by `ur`.`UserID`, `ar`.`AppID`, `r`.`RoleLevel`;
 
