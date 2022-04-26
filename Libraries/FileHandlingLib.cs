@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Libraries;
@@ -20,7 +19,7 @@ public class FileHandling
         };
         try
         {
-            await using FileStream fs = new($"{BaseConfig.ImportedPath}/{file.Name}", FileMode.CreateNew);
+            await using FileStream fs = new($"{BaseConfig.DownloadsPath}/{file!.Name}", FileMode.CreateNew);
             await file.OpenReadStream().CopyToAsync(fs);
         }
         catch (Exception e)
@@ -32,9 +31,26 @@ public class FileHandling
         return result;
     }
 
-    public static bool CheckFileExist(IBrowserFile? file)
+    public static bool CheckFileExist(IBrowserFile? file, string where)
     {
-        return File.Exists($"{BaseConfig.ImportedPath}/{file.Name}");
+        string path;
+        switch (where)
+        {
+            case "Download":
+                path = BaseConfig.DownloadsPath + "/";
+                break;
+            case "Validated":
+                path = BaseConfig.ValidatedPath + "/";
+                break;
+            case "Processed":
+                path = BaseConfig.ProcessedPath + "/";
+                break;
+            default:
+                path = BaseConfig.DownloadsPath + "/";
+                break;
+
+        }
+        return File.Exists($"{path}{file!.Name}");
     }
 
     public static (Result, List<string>) GetFilesInDir(string dir)
@@ -80,6 +96,22 @@ public class FileHandling
         return result;
     }
     
+    public Result RenameImportFile(string oldName, string newName)
+    {
+        Result result = new() { Success = true };
+        try
+        {
+            File.Move($"{BaseConfig.DownloadsPath}/{oldName}", $"{BaseConfig.DownloadsPath}/{newName}");
+        }
+        catch (Exception e)
+        {
+            _appInfo.TxtFile.Write($"Error: {e.Message}", "FH - RenameImport", 0);
+            result.Success = false;
+            result.Message = e.Message;
+        }
+
+        return result;
+    }
     
 }
 

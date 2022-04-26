@@ -7,7 +7,7 @@ public static class BaseConfig
     public static readonly string BasePath;
     public static readonly string HelpFilesPath;
     public static readonly string DownloadsPath;
-    public static readonly string ImportedPath;
+    public static readonly string ValidatedPath;
     public static readonly string ProcessedPath;
     public static readonly string ExportedPath;
     public static readonly string LogsPath;
@@ -48,7 +48,7 @@ public static class BaseConfig
         FullConfigPath = ConfigPath + "/NPDES-Complete.cnf";
         HelpFilesPath = BasePath + "HelpFiles";
         DownloadsPath = BasePath + "Downloads";
-        ImportedPath = DownloadsPath + "/Imported";
+        ValidatedPath = DownloadsPath + "/Validated";
         ExportedPath = BasePath + "Exported";
         ProcessedPath = DownloadsPath + "/Processed";
         LogsPath = BasePath + "Logs";

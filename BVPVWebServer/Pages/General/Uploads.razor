@@ -11,8 +11,6 @@
 @inject StateService StateService
 @inject DownloadService DownloadService
 
-@{ GetDirFiles(); }
-
 @{
     if (!StateService.IsLoggedIn)
     {
@@ -59,7 +57,6 @@
 
 @code
 {
-    private FileHandling? _fileHandling;
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
 
@@ -70,7 +67,6 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "ExcelTry");
-        _fileHandling = new FileHandling(StateService.GetAppInfo());
         _isProgressOverlayVisible = false;
     }
 }
@@ -90,32 +86,37 @@
             _files.Add(file);
         }
 
-        if (_files.Count > 1 || _files.Count == 0)
+        if (_files.Count is > 1 or 0)
         {
             Snackbar.Add($"No File selected", Severity.Info);
+            FreeUpload();
+            return;
         }
 
         _fileToUpload = _files[0];
-        var exists = FileHandling.CheckFileExist(_fileToUpload);
+        var exists = FileHandling.CheckFileExist(_fileToUpload, "Download");
         if (exists)
         {
-            Snackbar.Add($"File: {_fileToUpload.Name} sized: {_fileToUpload.Size / 1000} KB ALREADY is imported", Severity.Error);
+            Snackbar.Add($"File: {_fileToUpload!.Name} sized: {_fileToUpload.Size / 1000} KB ALREADY is imported", Severity.Error);
+            FreeUpload();
+            return;
+        }
+        
+        var result = await DownloadService.ProcessDownloadAsync(StateService.GetAppInfo(), StateService.UserId!, _fileToUpload!);
+        if (result.Success)
+        {
+            Snackbar.Add($"File: {_fileToUpload!.Name} sized: {_fileToUpload.Size / 1000} KB is imported by {StateService.UserId}", Severity.Info);
         }
         else
         {
-            var result = await _fileHandling!.ImportFile(_fileToUpload);
-            if (result.Success)
-            {
-                Snackbar.Add($"File: {_fileToUpload.Name} sized: {_fileToUpload.Size / 1000} KB is imported", Severity.Info);
-                var recordResult = DownloadService.RecordDownload(StateService.GetAppInfo(), StateService.UserId!, _fileToUpload.Name);
-                if (!recordResult.Success) Snackbar.Add($"File: {_fileToUpload.Name} Recording Error: {result.Message}", Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add($"File: {_fileToUpload.Name} Error: {result.Message}", Severity.Error);
-            }
+            Snackbar.Add($"File: {_fileToUpload!.Name} Error: {result.Message}", Severity.Error);
         }
-        
+
+        FreeUpload();
+    }
+
+    private void FreeUpload()
+    {
         _isProgressOverlayVisible = false;
         _files.Clear();
         StateHasChanged();
@@ -126,6 +127,6 @@
 {
     private void GetDirFiles()
     {
-        var result = FileHandling.GetFilesInDir($"{BaseConfig.ImportedPath}");
+        var result = FileHandling.GetFilesInDir($"{BaseConfig.DownloadsPath}");
     }
 }

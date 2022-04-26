@@ -17,8 +17,8 @@ using var prodDb = new MariaDb(applicationInfo);
 
 SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
 var excelfile = new Excel(applicationInfo, "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/ExcelData/Background_Files_Test.xlsx");
-Console.WriteLine($"Sheet Name is {excelfile.ActiveSheet.Name}");
-foreach (var sheet in excelfile.Sheets)
+Console.WriteLine($"Sheet Name is {excelfile!.ActiveSheet!.Name}");
+foreach (var sheet in excelfile!.Sheets!)
 {
     Console.WriteLine(sheet.Name);
 }
