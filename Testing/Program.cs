@@ -1,4 +1,6 @@
-﻿using Libraries;
+﻿using System.Data;
+using System.Data.OleDb;
+using Libraries;
 using GemBox.Spreadsheet;
 
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
@@ -23,9 +25,26 @@ foreach (var sheet in excelfile!.Sheets!)
     Console.WriteLine(sheet.Name);
 }
 
+var DSN = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source = /Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WATERDAT.accdb";
+var CON = new OleDbConnection(DSN);
+CON.Open();
+
+CON.Close();
+
 logFile.Stop();
 
+
+
 /*
+ var accessString = new OdbcConnectionStringBuilder
+{
+    Driver = "Actual Access"
+};
+accessString.Add("Dbq", "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WATERDAT.accdb");
+var Access = new OdbcConnection("Driver={Actual Access};Dbq=/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WATERDAT.accdb; Uid=; Pwd=;");
+
+
+
 var userInfo = new User("dkluis", "AAA123");
 Console.WriteLine($"The user is: {userInfo.firstName} {userInfo.lastName}, has superAdmin privs: {userInfo.superAdmin}");
 Console.WriteLine($"His roles are {userInfo.userRoles} and special functions are {userInfo.userApps}");
