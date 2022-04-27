@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Data.OleDb;
+﻿using System.Data.CData.Access;
 using Libraries;
 using GemBox.Spreadsheet;
 
@@ -25,11 +24,10 @@ foreach (var sheet in excelfile!.Sheets!)
     Console.WriteLine(sheet.Name);
 }
 
-var DSN = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source = /Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WATERDAT.accdb";
-var CON = new OleDbConnection(DSN);
-CON.Open();
-
-CON.Close();
+var con = new AccessConnection("Data Source=/home/dick/NPDES-System/AccessData/WASTEEMS.accdb");
+var a = con.Database;
+var cmd = new AccessCommand("select * from `BIENPRT`", con);
+var rdr = cmd.ExecuteReader(); 
 
 logFile.Stop();
 
