@@ -7,7 +7,7 @@ public class MarkdownService
     public static List<string> GetMarkDownFile(AppInfo appInfo, string fileName)
     {
         var fileContent = new List<string>();
-        var helpFilePath = appInfo.HelpFilesPath + "/" + fileName;
+        var helpFilePath = BaseConfig.HelpFilesPath + "/" + fileName;
         if (!File.Exists(helpFilePath))
         {
             fileContent.Add("No Help exists (yet)");

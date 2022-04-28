@@ -5,21 +5,17 @@ namespace Libraries;
 
 public class AppInfo
 {
-    public readonly string ActiveDbConn;
-    public readonly string Application;
-    public readonly string Program;
-    public readonly string ApiServerBase;
+    public string ActiveDbConn { get; }
+    private string Application { get; }
+    private string Program { get; }
+    public string ApiServerBase { get; }
+    private string? FullConfigPath { get; }
+    private string FileName { get; }
+    private string FilePath{ get; }
+    private int LogLevel{ get; }
+    public string SystemUserName{ get; set; }
 
-    public readonly string? FullConfigPath;
-    public readonly string ConfigPath;
-    public readonly string FileName;
-    public readonly string FilePath;
-    public readonly string WorkingDir;
-    public readonly int LogLevel;
-    public readonly string SystemUserName;
-    public readonly string HelpFilesPath;
-
-    public readonly TextFileHandler TxtFile;
+    public TextFileHandler TxtFile{ get; set; }
 
     public AppInfo(string application, string program, string dbConnection)
     {
@@ -34,36 +30,25 @@ public class AppInfo
             Console.WriteLine($"Full Config File Does not Exist {FullConfigPath}");
             Environment.Exit(666);
         }
-        ConfigPath = BaseConfig.ConfigPath;
-        HelpFilesPath = BaseConfig.HelpFilesPath;
-
-        WorkingDir = readKeyFromFile.FindInArray(FullConfigPath, "WorkingDir");
+        
         ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");
-
         LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
+
         FileName = Program + ".log";
-        FilePath = readKeyFromFile.FindInArray(FullConfigPath, "LogDir");
+        FilePath = BaseConfig.LogsPath;
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
 
         var dbProdConn = readKeyFromFile.FindInArray(FullConfigPath, "DbProduction");
         var dbTestConn = readKeyFromFile.FindInArray(FullConfigPath, "DbTesting");
         var dbAltConn = readKeyFromFile.FindInArray(FullConfigPath, "DbAlternate");
 
-        switch (dbConnection)
+        ActiveDbConn = dbConnection switch
         {
-            case "DbProduction":
-                ActiveDbConn = dbProdConn;
-                break;
-            case "DbTesting":
-                ActiveDbConn = dbTestConn;
-                break;
-            case "DbAlternate":
-                ActiveDbConn = dbAltConn;
-                break;
-            default:
-                ActiveDbConn = "";
-                break;
-        }
+            "DbProduction" => dbProdConn,
+            "DbTesting" => dbTestConn,
+            "DbAlternate" => dbAltConn,
+            _ => ""
+        };
     }
 }
 
