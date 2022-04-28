@@ -1,19 +1,16 @@
-using System.Data.Odbc;
+using System.Data.CData.Access;
 
 
 namespace Libraries;
 
 public class AccessDb
 {
-    public void Try()
+    public AccessDataReader Try()
     {
-        OdbcConnection con =
-            new OdbcConnection(
-                "Driver={Microsoft Access Driver(*.mdb, *.accdb)}; DBQ=/media/psf/Styropek/NPDES-System/WASTEEMS.accdb;");
-        //OdbcCommand command = new OdbcCommand("select * from table");
-
-        //command.Connection = con;
-        con.Open();
-        //var reader = command.ExecuteReader();
+        var con = new AccessConnection("DataSource=/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WASTEEMS.accdb; " +
+                                       "Logfile=C:/Users/Dick/Documents/Development/Data/CData.log; Verbosity=3;");
+        var cmd = new AccessCommand("select * from bienprt;", con);
+        var rdr = cmd.ExecuteReader();
+        return rdr;
     }
 }

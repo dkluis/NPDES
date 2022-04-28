@@ -8,12 +8,12 @@
 
     <ItemGroup>
       <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="CData.Access" Version="21.0.8091" />
       <PackageReference Include="GemBox.Spreadsheet" Version="49.0.1000" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Forms" Version="6.0.4" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.4" />
       <PackageReference Include="MySqlConnector" Version="2.1.8" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-      <PackageReference Include="System.Data.Odbc" Version="6.0.0" />
     </ItemGroup>
 
 </Project>
