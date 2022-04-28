@@ -12,6 +12,7 @@ public static class BaseConfig
     public static readonly string ExportedPath;
     public static readonly string LogsPath;
     public static readonly string ArchivesPath;
+    public static readonly string AccessData;
 
     static BaseConfig()
     {
@@ -53,5 +54,6 @@ public static class BaseConfig
         ProcessedPath = DownloadsPath + "/Processed";
         LogsPath = BasePath + "Logs";
         ArchivesPath = BasePath + "Archives";
+        AccessData = BasePath + "AccessData";
     }
 }
