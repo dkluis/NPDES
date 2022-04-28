@@ -28,7 +28,7 @@ public static class BaseConfig
             case PlatformID.Win32S:
             case PlatformID.Win32Windows:
             case PlatformID.WinCE:
-                BasePath = "C:/Users/Dick/NPDES-System/";
+                BasePath = "C:/Users/Dick/Documents/NPDES-System/";
                 break;
             case PlatformID.Unix:
                 BasePath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
