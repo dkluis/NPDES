@@ -52,8 +52,7 @@
             </MudButton>
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Downloads Table" IsInitiallyExpanded="true">
-                    <MudTable Items="@_allDownloadRecs" Hover="true" Breakpoint="Breakpoint.Sm" 
-                              Loading="@_loading" LoadingProgressColor="Color.Info"
+                    <MudTable Items="@_allDownloadRecs" Hover="true" Breakpoint="Breakpoint.Sm"
                               Dense="true" Striped="true" 
                               SortLabel="Sort By" Filter="new Func<DownloadRec, bool>(FilterFunc)" 
                               RowsPerPage=25 FixedHeader="true" Height="500px">
@@ -83,6 +82,7 @@
                             </MudTh>
                             <MudTh>Validate DT</MudTh>
                             <MudTh>Process DT</MudTh>
+                            <MudTh>File Exists</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="User">@context.User</MudTd>
@@ -94,6 +94,8 @@
                             <MudTd DataLabel="Download Date">@context.DownloadDateTime</MudTd>
                             <MudTd DataLabel="Validate Date">@context.ValidateDateTime</MudTd>
                             <MudTd DataLabel="Process Date">@context.ProcessDateTime</MudTd>
+                            @{ CheckFileStillThere(context); }
+                            <MudTd DataLabel="Still Exist">@_fileStillExist</MudTd>
                         </RowTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
@@ -109,7 +111,7 @@
 {
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
-    private bool _loading;
+    private bool _fileStillExist;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
     private List<DownloadRec> _allDownloadRecs = new List<DownloadRec>();
@@ -161,7 +163,7 @@
         }
 
         _fileToUpload = _files[0];
-        var exists = FileHandling.CheckFileExist(_fileToUpload, "Download");
+        var exists = FileHandling.CheckFileExist(_fileToUpload!.Name, "Download");
         if (exists)
         {
             Snackbar.Add($"File: {_fileToUpload!.Name} sized: {_fileToUpload.Size / 1000} KB ALREADY is imported", Severity.Error);
@@ -212,5 +214,16 @@
     private void GetDirFiles()
     {
         var result = FileHandling.GetFilesInDir($"{BaseConfig.DownloadsPath}");
+    }
+}
+
+@code
+{
+    private void CheckFileStillThere(DownloadRec dlRec)
+    {
+        var directory = "Downloads";
+        if (dlRec.ValidateDateTime.Year != 0001) directory = "Validated";
+        if (dlRec.ProcessDateTime.Year != 0001) directory = "Processed";
+        _fileStillExist = FileHandling.CheckFileExist(dlRec.FileName!, directory);
     }
 }

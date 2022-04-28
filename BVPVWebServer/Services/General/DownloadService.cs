@@ -94,9 +94,8 @@ public class DownloadService
         }
 
         return (result, recList);
-        
-
-        return (result, recList);
     }
+    
+    
 }
 

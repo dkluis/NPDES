@@ -1,5 +1,8 @@
-﻿using Libraries;
+﻿using System.Data.CData.Access;
+using Libraries;
 using GemBox.Spreadsheet;
+using CData;
+using CData.Sql;
 
 var applicationInfo = new AppInfo("NPDES", "Testing", "DbProduction");
 
@@ -24,8 +27,21 @@ foreach (var sheet in excelfile!.Sheets!)
 }
 
 
+var con = new AccessConnection("DataSource=/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/AccessData/WASTEEMS.accdb; RTK=43445247415A3034323732323330574542545231413100000000000000000000000000000000000044444530395431580000444A38575A313246383055460000;");
+var cmd = new AccessCommand("select * from bienprt;", con);
+var rdr = cmd.ExecuteReader();
 
 logFile.Stop();
+
+
+
+
+
+
+
+
+
+
 
 
 /*

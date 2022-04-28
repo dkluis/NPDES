@@ -31,7 +31,7 @@ public class FileHandling
         return result;
     }
 
-    public static bool CheckFileExist(IBrowserFile? file, string where)
+    public static bool CheckFileExist(string fileName, string where)
     {
         string path;
         switch (where)
@@ -50,8 +50,10 @@ public class FileHandling
                 break;
 
         }
-        return File.Exists($"{path}{file!.Name}");
+        return File.Exists($"{path}{fileName}");
     }
+    
+    
 
     public static (Result, List<string>) GetFilesInDir(string dir)
     {
