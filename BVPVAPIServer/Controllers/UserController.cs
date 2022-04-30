@@ -15,7 +15,7 @@ public class UserController : ControllerBase
     public UserRec GetUserInfo(string userId) 
     {
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` = '{userId}' LIMIT 1").Result;
+        var rdr = Db.ExecQueryAsync($"select * from `Admin-Users` where `UserID` = '{userId}' LIMIT 1").Result;
         var userInfo = new UserRec();
         if (rdr == null) return userInfo;
         while (rdr.Read())
@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     public List<UserRec> GetAllUsers()
     {
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `Users`").Result;
+        var rdr = Db.ExecQueryAsync($"select * from `Admin-Users`").Result;
         List<UserRec> users = new List<UserRec>();
         if (rdr == null) return users;
         while (rdr.Read())
@@ -58,7 +58,7 @@ public class UserController : ControllerBase
     public List<UserRec> GetAllUsersWildCard(string wildcard)
     {
         Db.Open();
-        var rdr = Db.ExecQueryAsync($"select * from `Users` where `UserID` like '{wildcard}'").Result;
+        var rdr = Db.ExecQueryAsync($"select * from `Admin-Users` where `UserID` like '{wildcard}'").Result;
         List<UserRec> users = new List<UserRec>();
         if (rdr == null) return users;
         while (rdr.Read())
@@ -80,7 +80,7 @@ public class UserController : ControllerBase
     public bool PutUserInfo(UserRec userRec) 
     {
         Db.Open();
-        var sql = $"insert into Users values ('{userRec.UserId}', '{userRec.Password}', '{userRec.Salt}');";
+        var sql = $"insert into `Admin-Users` values ('{userRec.UserId}', '{userRec.Password}', '{userRec.Salt}');";
         Db.ExecNonQuery(sql);
         var result = Db.Success;
         Db.Close();
@@ -103,7 +103,7 @@ public class UserController : ControllerBase
     public bool DeleteUserInfo(string userId) 
     {
         Db.Open();
-        var sql = $"delete from Users where `UserID` ='{userId}';";
+        var sql = $"delete from `Admin-Users` where `UserID` = '{userId}';";
         Db.ExecNonQuery(sql);
         var result = Db.Success;
         Db.Close();
