@@ -14,7 +14,6 @@ public class AppInfo
     private string FilePath{ get; }
     private int LogLevel{ get; }
     public string SystemUserName{ get; set; }
-
     public TextFileHandler TxtFile{ get; set; }
 
     public AppInfo(string application, string program, string dbConnection)
