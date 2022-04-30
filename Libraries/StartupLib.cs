@@ -29,14 +29,19 @@ public static class BaseConfig
             case PlatformID.Win32Windows:
             case PlatformID.WinCE:
                 BasePath = "C:/Users/Dick/Documents/NPDES-System/";
+                AccessData = "//Win11Dev/NPDES-System/AccessData";
                 break;
             case PlatformID.Unix:
                 BasePath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
                     ? "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/"
-                    : "/home/dick/NPDES-System/";
+                    : "/Volumes/NPDES-System/AccessData";
+                AccessData = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
+                    ? "/Volumes/NPDES-System/AccessData"
+                    : "/mnt/share/AccessData";
                 break;
             case PlatformID.MacOSX:
                 BasePath = "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/";
+                AccessData = "/Volumes/NPDES-System/AccessData";
                 break;
             case PlatformID.Xbox:
             case PlatformID.Other:
@@ -54,6 +59,6 @@ public static class BaseConfig
         ProcessedPath = DownloadsPath + "/Processed";
         LogsPath = BasePath + "Logs";
         ArchivesPath = BasePath + "Archives";
-        AccessData = BasePath + "AccessData";
+        //AccessData = BasePath + "AccessData";
     }
 }
