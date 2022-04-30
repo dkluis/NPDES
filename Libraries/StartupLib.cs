@@ -34,9 +34,9 @@ public static class BaseConfig
             case PlatformID.Unix:
                 BasePath = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
                     ? "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/"
-                    : "/Volumes/NPDES-System/AccessData";
+                    : "/home/dick/NPDES-System/";
                 AccessData = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
-                    ? "/Volumes/NPDES-System/AccessData"
+                    ? "/home/dick/NPDES-System/AccessData"
                     : "/mnt/share/AccessData";
                 break;
             case PlatformID.MacOSX:
