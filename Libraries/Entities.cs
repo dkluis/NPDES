@@ -17,4 +17,6 @@ public class DownloadRec
     public string? ValidateUser { get; set; }
     public DateTime ProcessDateTime { get; set; }
     public string? ProcessUser { get; set; }
+    public DateTime ArchiveDateTime { get; set; }
+    public string? ArchiveUser { get; set; }
 }
