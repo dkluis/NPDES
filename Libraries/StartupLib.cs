@@ -36,7 +36,7 @@ public static class BaseConfig
                     ? "/Volumes/HD-Data-CA-Server/BVPV/NPDES-System/"
                     : "/home/dick/NPDES-System/";
                 AccessData = Directory.Exists("/Applications") && Directory.Exists("/Volumes")
-                    ? "/home/dick/NPDES-System/AccessData"
+                    ? "/Volumes/NPDES-System/AccessData"
                     : "/mnt/share/AccessData";
                 break;
             case PlatformID.MacOSX:
