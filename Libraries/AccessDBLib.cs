@@ -54,4 +54,9 @@ public class AccessDb
         return rdr;
     }
 
+    public void TransferTableData(string accessDb, string aTable, string mariaDb, string mTable)
+    {
+        
+    }
+
 }
