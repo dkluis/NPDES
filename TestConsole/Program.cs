@@ -19,10 +19,20 @@ while (rdr.Read())
 }
 */
 
-const string accessDb = "WATEREMS.accdb";
+const string accessDb = "WaterDAT2.accdb";
+var sampInfoRecs = adb.GetAllSampInfoRecs();
+var count = 1;
+foreach (var rec in sampInfoRecs)
+{
+    Console.WriteLine($"{rec.HLALABID}, {rec.COLLDATE}, {rec.COLLTIME} ");
+    count++;
+    if (count > 100) break;
+}
 
+/*
 var tables = adb.GetAllTables(accessDb);
 var views = adb.GetAllTables(accessDb, "Views");
+*/
 
 // Below Code is for extracting all schema info for selected accessDb
 /*
@@ -47,6 +57,7 @@ foreach (DataRow table in views.Rows)
 }
 */
 
+/*
 // Below Code is for getting a record count for all Tables and Views for the accessDB selected
 var appInfo = new AppInfo("App", $"{accessDb.Replace(".accdb", "")} Record Counts", "DbCon");
 var outPutFile = appInfo.TxtFile;
@@ -56,4 +67,4 @@ foreach (DataRow table in tables.Rows)
     var rdr = adb.GetRecordCount(accessDb, tbl);
     outPutFile.WriteNoHead($"{table["TABLE_NAME"]},{rdr[0]}");
 }
-
+*/

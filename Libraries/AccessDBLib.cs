@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.CData.Access;
+using Org.BouncyCastle.Cms;
 
 namespace Libraries;
 
@@ -48,10 +49,35 @@ public class AccessDb
                                        $"Logfile={BaseConfig.LogsPath}/CData.log; " +
                                        $"Verbosity=3;");
         con.Open();
-        Console.WriteLine($"Working on Table: {table}");
         var cmd = new AccessCommand($"select count(*) from `{table}`;", con);
         var rdr = cmd.ExecuteReader();
         return rdr;
+    }
+    
+    public IEnumerable<ARCOSampInfo> GetAllSampInfoRecs()
+    {
+        var recsFound = new List<ARCOSampInfo>(35840);
+        var con = new AccessConnection($"DataSource={BaseConfig.AccessData}/WaterDAT2.accdb; " +
+                                       $"Logfile={BaseConfig.LogsPath}/CData.log; " +
+                                       $"Verbosity=3;");
+        con.Open();
+        var cmd = new AccessCommand($"select * from `ACROSampInfo`;", con);
+        var rdr = cmd.ExecuteReader();
+        if (rdr.HasRows)
+        {
+            while (rdr.Read())
+            {
+                var rec = new ARCOSampInfo()
+                {
+                    HLALABID = (string) rdr["HlALABID"],
+                    OBJID = (string) rdr["OBJID"],
+                    COLLDATE = (DateTime) rdr["COLLDATE"],
+                    COLLTIME = (DateTime) rdr["COLLTIME"]
+                };
+                recsFound.Add(rec);
+            }
+        }
+        return recsFound;
     }
 
     public void TransferTableData(string accessDb, string aTable, string mariaDb, string mTable)

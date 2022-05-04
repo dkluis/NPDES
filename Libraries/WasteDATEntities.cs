@@ -21,3 +21,4 @@ public class RData25
     public string? DS2 { get; set; }
     public string? RCLeader { get; set; }
 }
+
