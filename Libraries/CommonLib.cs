@@ -37,6 +37,9 @@ public class AppInfo
         FilePath = BaseConfig.LogsPath;
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
 
+        ActiveDbConn = readKeyFromFile.FindInArray(FullConfigPath, dbConnection);
+
+        /*
         var dbProdConn = readKeyFromFile.FindInArray(FullConfigPath, "DbProduction");
         var dbTestConn = readKeyFromFile.FindInArray(FullConfigPath, "DbTesting");
         var dbAltConn = readKeyFromFile.FindInArray(FullConfigPath, "DbAlternate");
@@ -48,6 +51,7 @@ public class AppInfo
             "DbAlternate" => dbAltConn,
             _ => ""
         };
+        */
     }
 }
 

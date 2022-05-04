@@ -1,5 +1,7 @@
 using System.Data;
 using System.Data.CData.Access;
+using System.Globalization;
+using System.Runtime.InteropServices.ComTypes;
 using Org.BouncyCastle.Cms;
 
 namespace Libraries;
@@ -61,7 +63,7 @@ public class AccessDb
                                        $"Logfile={BaseConfig.LogsPath}/CData.log; " +
                                        $"Verbosity=3;");
         con.Open();
-        var cmd = new AccessCommand($"select * from `ACROSampInfo`;", con);
+        var cmd = new AccessCommand($"select * from `ARCOSampInfo`;", con);
         var rdr = cmd.ExecuteReader();
         if (rdr.HasRows)
         {
@@ -69,10 +71,21 @@ public class AccessDb
             {
                 var rec = new ARCOSampInfo()
                 {
-                    HLALABID = (string) rdr["HlALABID"],
-                    OBJID = (string) rdr["OBJID"],
-                    COLLDATE = (DateTime) rdr["COLLDATE"],
-                    COLLTIME = (DateTime) rdr["COLLTIME"]
+                    HLALABID = rdr["HLALABID"].ToString() != "" ? (string) rdr["HlALABID"] : null,
+                    OBJID = rdr["OBJID"].ToString() != "" ? (string) rdr["OBJID"] : null,
+                    PERMNUM = rdr["PERMNUM"].ToString() != "" ? (string) rdr["PERMNUM"] : null,
+                    ORDERNUM = rdr["ORDERNUM"].ToString() != "" ? (string) rdr["ORDERNUM"] : null,
+                    SAMPLEID = rdr["SAMPLEID"].ToString() != "" ? (string) rdr["SAMPLEID"] : null,
+                    SAMPTYPE = rdr["SAMPTYPE"].ToString() != "" ? (string) rdr["SAMPTYPE"] : null,
+                    SAMPBY = rdr["SAMPBY"].ToString() != "" ? (string) rdr["SAMPBY"] : null,
+                    COLLDATE = rdr["COLLDATE"].ToString() != "" ? (DateTime) rdr["COLLDATE"] : new DateTime(1990,01,01,00,00,00),
+                    COLLTIME = rdr["COLLTIME"].ToString() != "" ? (DateTime) rdr["COLLTIME"] : new DateTime(1990,01,01,00,00,00),
+                    SAMPDATE = rdr["SAMPDATE"].ToString() != "" ? (DateTime) rdr["SAMPDATE"] : new DateTime(1990,01,01,00,00,00),
+                    LABNAME = rdr["LABNAME"].ToString() != "" ? (string) rdr["LABNAME"] : null,
+                    RECDATE = rdr["RECDATE"].ToString() != "" ? (DateTime) rdr["RECDATE"] : new DateTime(1990,01,01,00,00,00),
+                    COMMENT = rdr["COMMENT"].ToString() != "" ? (string) rdr["COMMENT"] : null,
+                    ENTERDATE = rdr["ENTERDATE"].ToString() != "" ? (DateTime) rdr["ENTERDATE"] : new DateTime(1990,01,01,00,00,00),
+                    SOURCE = rdr["SOURCE"].ToString() != "" ? (string) rdr["SOURCE"] : null
                 };
                 recsFound.Add(rec);
             }

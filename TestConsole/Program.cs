@@ -2,6 +2,7 @@
 
 using System.Data;
 using Libraries;
+using Org.BouncyCastle.Asn1.Cms;
 
 Console.WriteLine("Hello, World!");
 
@@ -21,12 +22,18 @@ while (rdr.Read())
 
 const string accessDb = "WaterDAT2.accdb";
 var sampInfoRecs = adb.GetAllSampInfoRecs();
-var count = 1;
+var count = 0;
+var appInfo = new AppInfo("NPDES", "SampInfo", "AccessDBWaterDAT2");
+var mdb = new MariaDb(appInfo);
+mdb.Open();
 foreach (var rec in sampInfoRecs)
 {
-    Console.WriteLine($"{rec.HLALABID}, {rec.COLLDATE}, {rec.COLLTIME} ");
-    count++;
-    if (count > 100) break;
+    var values = $"'{rec.HLALABID}', '{rec.OBJID}', '{rec.PERMNUM}', " +
+                 $"'{rec.ORDERNUM}', '{rec.SAMPLEID}', '{rec.SAMPTYPE}', " +
+                 $"'{rec.SAMPBY}', '{rec.COLLDATE.ToString("yyyy/MM/dd hh:mm:ss")}', '{rec.COLLTIME.ToString("yyyy/MM/dd hh:mm:ss")}', " +
+                 $"'{rec.SAMPDATE.ToString("yyyy/MM/dd hh:mm:ss")}', '{rec.LABNAME}', '{rec.RECDATE.ToString("yyyy/MM/dd hh:mm:ss")}', " +
+                 $"'{rec.COMMENT}', '{rec.ENTERDATE.ToString("yyyy/MM/dd hh:mm:ss")}', '{rec.SOURCE}'";
+    mdb.ExecNonQuery($"insert into ARCOSampInfo values ({values});");
 }
 
 /*
