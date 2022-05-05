@@ -5,19 +5,19 @@ namespace Libraries;
 
 public class ARCOSampInfoRec
 {
-    public string? HLALABID;
-    public string? OBJID;
-    public string? PERMNUM;
-    public string? ORDERNUM;
-    public string? SAMPLEID;
-    public string? SAMPTYPE;
-    public string? SAMPBY;
-    public DateTime COLLDATE;
-    public DateTime COLLTIME;
-    public DateTime SAMPDATE;
-    public string? LABNAME;
-    public DateTime RECDATE;
-    public string? COMMENT;
-    public DateTime ENTERDATE;
-    public string? SOURCE;
+    public string? HLALABID { get; set; }
+    public string? OBJID { get; set; }
+    public string? PERMNUM { get; set; }
+    public string? ORDERNUM { get; set; }
+    public string? SAMPLEID { get; set; }
+    public string? SAMPTYPE { get; set; }
+    public string? SAMPBY { get; set; }
+    public DateTime COLLDATE { get; set; }
+    public DateTime COLLTIME { get; set; }
+    public DateTime SAMPDATE { get; set; }
+    public string? LABNAME { get; set; }
+    public DateTime RECDATE { get; set; }
+    public string? COMMENT { get; set; }
+    public DateTime ENTERDATE { get; set; }
+    public string? SOURCE { get; set; }
 }

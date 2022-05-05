@@ -1,6 +1,5 @@
 @page "/ARCOSampInfo"
 
-
 @using System.Globalization
 
 @inject ProtectedSessionStorage SessionStore
@@ -22,7 +21,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Uploads") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "ARCOSampInfo") == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -41,20 +40,29 @@
                 </MudGrid>
             </MudOverlay>
 
-            <MudText Typo="Typo.h4" Align="Align.Center">Uploads</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">Sample Information Table</MudText>
 
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Sample Info Table" IsInitiallyExpanded="true">
+
+                    <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
+                        <MudCard Outlined="true" Elevation="4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Sample Date Year</MudText>
+                                <MudTextField Label="Year" HelperText="Use the Year of the Sample Date" @bind-Value="_year"/>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillArcoSampInfo">Fill Table</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
+
                     <MudTable Items="@_allArcoSampInfos" Hover="true" Breakpoint="Breakpoint.Sm"
                               Dense="true" Striped="true"
                               SortLabel="Sort By" Filter="new Func<ARCOSampInfoRec, bool>(FilterFunc)"
-                              RowsPerPage=50 FixedHeader="true" Height="800px">
+                              RowsPerPage=50 FixedHeader="true" Height="700px">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Sample Info Table</MudText>
-                            <MudSpacer></MudSpacer>
-                            <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
-                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillArcoSampInfo">Refresh</MudButton>
-                            </MudButtonGroup>
                             <MudSpacer></MudSpacer>
                             <MudTextField @bind-Value="_searchString" Placeholder="Search Sample Info Table" Adornment="Adornment.Start"
                                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
@@ -97,17 +105,17 @@
                             <MudTd DataLabel="SAMPLEID">@context.SAMPLEID</MudTd>
                             <MudTd DataLabel="SAMPTYPE">@context.SAMPTYPE</MudTd>
                             <MudTd DataLabel="SAMPBY">@context.SAMPBY</MudTd>
-                            @{ var collD = @context.COLLDATE.ToString("yyyy") != "1990" ? @context.COLLDATE.ToString("MM/dd/yyyy") : "";}
+                            @{ var collD = @context.COLLDATE.ToString("yyyy") != "1990" ? @context.COLLDATE.ToString("MM/dd/yyyy") : ""; }
                             <MudTd DataLabel="COLLDATE">@collD</MudTd>
-                            @{ var collT = @context.COLLTIME.ToString("yyyy") != "1990" ? @context.COLLTIME.ToString("hh:mm:ss") : "";}
+                            @{ var collT = @context.COLLTIME.ToString("yyyy") != "1990" ? @context.COLLTIME.ToString("hh:mm:ss") : ""; }
                             <MudTd DataLabel="COLLTIME">@collT</MudTd>
-                            @{ var sampD = @context.SAMPDATE.ToString("yyyy") != "1990" ? @context.SAMPDATE.ToString("MM/dd/yyyy") : "";}
+                            @{ var sampD = @context.SAMPDATE.ToString("yyyy") != "1990" ? @context.SAMPDATE.ToString("MM/dd/yyyy") : ""; }
                             <MudTd DataLabel="SAMPDATE">@sampD</MudTd>
                             <MudTd DataLabel="LABNAME">@context.LABNAME</MudTd>
-                            @{ var recD = @context.RECDATE.ToString("yyyy") != "1990" ? @context.RECDATE.ToString("MM/dd/yyyy") : "";}
+                            @{ var recD = @context.RECDATE.ToString("yyyy") != "1990" ? @context.RECDATE.ToString("MM/dd/yyyy") : ""; }
                             <MudTd DataLabel="RECDATE">@recD</MudTd>
                             <MudTd DataLabel="COMMENT">@context.COMMENT</MudTd>
-                            @{ var enterD = @context.ENTERDATE.ToString("yyyy") != "1990" ? @context.ENTERDATE.ToString("MM/dd/yyyy") : "";}
+                            @{ var enterD = @context.ENTERDATE.ToString("yyyy") != "1990" ? @context.ENTERDATE.ToString("MM/dd/yyyy") : ""; }
                             <MudTd DataLabel="ENTERDATE">@enterD</MudTd>
                             <MudTd DataLabel="SOURCE">@context.SOURCE</MudTd>
                         </RowTemplate>
@@ -127,6 +135,7 @@
     private string? _progressMessage;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
+    private string _year = "";
     private List<Libraries.ARCOSampInfoRec> _allArcoSampInfos = new(100000);
 
     protected override async Task OnInitializedAsync()
@@ -136,7 +145,8 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "ARCOSampInfo");
-        FillArcoSampInfo();
+        _year = DateTime.Now.ToString("yyyy");
+        //FillArcoSampInfo();
         _isProgressOverlayVisible = false;
     }
 
@@ -146,9 +156,19 @@
 {
     private void FillArcoSampInfo()
     {
-        var allInfo = WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), "");
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var fromdate = $"{_year}-01-01";
+        var todate = $"{_year}-12-31";
+        var allInfo = _year != "" ? WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), $"WHERE SAMPDATE BETWEEN '{fromdate}' AND '{todate}'") : WaterDatService.GetArcoSampInfo(StateService.GetAppInfo());
         if (allInfo.Item1.Success) _allArcoSampInfos = allInfo.Item2;
+        _isProgressOverlayVisible = false;
     }
+}
+
+@code
+{
+    DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.Date);
 }
 
 @code
@@ -176,7 +196,6 @@
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (rec.RECDATE.ToString(CultureInfo.InvariantCulture)!.Contains(_searchString))
             return true;
-
         return false;
     }
 }
