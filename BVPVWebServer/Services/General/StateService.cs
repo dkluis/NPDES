@@ -11,7 +11,7 @@ public class StateService
     public AppState? AppState;
     public string? UserId;
     public bool IsLoggedIn;
-    public bool IsEnabled;
+    public bool IsEnabled { get; set; }
 
     public readonly string ApiServerBase;
 
@@ -80,19 +80,6 @@ public class StateService
     {
         InitSystemState(UserId!);
     }
-
-    public void UpdateAll()
-    {
-    }
-    
-    public void UpdateAppState()
-    {
-    }
-
-    public void Delete()
-    {
-    }
-    
 }
 
 

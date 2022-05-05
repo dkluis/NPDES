@@ -148,7 +148,7 @@ public class UserService
         db.Open();
         foreach (var role in userRoles)
         {
-            string sql = $"delete from `Admin-UserRoles` where `UserId`= '{userName}' and `RoleID` = '{role}';";
+            var sql = $"delete from `Admin-UserRoles` where `UserId`= '{userName}' and `RoleID` = '{role}';";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }
@@ -167,7 +167,7 @@ public class UserService
         if (!rdr!.HasRows) return assignedRoles;
         while (rdr.Read())
         {
-            if ((string) rdr[$"RoleId"] == "None" || (string) rdr["RoleId"] == "SuperAdmin") continue;
+            if ((string) rdr["RoleId"] == "None" || (string) rdr["RoleId"] == "SuperAdmin") continue;
             assignedRoles.Add((string) rdr["RoleID"]);
         }
         return assignedRoles;
@@ -211,7 +211,7 @@ public class UserService
         return ue;
     }
 
-    public List<AppsByUser> GetAppsByUser(AppInfo appInfo, string userid)
+    public static List<AppsByUser> GetAppsByUser(AppInfo appInfo, string userid)
     {
         var result = new List<AppsByUser>();
         using var db = new MariaDb(appInfo);

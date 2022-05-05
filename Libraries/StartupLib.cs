@@ -20,6 +20,7 @@ public static class BaseConfig
         HelpFilesPath = string.Empty;
         ConfigPath = string.Empty;
         FullConfigPath = string.Empty;
+        AccessData = string.Empty;
         var os = Environment.OSVersion;
         var pid = os.Platform;
         switch (pid)

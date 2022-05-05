@@ -69,10 +69,10 @@
                                 <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.User!)">User</MudTableSortLabel>
                             </MudTh>
                             <MudTh T="int">
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.FileName)">File Name</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.FileName!)">File Name</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.Function)">Function</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.Function!)">Function</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
                                 <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.DownloadDateTime)">Download DT</MudTableSortLabel>
@@ -111,7 +111,7 @@
     private bool _fileStillExist;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
-    private List<DownloadRec> _allDownloadRecs = new List<DownloadRec>();
+    private List<DownloadRec> _allDownloadRecs = new (1024);
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,7 +154,7 @@
 
         if (_files.Count is > 1 or 0)
         {
-            Snackbar.Add($"No File selected", Severity.Info);
+            Snackbar.Add("No File selected", Severity.Info);
             FreeUpload();
             return;
         }
@@ -198,7 +198,7 @@
         if (downloadRec.User!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (downloadRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture)!.Contains(_searchString))
+        if (downloadRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
             return true;
 
         return false;

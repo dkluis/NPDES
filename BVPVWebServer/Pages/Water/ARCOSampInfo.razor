@@ -1,15 +1,12 @@
 @page "/ARCOSampInfo"
 
 @using System.Globalization
+@using Severity = MudBlazor.Severity
 
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
 @inject WaterDatService WaterDatService
-
-@inject ISnackbar Snackbar
-@using Severity = MudBlazor.Severity
-@using BVPVWebServer.Services.Water
 
 <PageTitle>ARCO Sample Info Table</PageTitle>
 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
@@ -70,15 +67,15 @@
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.HLALABID)">HLA LAB</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.HLALABID!)">HLA LAB</MudTableSortLabel>
                             </MudTh>
                             <MudTh T="int">
-                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.OBJID)">Obj Id</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.OBJID!)">Obj Id</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Permit Num</MudTh>
                             <MudTh>Order Num</MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.SAMPLEID)">Sample Id</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.SAMPLEID!)">Sample Id</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Sample Type</MudTh>
                             <MudTh>Sampled By</MudTh>
@@ -134,9 +131,8 @@
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
     private string _searchString = "";
-    private string _linkedContext = string.Empty;
     private string _year = "";
-    private List<Libraries.ARCOSampInfoRec> _allArcoSampInfos = new(100000);
+    private List<ARCOSampInfoRec> _allArcoSampInfos = new(100000);
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,17 +154,12 @@
     {
         _progressMessage = "(Re)Initializing the App";
         _isProgressOverlayVisible = true;
-        var fromdate = $"{_year}-01-01";
-        var todate = $"{_year}-12-31";
-        var allInfo = _year != "" ? WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), $"WHERE SAMPDATE BETWEEN '{fromdate}' AND '{todate}'") : WaterDatService.GetArcoSampInfo(StateService.GetAppInfo());
+        var fromDate = $"{_year}-01-01";
+        var toDate = $"{_year}-12-31";
+        var allInfo = _year != "" ? WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), $"WHERE SAMPDATE BETWEEN '{fromDate}' AND '{toDate}'") : WaterDatService.GetArcoSampInfo(StateService.GetAppInfo());
         if (allInfo.Item1.Success) _allArcoSampInfos = allInfo.Item2;
         _isProgressOverlayVisible = false;
     }
-}
-
-@code
-{
-    DateRange _dateRange = new(DateTime.Now.Date, DateTime.Now.Date);
 }
 
 @code
@@ -187,14 +178,14 @@
             return true;
         if (rec.SAMPTYPE!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.SAMPDATE!.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.SAMPDATE.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (rec.LABNAME!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (rec.COMMENT!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (rec.RECDATE.ToString(CultureInfo.InvariantCulture)!.Contains(_searchString))
+        if (rec.RECDATE.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
             return true;
         return false;
     }

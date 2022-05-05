@@ -15,7 +15,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="_themeManager.AppBarElevation">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => DrawerToggle())"/>
         <MudSpacer></MudSpacer>
         <MudIconButton Icon="@Icons.Material.Filled.HelpCenter" Color="Color.Inherit" OnClick="Help"></MudIconButton>
         @{
@@ -48,20 +48,8 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    private ThemeManagerTheme _themeManager = new();
-    private bool _themeManagerOpen;
-
-    void OpenThemeManager(bool value)
-    {
-        _themeManagerOpen = value;
-    }
-
-    void UpdateTheme(ThemeManagerTheme value)
-    {
-        _themeManager = value;
-        StateHasChanged();
-    }
-
+    private readonly ThemeManagerTheme _themeManager = new();
+    
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");

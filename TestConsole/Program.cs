@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Data;
 using Libraries;
-using Org.BouncyCastle.Asn1.Cms;
 
 Console.WriteLine("Hello, World!");
 
@@ -22,8 +20,8 @@ while (rdr.Read())
 
 const string accessDb = "WaterDAT2.accdb";
 var sampInfoRecs = adb.GetAllSampInfoRecs();
-var count = 0;
-var appInfo = new AppInfo("NPDES", "SampInfo", "AccessDBWaterDAT2");
+
+var appInfo = new AppInfo("NPDES", "SampInfo", accessDb);
 var mdb = new MariaDb(appInfo);
 mdb.Open();
 foreach (var rec in sampInfoRecs)
