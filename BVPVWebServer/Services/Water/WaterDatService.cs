@@ -4,17 +4,17 @@ namespace BVPVWebServer.Services.Water;
 
 public class WaterDatService
 {
-    public (Result, List<ARCOSampInfo>) GetArcoSampInfo(AppInfo appInfo, string whereClause = "")
+    public (Result, List<ARCOSampInfoRec>) GetArcoSampInfo(AppInfo appInfo, string whereClause = "")
     {
-        var allRecords = new List<ARCOSampInfo>(100000);
+        var allRecords = new List<ARCOSampInfoRec>(100000);
         var sql = whereClause == "" ? $"select * from ARCOSampInfo" : $"select * from ARCOSampInfo where {whereClause}";
-        var db = new MariaDb(appInfo);
+        var db = new MariaDb(appInfo, "server=BVPVServer.local; port=3306; database=WaterDAT2; uid=dick; pwd=password");
         db.Open();
         var rdr = db.ExecQuery(sql);
         var result = new Result() {Message = db.ErrorMessage, Success = db.Success};
         while (rdr!.Read() && rdr.HasRows)
         {
-            var rec = new ARCOSampInfo()
+            var rec = new ARCOSampInfoRec()
             {
                 HLALABID = rdr["HLALABID"].ToString() != null ? (string) rdr["HlALABID"] : "",
                 OBJID = rdr["OBJID"].ToString() != null ? (string) rdr["OBJID"] : "",

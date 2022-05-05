@@ -56,9 +56,9 @@ public class AccessDb
         return rdr;
     }
     
-    public IEnumerable<ARCOSampInfo> GetAllSampInfoRecs()
+    public IEnumerable<ARCOSampInfoRec> GetAllSampInfoRecs()
     {
-        var recsFound = new List<ARCOSampInfo>(35840);
+        var recsFound = new List<ARCOSampInfoRec>(35840);
         var con = new AccessConnection($"DataSource={BaseConfig.AccessData}/WaterDAT2.accdb; " +
                                        $"Logfile={BaseConfig.LogsPath}/CData.log; " +
                                        $"Verbosity=3;");
@@ -69,7 +69,7 @@ public class AccessDb
         {
             while (rdr.Read())
             {
-                var rec = new ARCOSampInfo()
+                var rec = new ARCOSampInfoRec()
                 {
                     HLALABID = rdr["HLALABID"].ToString() != "" ? (string) rdr["HlALABID"] : null,
                     OBJID = rdr["OBJID"].ToString() != "" ? (string) rdr["OBJID"] : null,

@@ -15,17 +15,17 @@ public class MariaDb : IDisposable
         public bool Success;
         public string ErrorMessage;
 
-        public MariaDb(AppInfo appInfo)
+        public MariaDb(AppInfo appInfo, string overrideDbCon = "")
         {
             _mDbLog = appInfo.TxtFile;
             _conn = new MySqlConnection();
             _cmd = new MySqlCommand();
             ErrorMessage = string.Empty;
-
+            var dbCon = overrideDbCon == "" ? appInfo.ActiveDbConn : overrideDbCon;
             Success = false;
             try
             {
-                _conn = new MySqlConnection(appInfo.ActiveDbConn);
+                _conn = new MySqlConnection(dbCon);
                 Success = true;
             }
             catch (Exception e)

@@ -3,7 +3,7 @@
 // ReSharper disable UnusedType.Global
 namespace Libraries;
 
-public class ARCOSampInfo
+public class ARCOSampInfoRec
 {
     public string? HLALABID;
     public string? OBJID;

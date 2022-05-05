@@ -1,5 +1,8 @@
 @page "/ARCOSampInfo"
 
+
+@using System.Globalization
+
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
@@ -12,13 +15,119 @@
 <PageTitle>ARCO Sample Info Table</PageTitle>
 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
 
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Uploads") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            //Page Detail
+
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+
+            <MudText Typo="Typo.h4" Align="Align.Center">Uploads</MudText>
+
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Sample Info Table" IsInitiallyExpanded="true">
+                    <MudTable Items="@_allArcoSampInfos" Hover="true" Breakpoint="Breakpoint.Sm"
+                              Dense="true" Striped="true"
+                              SortLabel="Sort By" Filter="new Func<ARCOSampInfoRec, bool>(FilterFunc)"
+                              RowsPerPage=50 FixedHeader="true" Height="800px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Sample Info Table</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudButtonGroup Variant="Variant.Filled" Color="Color.Primary">
+                                <MudButton StartIcon="@Icons.Material.Filled.Refresh" OnClick="FillArcoSampInfo">Refresh</MudButton>
+                            </MudButtonGroup>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search Sample Info Table" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.HLALABID)">HLA LAB</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh T="int">
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.OBJID)">Obj Id</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Permit Num</MudTh>
+                            <MudTh>Order Num</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.SAMPLEID)">Sample Id</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Sample Type</MudTh>
+                            <MudTh>Sampled By</MudTh>
+                            <MudTh>Coll Date</MudTh>
+                            <MudTh>Coll Time</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.SAMPDATE)">Sample Date</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Lab Name</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.RECDATE)">Received Date</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Comment</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOSampInfoRec, object>(x => x.SAMPDATE)">Entered Date</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Source</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="HLALABID">@context.HLALABID</MudTd>
+                            <MudTd DataLabel="OBJID">@context.OBJID</MudTd>
+                            <MudTd DataLabel="PERMNUM">@context.PERMNUM</MudTd>
+                            <MudTd DataLabel="ORDERNUM">@context.ORDERNUM</MudTd>
+                            <MudTd DataLabel="SAMPLEID">@context.SAMPLEID</MudTd>
+                            <MudTd DataLabel="SAMPTYPE">@context.SAMPTYPE</MudTd>
+                            <MudTd DataLabel="SAMPBY">@context.SAMPBY</MudTd>
+                            @{ var collD = @context.COLLDATE.ToString("yyyy") != "1990" ? @context.COLLDATE.ToString("MM/dd/yyyy") : "";}
+                            <MudTd DataLabel="COLLDATE">@collD</MudTd>
+                            @{ var collT = @context.COLLTIME.ToString("yyyy") != "1990" ? @context.COLLTIME.ToString("hh:mm:ss") : "";}
+                            <MudTd DataLabel="COLLTIME">@collT</MudTd>
+                            @{ var sampD = @context.SAMPDATE.ToString("yyyy") != "1990" ? @context.SAMPDATE.ToString("MM/dd/yyyy") : "";}
+                            <MudTd DataLabel="SAMPDATE">@sampD</MudTd>
+                            <MudTd DataLabel="LABNAME">@context.LABNAME</MudTd>
+                            @{ var recD = @context.RECDATE.ToString("yyyy") != "1990" ? @context.RECDATE.ToString("MM/dd/yyyy") : "";}
+                            <MudTd DataLabel="RECDATE">@recD</MudTd>
+                            <MudTd DataLabel="COMMENT">@context.COMMENT</MudTd>
+                            @{ var enterD = @context.ENTERDATE.ToString("yyyy") != "1990" ? @context.ENTERDATE.ToString("MM/dd/yyyy") : "";}
+                            <MudTd DataLabel="ENTERDATE">@enterD</MudTd>
+                            <MudTd DataLabel="SOURCE">@context.SOURCE</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {50, 150, 500}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+}
+
+
 @code {
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
-    private bool _fileStillExist;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
-    private List<Libraries.ARCOSampInfo> _allArcoSampInfos = new (100000);
+    private List<Libraries.ARCOSampInfoRec> _allArcoSampInfos = new(100000);
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,13 +136,47 @@
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
         await SessionStore.SetAsync("CurrentApp", "ARCOSampInfo");
+        FillArcoSampInfo();
+        _isProgressOverlayVisible = false;
+    }
+
+}
+
+@code
+{
+    private void FillArcoSampInfo()
+    {
         var allInfo = WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), "");
         if (allInfo.Item1.Success) _allArcoSampInfos = allInfo.Item2;
-        _isProgressOverlayVisible = false;
     }
 }
 
 @code
 {
-    
+    private bool FilterFunc(ARCOSampInfoRec rec)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (rec.HLALABID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.OBJID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.SAMPLEID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.SAMPBY!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.SAMPTYPE!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.SAMPDATE!.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.LABNAME!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.COMMENT!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (rec.RECDATE.ToString(CultureInfo.InvariantCulture)!.Contains(_searchString))
+            return true;
+
+        return false;
+    }
 }
