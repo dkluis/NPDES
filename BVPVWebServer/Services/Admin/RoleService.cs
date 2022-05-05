@@ -6,7 +6,7 @@ public class RoleService
 {
     public static IEnumerable<Role> GetAllRoles(AppInfo appInfo, string searchString = "")
     {
-        var allRoles = new List<Role>();
+        var allRoles = new List<Role>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var sql = searchString switch
@@ -36,7 +36,7 @@ public class RoleService
     
     public static List<string> GetAllRoleIds(AppInfo appInfo)
     {
-        var allRoleIds = new List<string>();
+        var allRoleIds = new List<string>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select `RoleID` from `Admin-Roles` order by `RoleLevel`, `RoleID`");

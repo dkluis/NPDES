@@ -1,16 +1,13 @@
 @page "/Uploads"
 
+@using System.Globalization
 
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
+@inject StateService StateService
 
 @inject ISnackbar Snackbar
 @using Severity = MudBlazor.Severity
-
-@using Libraries
-@using System.Globalization
-@inject StateService StateService
-@inject DownloadService DownloadService
 
 <PageTitle>Uploads NPDES</PageTitle>
 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>

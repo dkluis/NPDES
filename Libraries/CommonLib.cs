@@ -38,20 +38,10 @@ public class AppInfo
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);
 
         ActiveDbConn = readKeyFromFile.FindInArray(FullConfigPath, dbConnection);
-
-        /*
-        var dbProdConn = readKeyFromFile.FindInArray(FullConfigPath, "DbProduction");
-        var dbTestConn = readKeyFromFile.FindInArray(FullConfigPath, "DbTesting");
-        var dbAltConn = readKeyFromFile.FindInArray(FullConfigPath, "DbAlternate");
-
-        ActiveDbConn = dbConnection switch
+        if (ActiveDbConn == "")
         {
-            "DbProduction" => dbProdConn,
-            "DbTesting" => dbTestConn,
-            "DbAlternate" => dbAltConn,
-            _ => ""
-        };
-        */
+            TxtFile.Write($"Database {dbConnection} could not be found", "AppInfo", 0);
+        }
     }
 }
 

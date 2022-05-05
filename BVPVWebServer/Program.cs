@@ -1,6 +1,7 @@
 using BVPVWebServer.Services;
 using BVPVWebServer.Services.Admin;
 using BVPVWebServer.Services.General;
+using BVPVWebServer.Services.Water;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -19,6 +20,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AppService>();
 builder.Services.AddScoped<MarkdownService>();
 builder.Services.AddScoped<DownloadService>();
+builder.Services.AddScoped<WaterDatService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<HttpClient>();

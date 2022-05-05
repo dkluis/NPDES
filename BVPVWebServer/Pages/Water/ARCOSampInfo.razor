@@ -1,0 +1,39 @@
+@page "/ARCOSampInfo"
+
+@inject ProtectedSessionStorage SessionStore
+@inject NavigationManager NavMgr
+@inject StateService StateService
+@inject WaterDatService WaterDatService
+
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
+@using BVPVWebServer.Services.Water
+
+<PageTitle>ARCO Sample Info Table</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+
+@code {
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
+    private bool _fileStillExist;
+    private string _searchString = "";
+    private string _linkedContext = string.Empty;
+    private List<Libraries.ARCOSampInfo> _allArcoSampInfos = new (100000);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "ARCOSampInfo");
+        var allInfo = WaterDatService.GetArcoSampInfo(StateService.GetAppInfo(), "");
+        if (allInfo.Item1.Success) _allArcoSampInfos = allInfo.Item2;
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    
+}

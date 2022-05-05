@@ -20,7 +20,8 @@
     <ItemGroup>
       <Folder Include="Pages\Potable" />
       <Folder Include="Pages\Waste" />
-      <Folder Include="Pages\Water" />
+      <Folder Include="Services\Potable" />
+      <Folder Include="Services\Waste" />
     </ItemGroup>
 
 </Project>
