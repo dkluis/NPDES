@@ -5,6 +5,12 @@ namespace Libraries;
 
 public class AccessDb
 {
+    private AppInfo AppInfo { get; }
+    
+    public AccessDb(AppInfo info)
+    {
+        AppInfo = info;
+    }
 
     public AccessDataReader GetFromTable(string accessDb, string table)
     {
@@ -26,7 +32,7 @@ public class AccessDb
                                        $"Logfile={BaseConfig.LogsPath}/CData.log; " +
                                        $"Verbosity=3;");
         con.Open();
-        var result = con.GetSchema("Columns", new string[] {table} );
+        var result = con.GetSchema("Columns", new [] {table} );
         con.Close();
         return result;
     }
@@ -75,13 +81,13 @@ public class AccessDb
                     SAMPLEID = rdr["SAMPLEID"].ToString() != "" ? (string) rdr["SAMPLEID"] : null,
                     SAMPTYPE = rdr["SAMPTYPE"].ToString() != "" ? (string) rdr["SAMPTYPE"] : null,
                     SAMPBY = rdr["SAMPBY"].ToString() != "" ? (string) rdr["SAMPBY"] : null,
-                    COLLDATE = rdr["COLLDATE"].ToString() != "" ? (DateTime) rdr["COLLDATE"] : new DateTime(1990,01,01,00,00,00),
-                    COLLTIME = rdr["COLLTIME"].ToString() != "" ? (DateTime) rdr["COLLTIME"] : new DateTime(1990,01,01,00,00,00),
-                    SAMPDATE = rdr["SAMPDATE"].ToString() != "" ? (DateTime) rdr["SAMPDATE"] : new DateTime(1990,01,01,00,00,00),
+                    COLLDATE = rdr["COLLDATE"].ToString() != "" ? (DateTime) rdr["COLLDATE"] : AppInfo.BaseDate,
+                    COLLTIME = rdr["COLLTIME"].ToString() != "" ? (DateTime) rdr["COLLTIME"] : AppInfo.BaseDate,
+                    SAMPDATE = rdr["SAMPDATE"].ToString() != "" ? (DateTime) rdr["SAMPDATE"] : AppInfo.BaseDate,
                     LABNAME = rdr["LABNAME"].ToString() != "" ? (string) rdr["LABNAME"] : null,
-                    RECDATE = rdr["RECDATE"].ToString() != "" ? (DateTime) rdr["RECDATE"] : new DateTime(1990,01,01,00,00,00),
+                    RECDATE = rdr["RECDATE"].ToString() != "" ? (DateTime) rdr["RECDATE"] : AppInfo.BaseDate,
                     COMMENT = rdr["COMMENT"].ToString() != "" ? (string) rdr["COMMENT"] : null,
-                    ENTERDATE = rdr["ENTERDATE"].ToString() != "" ? (DateTime) rdr["ENTERDATE"] : new DateTime(1990,01,01,00,00,00),
+                    ENTERDATE = rdr["ENTERDATE"].ToString() != "" ? (DateTime) rdr["ENTERDATE"] : AppInfo.BaseDate,
                     SOURCE = rdr["SOURCE"].ToString() != "" ? (string) rdr["SOURCE"] : null
                 };
                 recsFound.Add(rec);

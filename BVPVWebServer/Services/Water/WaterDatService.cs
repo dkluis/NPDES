@@ -23,13 +23,13 @@ public class WaterDatService
                 SAMPLEID = rdr["SAMPLEID"].ToString() != null ? (string) rdr["SAMPLEID"] : "",
                 SAMPTYPE = rdr["SAMPTYPE"].ToString() != null ? (string) rdr["SAMPTYPE"] : "",
                 SAMPBY = rdr["SAMPBY"].ToString() != null ? (string) rdr["SAMPBY"] : "",
-                COLLDATE = rdr["COLLDATE"].ToString() != null ? (DateTime) rdr["COLLDATE"] : new DateTime(1990,01,01,00,00,00),
-                COLLTIME = rdr["COLLTIME"].ToString() != null ? (DateTime) rdr["COLLTIME"] : new DateTime(1990,01,01,00,00,00),
-                SAMPDATE = rdr["SAMPDATE"].ToString() != null ? (DateTime) rdr["SAMPDATE"] : new DateTime(1990,01,01,00,00,00),
+                COLLDATE = rdr["COLLDATE"].ToString() != null ? (DateTime) rdr["COLLDATE"] : appInfo.BaseDate,
+                COLLTIME = rdr["COLLTIME"].ToString() != null ? (DateTime) rdr["COLLTIME"] : appInfo.BaseDate,
+                SAMPDATE = rdr["SAMPDATE"].ToString() != null ? (DateTime) rdr["SAMPDATE"] : appInfo.BaseDate,
                 LABNAME = rdr["LABNAME"].ToString() != null ? (string) rdr["LABNAME"] : "",
-                RECDATE = rdr["RECDATE"].ToString() != null ? (DateTime) rdr["RECDATE"] : new DateTime(1990,01,01,00,00,00),
+                RECDATE = rdr["RECDATE"].ToString() != null ? (DateTime) rdr["RECDATE"] : appInfo.BaseDate,
                 COMMENT = rdr["COMMENT"].ToString() != null ? (string) rdr["COMMENT"] : "",
-                ENTERDATE = rdr["ENTERDATE"].ToString() != null ? (DateTime) rdr["ENTERDATE"] : new DateTime(1990,01,01,00,00,00),
+                ENTERDATE = rdr["ENTERDATE"].ToString() != null ? (DateTime) rdr["ENTERDATE"] : appInfo.BaseDate,
                 SOURCE = rdr["SOURCE"].ToString() != null ? (string) rdr["SOURCE"] : ""
             };
             allRecords.Add(rec);

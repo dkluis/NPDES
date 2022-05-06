@@ -18,10 +18,9 @@ while (rdr.Read())
 }
 */
 
-var adb = new AccessDb();
-var sampInfoRecs = adb.GetAllSampInfoRecs();
-
 var appInfo = new AppInfo("NPDES", "SampInfo", "DbWaterDat");
+var adb = new AccessDb(appInfo);
+var sampInfoRecs = adb.GetAllSampInfoRecs();
 var mdb = new MariaDb(appInfo);
 mdb.Open();
 foreach (var rec in sampInfoRecs)

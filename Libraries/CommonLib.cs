@@ -19,12 +19,14 @@ public class AppInfo
     public string WasteDatDb { get; }
     public string WaterEmsDb { get; }
     public string WasteEmsDb { get; }
+    public DateTime BaseDate { get; }
 
     public AppInfo(string application, string program, string dbConnection)
     {
         Application = application;
         Program = program;
         SystemUserName = Environment.UserName;
+        BaseDate = new DateTime(1990,01,01,00,00,00);
         
         ReadKeyFromFile readKeyFromFile = new();
         FullConfigPath = BaseConfig.FullConfigPath;
