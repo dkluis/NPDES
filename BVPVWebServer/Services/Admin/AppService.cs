@@ -6,7 +6,7 @@ public class AppService
 {
     public static List<string> GetAllAppIds(AppInfo appInfo)
     {
-        var allAppIds = new List<string>();
+        var allAppIds = new List<string>(512);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select `AppID` from `Admin-Apps` order by `AppID`;");
@@ -22,7 +22,7 @@ public class AppService
 
     public static List<App> GetAllApps(AppInfo appInfo)
     {
-        var allApps = new List<App>();
+        var allApps = new List<App>(512);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `Admin-Apps` order by `AppID`;");
@@ -45,7 +45,7 @@ public class AppService
 
     public static List<AppRole> GetAllAppRoles(AppInfo appInfo)
     {
-        var allAppRoles = new List<AppRole>();
+        var allAppRoles = new List<AppRole>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `Admin-AppRoles` order by `AppID`, `RoleID`;");
@@ -66,7 +66,7 @@ public class AppService
     
     public static List<App> GetAppsWithoutRoles(AppInfo appInfo)
     {
-        var allAppsWithoutRoles = new List<App>();
+        var allAppsWithoutRoles = new List<App>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `Admin-AppsWithoutRoles` order by `App`;");
@@ -88,7 +88,7 @@ public class AppService
 
     public static List<string> GetAllAssignedRoles(AppInfo appInfo, string appid)
     {
-        var allApps = new List<string>();
+        var allApps = new List<string>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select `RoleID` from `Admin-AppRoles` where `AppID` = '{appid}' order by `RoleID`;");

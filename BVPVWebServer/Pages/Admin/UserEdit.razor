@@ -185,10 +185,10 @@
 @code
 {
     // For Page specific code
-    private List<string> _allUserRoles = new();
-    private List<string> _assignedRoles = new();
-    private List<string> _originalAssignedRoles = new();
-    private List<AppsByUser> _appsByUsers = new();
+    private List<string> _allUserRoles = new(64);
+    private List<string> _assignedRoles = new(64);
+    private List<string> _originalAssignedRoles = new(64);
+    private List<AppsByUser> _appsByUsers = new(128);
     private MudTable<AppsByUser>? _mudTableAppsByUsers;
     private bool _isEnabled;
     private User? _currentUser;
@@ -242,7 +242,7 @@
 @code
 {
     // ReSharper disable once CollectionNeverQueried.Local
-    private readonly List<string> _editEvents = new();
+    private readonly List<string> _editEvents = new(16);
     private string? _selectedUserId;
 }
 

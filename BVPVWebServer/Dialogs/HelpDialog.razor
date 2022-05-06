@@ -29,7 +29,7 @@
     public string CurrentApp { get; set; } = "";
 
     [Parameter]
-    public List<string> HelpContent { get; set; } = new ();
+    public List<string> HelpContent { get; set; } = new (512);
     
     void Cancel() => MudDialog.Cancel();
 }

@@ -37,7 +37,7 @@ public class UserController : ControllerBase
     {
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Admin-Users`").Result;
-        List<UserRec> users = new List<UserRec>();
+        List<UserRec> users = new List<UserRec>(512);
         if (rdr == null) return users;
         while (rdr.Read())
         {
@@ -59,7 +59,7 @@ public class UserController : ControllerBase
     {
         Db.Open();
         var rdr = Db.ExecQueryAsync($"select * from `Admin-Users` where `UserID` like '{wildcard}'").Result;
-        List<UserRec> users = new List<UserRec>();
+        List<UserRec> users = new List<UserRec>(512);
         if (rdr == null) return users;
         while (rdr.Read())
         {

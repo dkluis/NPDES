@@ -74,9 +74,9 @@
     [Parameter]
     public string? PassedApp { get; set; }
 
-    private List<string> _allUserRoles = new();
-    private List<string> _assignedRoles = new();
-    private List<string> _originalAssignedRoles = new();
+    private List<string> _allUserRoles = new(32);
+    private List<string> _assignedRoles = new(32);
+    private List<string> _originalAssignedRoles = new(32);
     
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;

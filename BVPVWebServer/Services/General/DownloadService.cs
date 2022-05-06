@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Libraries;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -38,7 +37,7 @@ public class DownloadService
     public static (Result, List<DownloadRec>) GetAllDownloadRecs(AppInfo appInfo)
     {
         var result = new Result() {Success = true};
-        var recList = new List<DownloadRec>();
+        var recList = new List<DownloadRec>(1024);
         
         var db = new MariaDb(appInfo);
         db.Open();

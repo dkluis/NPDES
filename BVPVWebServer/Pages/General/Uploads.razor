@@ -139,7 +139,7 @@
 
 @code
 {
-    readonly IList<IBrowserFile?> _files = new List<IBrowserFile?>();
+    readonly IList<IBrowserFile?> _files = new List<IBrowserFile?>(1024);
     IBrowserFile? _fileToUpload;
 
     private async void UploadFiles(InputFileChangeEventArgs e)

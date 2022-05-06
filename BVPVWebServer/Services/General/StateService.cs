@@ -4,22 +4,21 @@ namespace BVPVWebServer.Services.General;
 
 public class StateService
 {
-    private readonly AppInfo _appInfo;
-    private readonly MariaDb? _db;
+    private AppInfo AppInfo { get; }
+    private MariaDb? Db { get; }
 
-    public SystemState? SystemState;
-    public AppState? AppState;
-    public string? UserId;
-    public bool IsLoggedIn;
+    public SystemState? SystemState { get; set; }
+    public AppState? AppState { get; set; }
+    public string? UserId { get; set; }
+    public bool IsLoggedIn { get; set; }
     public bool IsEnabled { get; set; }
-
-    public readonly string ApiServerBase;
+    public string ApiServerBase { get; }
 
     public StateService()
     {
-        _appInfo = new AppInfo("NPDES", "WebUI", "DbNPDES");
-        _db = new MariaDb(_appInfo);
-        ApiServerBase = _appInfo.ApiServerBase;
+        AppInfo = new AppInfo("NPDES", "WebUI", "DbNPDES");
+        Db = new MariaDb(AppInfo);
+        ApiServerBase = AppInfo.ApiServerBase;
     }
 
     public void InitUserInfo(string userid)
@@ -31,14 +30,14 @@ public class StateService
 
     public AppInfo GetAppInfo()
     {
-        return _appInfo;
+        return AppInfo;
     }
     
     public void InitSystemState(string userid)
     {
         SystemState = new SystemState();
-        _db!.Open();
-        var rdr = _db.ExecQuery($"select * from `Admin-UserSystemState` where `UserID` = '{userid}'");
+        Db!.Open();
+        var rdr = Db.ExecQuery($"select * from `Admin-UserSystemState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())
@@ -49,31 +48,31 @@ public class StateService
             }
         }
 
-        _db.Close();
+        Db.Close();
     }
 
     public void InitAppStates(string userid)
     {
         AppState = new AppState();
-        _db!.Open();
-        var rdr = _db.ExecQuery($"select * from `Admin-UserAppState` where `UserID` = '{userid}'");
+        Db!.Open();
+        var rdr = Db.ExecQuery($"select * from `Admin-UserAppState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())
             {
                 AppState!.App = rdr["AppID"].ToString();
-                var kv = new List<KeyValuePair<string, string>>();
+                var kv = new List<KeyValuePair<string, string>>(4);
                 AppState.Setting = kv;
             }
         }
         else
         {
             AppState.App = "";
-            var kv = new List<KeyValuePair<string, string>>();
+            var kv = new List<KeyValuePair<string, string>>(4);
             AppState.Setting = kv;
         }
 
-        _db.Close();
+        Db.Close();
     }
 
     public void ReloadSystemState()

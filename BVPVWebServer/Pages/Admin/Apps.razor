@@ -210,10 +210,10 @@
 {
     
     private MudTable<App>? _mudTableApps;
-    private List<App> _allApps = new();
+    private List<App> _allApps = new(128);
     private string _linkedContext = string.Empty;
-    private List<AppRole> _allAppRoles = new();
-    private List<App> _appsWithoutRoles = new();
+    private List<AppRole> _allAppRoles = new(32);
+    private List<App> _appsWithoutRoles = new(128);
     private MudTable<AppRole>? _mudTableAppRoles;
     
     private bool _isProgressOverlayVisible;

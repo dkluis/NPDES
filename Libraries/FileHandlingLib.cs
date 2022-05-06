@@ -4,11 +4,11 @@ namespace Libraries;
 
 public class FileHandling
 {
-    private readonly AppInfo _appInfo;
+    private AppInfo AppInfo { get; }
 
     public FileHandling(AppInfo appInfo)
     {
-        _appInfo = appInfo;
+        AppInfo = appInfo;
     }
 
     public async Task<Result> ImportFile(IBrowserFile? file)
@@ -24,7 +24,7 @@ public class FileHandling
         }
         catch (Exception e)
         {
-            _appInfo.TxtFile.Write($"Error: {e.Message}", "FH - ImportFile", 0);
+            AppInfo.TxtFile.Write($"Error: {e.Message}", "FH - ImportFile", 0);
             result.Success = false;
             result.Message = e.Message;
         }
@@ -62,7 +62,7 @@ public class FileHandling
             Success = true
         };
         
-        var allFiles = new List<string>();
+        var allFiles = new List<string>(512);
         try
         {
             var files = Directory.GetFiles(dir);
@@ -90,7 +90,7 @@ public class FileHandling
         }
         catch (Exception e)
         {
-            _appInfo.TxtFile.Write($"Error: {e.Message}", "FH - ArchiveFile", 0);
+            AppInfo.TxtFile.Write($"Error: {e.Message}", "FH - ArchiveFile", 0);
             result.Success = false;
             result.Message = e.Message;
         }
@@ -107,7 +107,7 @@ public class FileHandling
         }
         catch (Exception e)
         {
-            _appInfo.TxtFile.Write($"Error: {e.Message}", "FH - RenameImport", 0);
+            AppInfo.TxtFile.Write($"Error: {e.Message}", "FH - RenameImport", 0);
             result.Success = false;
             result.Message = e.Message;
         }

@@ -55,78 +55,78 @@ public class AppInfo
 
 public class TextFileHandler
 {
-    private readonly string _app;
-    private readonly string _fullFilePath;
-    private readonly int _level;
-    private readonly Stopwatch _timer = new();
+    private string App { get; }
+    private string FullFilePath { get; }
+    private int Level { get; }
+    private Stopwatch Timer { get; } = new();
 
     public TextFileHandler(string filename, string application, string inFilePath, int loglevel)
     {
-        _timer.Start();
-        _app = application;
-        _level = loglevel;
-        _fullFilePath = Path.Combine(inFilePath, filename);
-        if (!File.Exists(_fullFilePath)) File.Create(_fullFilePath).Close();
+        Timer.Start();
+        App = application;
+        Level = loglevel;
+        FullFilePath = Path.Combine(inFilePath, filename);
+        if (!File.Exists(FullFilePath)) File.Create(FullFilePath).Close();
     }
 
     public void Start()
     {
         EmptyLine();
         Write(
-            $"{_app} Started  ########################################################################################",
-            _app, 0);
+            $"{App} Started  ########################################################################################",
+            App, 0);
     }
 
     public void Stop()
     {
-        _timer.Stop();
+        Timer.Stop();
         Write(
-            $"{_app} Finished ####################################  in {_timer.ElapsedMilliseconds} mSec  ####################################",
-            _app, 0);
+            $"{App} Finished ####################################  in {Timer.ElapsedMilliseconds} mSec  ####################################",
+            App, 0);
     }
 
     public void Empty()
     {
-        using StreamWriter file = new(_fullFilePath, false);
+        using StreamWriter file = new(FullFilePath, false);
     }
 
     public void Write(string message, string function = "", int loglevel = 3, bool append = true)
     {
-        if (string.IsNullOrEmpty(function)) function = _app;
+        if (string.IsNullOrEmpty(function)) function = App;
         if (function.Length > 19) function = function[..19];
 
-        if (loglevel > _level) return;
-        using StreamWriter file = new(_fullFilePath, append);
+        if (loglevel > Level) return;
+        using StreamWriter file = new(FullFilePath, append);
         file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2} --> {message}");
     }
 
     public void Write(string[] messages, string function = "", int loglevel = 3, bool append = true)
     {
-        if (string.IsNullOrEmpty(function)) function = _app;
+        if (string.IsNullOrEmpty(function)) function = App;
         if (function.Length > 19) function = function[..19];
 
-        if (loglevel > _level) return;
-        using StreamWriter file = new(_fullFilePath, append);
+        if (loglevel > Level) return;
+        using StreamWriter file = new(FullFilePath, append);
         foreach (var msg in messages) file.WriteLine($"{DateTime.Now}: {function,-20}: {loglevel,-2}--> {msg}");
     }
 
     public void WriteJson(string message)
     {
-        using StreamWriter file = new(_fullFilePath, false);
+        using StreamWriter file = new(FullFilePath, false);
         file.WriteLine(message);
     }
 
     public void Elapsed()
     {
         EmptyLine();
-        Write($"{_app} Elapsed up to now: {_timer.ElapsedMilliseconds} mSec", "Elapsed Time", 0);
+        Write($"{App} Elapsed up to now: {Timer.ElapsedMilliseconds} mSec", "Elapsed Time", 0);
         EmptyLine();
     }
 
     public void EmptyLine(int lines = 1)
     {
         var idx = 1;
-        using StreamWriter file = new(_fullFilePath, true);
+        using StreamWriter file = new(FullFilePath, true);
         while (idx <= lines)
         {
             file.WriteLine("");
@@ -136,7 +136,7 @@ public class TextFileHandler
 
     public void WriteNoHead(string message, bool newline = true, bool append = true)
     {
-        using StreamWriter file = new(_fullFilePath, append);
+        using StreamWriter file = new(FullFilePath, append);
         if (newline)
             file.WriteLine(message);
         else
@@ -145,7 +145,7 @@ public class TextFileHandler
 
     public void WriteNoHead(string[] messages, bool newline = true, bool append = true)
     {
-        using StreamWriter file = new(_fullFilePath, append);
+        using StreamWriter file = new(FullFilePath, append);
         foreach (var msg in messages)
             if (newline)
                 file.WriteLine(msg);
@@ -155,8 +155,8 @@ public class TextFileHandler
 
     public List<string> ReturnLogContent()
     {
-        var content = new List<string>();
-        var fileContent = File.ReadAllLines(_fullFilePath);
+        var content = new List<string>(2048);
+        var fileContent = File.ReadAllLines(FullFilePath);
         foreach (var line in fileContent)
         {
             content.Add(line);
@@ -168,8 +168,8 @@ public class TextFileHandler
 
     public string ReadKeyArray(string find)
     {
-        if (!File.Exists(_fullFilePath)) return "";
-        var filetText = File.ReadAllText(_fullFilePath);
+        if (!File.Exists(FullFilePath)) return "";
+        var filetText = File.ReadAllText(FullFilePath);
         var keyValuePair = ConvertJsonTxt.ConvertStringToJArray(filetText);
         foreach (var rec in keyValuePair)
         {
@@ -188,8 +188,8 @@ public class TextFileHandler
 
     public string ReadKeyObject(string find)
     {
-        if (!File.Exists(_fullFilePath)) return "";
-        var fileText = File.ReadAllText(_fullFilePath);
+        if (!File.Exists(FullFilePath)) return "";
+        var fileText = File.ReadAllText(FullFilePath);
         var keyValuePair = ConvertJsonTxt.ConvertStringToJObject(fileText);
         foreach (var rec in keyValuePair)
             if (rec.Key == find)
@@ -256,43 +256,5 @@ public class ReadKeyFromFile
             if (rec.Key == find)
                 return rec.Value!.ToString();
         return "";
-    }
-}
-
-public class EnvInfo
-{
-    public readonly string MachineName;
-    public readonly string Os;
-    public readonly string UserName;
-    public readonly string? WorkingDrive;
-    public readonly string WorkingPath;
-
-    public EnvInfo()
-    {
-        var os = Environment.OSVersion;
-        var pid = os.Platform;
-        switch (pid)
-        {
-            case PlatformID.Win32NT:
-            case PlatformID.Win32S:
-            case PlatformID.Win32Windows:
-            case PlatformID.WinCE:
-                Os = "Windows";
-                break;
-            case PlatformID.Unix:
-            case PlatformID.MacOSX:
-                Os = "Linux";
-                break;
-            case PlatformID.Xbox:
-            case PlatformID.Other:
-            default:
-                Os = "Unknown";
-                break;
-        }
-
-        MachineName = Environment.MachineName;
-        WorkingPath = Environment.CurrentDirectory;
-        WorkingDrive = Path.GetPathRoot(WorkingPath);
-        UserName = Environment.UserName;
     }
 }

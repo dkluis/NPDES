@@ -136,7 +136,7 @@
 @code
 {
     private MudTable<UserElement>? _mudTableUsers;
-    private IEnumerable<UserElement> _userElements = new List<UserElement>();
+    private IEnumerable<UserElement> _userElements = new List<UserElement>(512);
     private string _linkedContext = string.Empty;
 }
 

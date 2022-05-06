@@ -174,7 +174,7 @@
     private bool _loading;
     private string _searchString = "";
     private string _sqlSearchString = "";
-    private IEnumerable<Role> _roles = new List<Role>();
+    private IEnumerable<Role> _roles = new List<Role>(64);
 
     protected override void OnInitialized()
     {

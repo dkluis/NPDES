@@ -159,7 +159,7 @@ public class UserService
 
     public static List<string> AllAssignedRoles(string userid)
     {
-        var assignedRoles = new List<string>();
+        var assignedRoles = new List<string>(32);
         var appInfo = new AppInfo("NPDES", "WebUI", "DbNPDES");
         var db = new MariaDb(appInfo);
         db.Open();
@@ -187,7 +187,7 @@ public class UserService
 
     public static IEnumerable<UserElement> GetUsers(AppInfo appInfo, string searchString)
     { 
-        var ue = new List<UserElement>();
+        var ue = new List<UserElement>(512);
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from `Admin-Users` where `UserID` like '{searchString}'";
@@ -213,7 +213,7 @@ public class UserService
 
     public static List<AppsByUser> GetAppsByUser(AppInfo appInfo, string userid)
     {
-        var result = new List<AppsByUser>();
+        var result = new List<AppsByUser>(512);
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from `Admin-AppsByUserView` where `User` = '{userid}'";
