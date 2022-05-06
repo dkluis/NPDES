@@ -37,5 +37,37 @@ public class WaterDatService
 
         return (result, allRecords);
     }
+
+    public static (Result, List<ARCOParamRec>) GetArcoParam(AppInfo appInfo, string whereClause = "")
+    {
+        var allRecords = new List<ARCOParamRec>(100000);
+        var sql = whereClause == "" ? "select * from ARCOParam" : $"select * from ARCOParam {whereClause}";
+        var db = new MariaDb(appInfo, appInfo.WaterDatDb);
+        db.Open();
+        var rdr = db.ExecQuery(sql);
+        var result = new Result {Message = db.ErrorMessage, Success = db.Success};
+        while (rdr!.Read())
+        {
+            var rec = new ARCOParamRec
+            {
+                HLALABID = !DBNull.Value.Equals(rdr["HLALABID"]) ? (string) rdr["HlALABID"] : "",
+                PARAM = !DBNull.Value.Equals(rdr["PARAM"]) ? (string) rdr["PARAM"] : "",
+                FIELDNUM =  Convert.ToInt16(rdr["FIELDNUM"]),
+                LABRESULT = !DBNull.Value.Equals(rdr["LABRESULT"]) ? (string) rdr["LABRESULT"] : "",
+                LABUNIT = !DBNull.Value.Equals(rdr["LABUNIT"]) ? (string) rdr["LABUNIT"] : "",
+                LABQUAL = !DBNull.Value.Equals(rdr["LABQUAL"]) ? (string) rdr["LABQUAL"] : "",
+                RESULT = Convert.ToDouble(rdr["RESULT"]),
+                UNIT = !DBNull.Value.Equals(rdr["UNIT"]) ? (string) rdr["UNIT"] : "",
+                QUAL = !DBNull.Value.Equals(rdr["QUAL"]) ? (string) rdr["QUAL"] : "",
+                METHOD = !DBNull.Value.Equals(rdr["METHOD"]) ? (string) rdr["METHOD"] : "",
+                ANALDATE = !DBNull.Value.Equals(rdr["ANALDATE"]) ? (DateTime) rdr["ANALDATE"] : appInfo.BaseDate,
+                ANALYST = !DBNull.Value.Equals(rdr["ANALYST"]) ? (string) rdr["ANALYST"] : "",
+                DATAUSE = !DBNull.Value.Equals(rdr["DATAUSE"]) ? (string) rdr["DATAUSE"] : "",
+            };
+            allRecords.Add(rec);
+        }
+        
+        return (result, allRecords);
+    }
 }
 

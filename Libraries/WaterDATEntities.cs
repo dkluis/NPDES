@@ -21,3 +21,20 @@ public class ARCOSampInfoRec
     public DateTime ENTERDATE { get; set; }
     public string? SOURCE { get; set; }
 }
+
+public class ARCOParamRec
+{
+    public string? HLALABID { get; set; }
+    public string? PARAM { get; set; }
+    public int FIELDNUM { get; set; }
+    public string? LABRESULT { get; set; }
+    public string? LABUNIT { get; set; }
+    public string? LABQUAL { get; set; }
+    public double RESULT { get; set; }
+    public string? UNIT { get; set; }
+    public string? QUAL { get; set; }
+    public string? METHOD { get; set; }
+    public DateTime ANALDATE { get; set; }
+    public string? ANALYST { get; set; }
+    public string? DATAUSE { get; set; }
+}

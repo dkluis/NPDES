@@ -1,0 +1,176 @@
+@page "/ARCOParam"
+
+@using System.Globalization
+@using Severity = MudBlazor.Severity
+
+@inject ProtectedSessionStorage SessionStore
+@inject NavigationManager NavMgr
+@inject StateService StateService
+@inject WaterDatService WaterDatService
+
+<PageTitle>ARCO Param Table</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "ARCOParam") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            //Page Detail
+
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+
+            <MudText Typo="Typo.h4" Align="Align.Center">Parameter Information Table</MudText>
+
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Parameter Info Table" IsInitiallyExpanded="true">
+
+                    <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
+                        <MudCard Outlined="true" Elevation="4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Analysis Date Year</MudText>
+                                <MudTextField Label="Year" HelperText="Use the Year of the Sample Date" @bind-Value="_year"/>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillARCOParam">Fill Table</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
+
+                    <MudTable Items="@_allARCOParams" Hover="true" Breakpoint="Breakpoint.Sm"
+                              Dense="true" Striped="true"
+                              SortLabel="Sort By" Filter="new Func<ARCOParamRec, bool>(FilterFunc)"
+                              RowsPerPage=50 FixedHeader="true" Height="700px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Sample Info Table</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search Sample Info Table" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOParamRec, object>(x => x.HLALABID!)">HLA LAB</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh >
+                                <MudTableSortLabel SortBy="new Func<ARCOParamRec, object>(x => x.PARAM!)">Param</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Field Num</MudTh>
+                            <MudTh>Lab Result</MudTh>
+                            <MudTh>Lab Unit</MudTh>
+                            <MudTh>Lab Quality</MudTh>
+                            <MudTh T="double">Result</MudTh>
+                            <MudTh>Unit</MudTh>
+                            <MudTh>Quality</MudTh>
+                            <MudTh>Method</MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ARCOParamRec, object>(x => x.ANALDATE)">Analysis Date</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Analyst</MudTh>
+                            <MudTh>Data Use</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="HLALABID">@context.HLALABID</MudTd>
+                            <MudTd DataLabel="OBJID">@context.PARAM</MudTd>
+                            <MudTd DataLabel="PERMNUM">@context.FIELDNUM</MudTd>
+                            <MudTd DataLabel="ORDERNUM">@context.LABRESULT</MudTd>
+                            <MudTd DataLabel="SAMPLEID">@context.LABUNIT</MudTd>
+                            <MudTd DataLabel="SAMPTYPE">@context.LABQUAL</MudTd>
+                            <MudTd DataLabel="SAMPBY">@context.RESULT</MudTd>
+                            <MudTd DataLabel="SAMPBY">@context.UNIT</MudTd>
+                            <MudTd DataLabel="SAMPBY">@context.QUAL</MudTd>
+                            <MudTd DataLabel="SAMPBY">@context.METHOD</MudTd>
+                            @{ var analD = @context.ANALDATE.Year != 0000 ? @context.ANALDATE.ToString("d") : ""; }
+                            <MudTd DataLabel="COLLDATE">@analD</MudTd>
+                            <MudTd DataLabel="COMMENT">@context.ANALYST</MudTd>
+                            <MudTd DataLabel="SOURCE">@context.DATAUSE</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {50, 150, 500}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+}
+
+
+@code {
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
+    private string _searchString = "";
+    private string _year = "";
+    private List<ARCOParamRec> _allARCOParams = new(100000);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "ARCOParam");
+        _year = DateTime.Now.ToString("yyyy");
+        //FillARCOParam();
+        _isProgressOverlayVisible = false;
+    }
+
+}
+
+@code
+{
+    private void FillARCOParam()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var fromDate = $"{_year}-01-01";
+        var toDate = $"{_year}-12-31";
+        var allInfo = _year != "" ? WaterDatService.GetArcoParam(StateService.GetAppInfo(), $"WHERE `ANALDATE` BETWEEN '{fromDate}' AND '{toDate}'") : WaterDatService.GetArcoParam(StateService.GetAppInfo());
+        if (allInfo.Item1.Success) _allARCOParams = allInfo.Item2;
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private bool FilterFunc(ARCOParamRec rec)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (rec.HLALABID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.PARAM!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.ANALYST!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.LABQUAL!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.QUAL!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.ANALDATE.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.DATAUSE!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (rec.ANALDATE.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
+            return true;
+        return false;
+    }
+}
