@@ -4,7 +4,7 @@ using Libraries;
 
 Console.WriteLine("Hello, World!");
 
-var adb = new AccessDb();
+
 /*
 var rdr = adb.GetFromTable("WASTEEMS.accdb", "Biennial_Report_Query");
 
@@ -18,10 +18,10 @@ while (rdr.Read())
 }
 */
 
-const string accessDb = "WaterDAT2.accdb";
+var adb = new AccessDb();
 var sampInfoRecs = adb.GetAllSampInfoRecs();
 
-var appInfo = new AppInfo("NPDES", "SampInfo", accessDb);
+var appInfo = new AppInfo("NPDES", "SampInfo", "DbWaterDat");
 var mdb = new MariaDb(appInfo);
 mdb.Open();
 foreach (var rec in sampInfoRecs)

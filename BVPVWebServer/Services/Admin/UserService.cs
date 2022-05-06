@@ -160,7 +160,7 @@ public class UserService
     public static List<string> AllAssignedRoles(string userid)
     {
         var assignedRoles = new List<string>();
-        var appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        var appInfo = new AppInfo("NPDES", "WebUI", "DbNPDES");
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select `RoleID` from `Admin-UserRoles` where `UserID` = '{userid} 'order by `RoleID`");

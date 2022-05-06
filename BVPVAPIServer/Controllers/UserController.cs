@@ -8,7 +8,7 @@ namespace BVPVAPIServer.Controllers;
 public class UserController : ControllerBase
 {
  
-    public static readonly AppInfo AppInf = new AppInfo("NPDES", "WebUI", "DbProduction");
+    public static readonly AppInfo AppInf = new AppInfo("NPDES", "WebUI", "DbNPDES");
     public static readonly MariaDb Db = new MariaDb(AppInf);
 
     [HttpGet("{userId}")]

@@ -8,7 +8,7 @@ public class WaterDatService
     {
         var allRecords = new List<ARCOSampInfoRec>(100000);
         var sql = whereClause == "" ? "select * from ARCOSampInfo" : $"select * from ARCOSampInfo {whereClause}";
-        var db = new MariaDb(appInfo, "server=BVPVServer.local; port=3306; database=WaterDAT2; uid=dick; pwd=password");
+        var db = new MariaDb(appInfo, appInfo.WaterDatDb);
         db.Open();
         var rdr = db.ExecQuery(sql);
         var result = new Result {Message = db.ErrorMessage, Success = db.Success};

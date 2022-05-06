@@ -2,17 +2,17 @@ namespace Libraries;
 
 public static class BaseConfig
 {
-    public static readonly string FullConfigPath;
-    public static readonly string ConfigPath;
-    public static readonly string BasePath;
-    public static readonly string HelpFilesPath;
-    public static readonly string DownloadsPath;
-    public static readonly string ValidatedPath;
-    public static readonly string ProcessedPath;
-    public static readonly string ExportedPath;
-    public static readonly string LogsPath;
-    public static readonly string ArchivesPath;
-    public static readonly string AccessData;
+    public static string FullConfigPath { get; }
+    public static string ConfigPath { get; }
+    public static string BasePath { get; }
+    public static string HelpFilesPath { get; }
+    public static string DownloadsPath { get; }
+    public static string ValidatedPath { get; }
+    public static string ProcessedPath { get; }
+    public static string ExportedPath { get; }
+    public static string LogsPath { get; }
+    public static string ArchivesPath { get; }
+    public static string AccessData { get; }
 
     static BaseConfig()
     {
@@ -60,6 +60,5 @@ public static class BaseConfig
         ProcessedPath = DownloadsPath + "/Processed";
         LogsPath = BasePath + "Logs";
         ArchivesPath = BasePath + "Archives";
-        //AccessData = BasePath + "AccessData";
     }
 }

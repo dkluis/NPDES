@@ -1,8 +1,5 @@
 using System.Data;
 using System.Data.CData.Access;
-using System.Globalization;
-using System.Runtime.InteropServices.ComTypes;
-using Org.BouncyCastle.Cms;
 
 namespace Libraries;
 

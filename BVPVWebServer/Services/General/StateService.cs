@@ -17,7 +17,7 @@ public class StateService
 
     public StateService()
     {
-        _appInfo = new AppInfo("NPDES", "WebUI", "DbProduction");
+        _appInfo = new AppInfo("NPDES", "WebUI", "DbNPDES");
         _db = new MariaDb(_appInfo);
         ApiServerBase = _appInfo.ApiServerBase;
     }
