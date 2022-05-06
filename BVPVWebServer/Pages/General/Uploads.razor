@@ -88,11 +88,22 @@
                                 <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.FileName</MudLink>
                             </MudTd>
                             <MudTd DataLabel="Function">@context.Function</MudTd>
-                            <MudTd DataLabel="Download Date">@context.DownloadDateTime</MudTd>
-                            <MudTd DataLabel="Validate Date">@context.ValidateDateTime</MudTd>
-                            <MudTd DataLabel="Process Date">@context.ProcessDateTime</MudTd>
-                            @{ CheckFileStillThere(context); }
-                            <MudTd DataLabel="Still Exist">@_fileStillExist</MudTd>
+                            @{ var dld = @context.DownloadDateTime.Year != 0001 ? @context.DownloadDateTime.ToString("G") : ""; }
+                            <MudTd DataLabel="Download Date">@dld</MudTd>
+                            @{ var vld = @context.ValidateDateTime.Year != 0001 ? @context.ValidateDateTime.ToString("G") : ""; }
+                            <MudTd DataLabel="Validate Date">@vld</MudTd>
+                            @{ var pd = @context.ProcessDateTime.Year != 0001 ? @context.ProcessDateTime.ToString("G") : ""; }
+                            <MudTd DataLabel="Process Date">@pd</MudTd>
+                            @{var exists = CheckFileStillThere(context); }
+                            @{
+                                if (exists) { 
+                                    <MudTd DataLabel="Still Exist">@exists</MudTd>
+                                }
+                                else
+                                {
+                                    <MudTd Style="color: red" DataLabel="Still Exist">@exists</MudTd>
+                                }
+                            }
                         </RowTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
@@ -108,7 +119,6 @@
 {
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
-    private bool _fileStillExist;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
     private List<DownloadRec> _allDownloadRecs = new (1024);
@@ -216,11 +226,11 @@
 
 @code
 {
-    private void CheckFileStillThere(DownloadRec dlRec)
+    private bool CheckFileStillThere(DownloadRec dlRec)
     {
         var directory = "Downloads";
         if (dlRec.ValidateDateTime.Year != 0001) directory = "Validated";
         if (dlRec.ProcessDateTime.Year != 0001) directory = "Processed";
-        _fileStillExist = FileHandling.CheckFileExist(dlRec.FileName!, directory);
+        return FileHandling.CheckFileExist(dlRec.FileName!, directory);
     }
 }

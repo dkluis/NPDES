@@ -21,9 +21,7 @@ public class AccessDb
         con.Open();
         var cmd = new AccessCommand($"select * from `{table}`;", con);
         var rdr = cmd.ExecuteReader();
-        var result = rdr;
-        //con.Close();
-        return result;
+        return rdr;
     }
 
     public DataTable GetAllColumns(string accessDb, string table)
