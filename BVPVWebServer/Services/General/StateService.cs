@@ -37,7 +37,7 @@ public class StateService
     {
         SystemState = new SystemState();
         Db!.Open();
-        var rdr = Db.ExecQuery($"select * from `Admin-UserSystemState` where `UserID` = '{userid}'");
+        var rdr = Db.ExecQuery($"select * from `NPDES`.`Admin-UserSystemState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())
@@ -55,7 +55,7 @@ public class StateService
     {
         AppState = new AppState();
         Db!.Open();
-        var rdr = Db.ExecQuery($"select * from `Admin-UserAppState` where `UserID` = '{userid}'");
+        var rdr = Db.ExecQuery($"select * from `NPDES`.`Admin-UserAppState` where `UserID` = '{userid}'");
         if (rdr!.HasRows)
         {
             while (rdr.Read())

@@ -26,7 +26,7 @@ public class DownloadService
         var result = new Result();
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"insert into `General-Download` values ('{user}', '{filename}', '{originalFilename}', Null, NOW(3), Null, Null, Null, Null);";
+        var sql = $"insert into `NPDES`.`General-Download` values ('{user}', '{filename}', '{originalFilename}', Null, NOW(3), Null, Null, Null, Null);";
         db.ExecNonQuery(sql);
         result.Success = db.Success;
         result.Message = db.ErrorMessage;
@@ -41,7 +41,7 @@ public class DownloadService
         
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from `General-Download`");
+        var rdr = db.ExecQuery($"select * from `NPDES`.`General-Download`");
         result.Success = db.Success;
         result.Message = db.ErrorMessage;
         if (rdr!.HasRows)
