@@ -7,8 +7,8 @@ public class WaterDatService
     public static (Result, List<ARCOSampInfoRec>) GetArcoSampInfo(AppInfo appInfo, string whereClause = "")
     {
         var allRecords = new List<ARCOSampInfoRec>(100000);
-        var sql = whereClause == "" ? "select * from ARCOSampInfo" : $"select * from ARCOSampInfo {whereClause}";
-        var db = new MariaDb(appInfo, appInfo.WaterDatDb);
+        var sql = whereClause == "" ? "select * from `WaterData`.`ARCOSampInfo`" : $"select * from `WaterData`.`ARCOSampInfo` {whereClause}";
+        var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery(sql);
         var result = new Result {Message = db.ErrorMessage, Success = db.Success};
@@ -41,8 +41,8 @@ public class WaterDatService
     public static (Result, List<ARCOParamRec>) GetArcoParam(AppInfo appInfo, string whereClause = "")
     {
         var allRecords = new List<ARCOParamRec>(100000);
-        var sql = whereClause == "" ? "select * from ARCOParam" : $"select * from ARCOParam {whereClause}";
-        var db = new MariaDb(appInfo, appInfo.WaterDatDb);
+        var sql = whereClause == "" ? "select * from `WaterData`.`ARCOParam`" : $"select * from `WaterData`.`ARCOParam` {whereClause}";
+        var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery(sql);
         var result = new Result {Message = db.ErrorMessage, Success = db.Success};

@@ -15,10 +15,6 @@ public class AppInfo
     private int LogLevel{ get; }
     public string SystemUserName{ get; }
     public TextFileHandler TxtFile{ get; }
-    public string WaterDatDb { get; }
-    public string WasteDatDb { get; }
-    public string WaterEmsDb { get; }
-    public string WasteEmsDb { get; }
     public DateTime BaseDate { get; }
 
     public AppInfo(string application, string program, string dbConnection)
@@ -38,11 +34,7 @@ public class AppInfo
         
         ApiServerBase = readKeyFromFile.FindInArray(FullConfigPath, "ApiServer");
         LogLevel = int.Parse(readKeyFromFile.FindInArray(FullConfigPath, "LogLevel"));
-        WasteDatDb = readKeyFromFile.FindInArray(FullConfigPath, "DbWasteDat");
-        WaterDatDb = readKeyFromFile.FindInArray(FullConfigPath, "DbWaterDat");
-        WasteEmsDb = readKeyFromFile.FindInArray(FullConfigPath, "DbWasteEms");
-        WaterEmsDb = readKeyFromFile.FindInArray(FullConfigPath, "DbWaterEms");
-        
+
         FileName = Program + ".log";
         FilePath = BaseConfig.LogsPath;
         TxtFile = new TextFileHandler(FileName, Program, FilePath, LogLevel);

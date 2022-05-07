@@ -14,18 +14,16 @@ public class MariaDb : IDisposable
         public bool Success { get; private set; }
         public string ErrorMessage { get; private set; }
 
-        public MariaDb(AppInfo appInfo, string overrideDbCon = "")
+        public MariaDb(AppInfo appInfo)
         {
             MDbLog = appInfo.TxtFile;
             Conn = new MySqlConnection();
             Cmd = new MySqlCommand();
             ErrorMessage = string.Empty;
-            //Allows for using multiple DB schemas to be used in 1 app.
-            var dbCon = overrideDbCon == "" ? appInfo.ActiveDbConn : overrideDbCon;
             Success = false;
             try
             {
-                Conn = new MySqlConnection(dbCon);
+                Conn = new MySqlConnection(appInfo.ActiveDbConn);
                 Success = true;
             }
             catch (Exception e)
