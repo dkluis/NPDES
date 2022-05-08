@@ -1,4 +1,4 @@
-CREATE TABLE `25RData` (
+CREATE TABLE `WasteData`.`25RData` (
                            ID INTEGER NOT NULL,
                            `ProfileID` VARCHAR(18),
                            B2 TEXT(21300),
@@ -22,7 +22,7 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_PK_25RData ON `25RData` (ID);
 CREATE INDEX SYS_IDX_25RDATA_ID ON `25RData` (ID);
 CREATE INDEX SYS_IDX_25RDATA_PROFILEID ON `25RData` (`ProfileID`);
 
-CREATE TABLE `BV_WasteSumRptTable` (
+CREATE TABLE `WasteData`.`BV_WasteSumRptTable` (
                                        `Month` INTEGER DEFAULT 0,
                                        `Year` INTEGER DEFAULT 0,
                                        `ProfileNumber` VARCHAR(18),
@@ -35,7 +35,7 @@ CREATE TABLE `BV_WasteSumRptTable` (
                                        `Units` VARCHAR(3)
 );
 
-CREATE TABLE `BV_WasteSumRptTableXTab` (
+CREATE TABLE `WasteData`.`BV_WasteSumRptTableXTab` (
                                            `ProfileNumber` VARCHAR(18),
                                            `CommonWasteName` VARCHAR(50),
                                            `HAZ/NON` VARCHAR(20),
@@ -78,7 +78,7 @@ CREATE TABLE CONTAINER_TYPE_CODES (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_CONTAINER_TYPE_CODES ON CONTAINER_TYPE_CODES (`ContainerType`);
 
-CREATE TABLE `Conversion Errors` (
+CREATE TABLE `WasteData`.`Conversion Errors` (
                                      `Object Type` VARCHAR(255),
                                      `Object Name` VARCHAR(255),
                                      `Error Description` TEXT(21300)
@@ -102,7 +102,7 @@ CREATE TABLE DISPOSAL_CODE (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_DISPOSAL_CODE ON DISPOSAL_CODE (`DisposalCode`);
 
-CREATE TABLE `DrumLocation` (
+CREATE TABLE `WasteData`.`DrumLocation` (
                                 ID INTEGER NOT NULL,
                                 `Location` VARCHAR(50),
                                 CONSTRAINT SYS_PK_10892 PRIMARY KEY (ID)
@@ -117,7 +117,7 @@ CREATE TABLE FORM_CODE (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_FORM_CODE ON FORM_CODE (`FormCode`);
 
-CREATE TABLE `FreightType` (
+CREATE TABLE `WasteData`.`FreightType` (
                                `FrtID` INTEGER NOT NULL,
                                `FtrType` VARCHAR(50),
                                CONSTRAINT SYS_PK_10903 PRIMARY KEY (`FrtID`)
@@ -125,7 +125,7 @@ CREATE TABLE `FreightType` (
 CREATE INDEX FREIGHTTYPE_FRTID ON `FreightType` (`FrtID`);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_FREIGHTTYPE ON `FreightType` (`FrtID`);
 
-CREATE TABLE `FrtUOM` (
+CREATE TABLE `WasteData`.`FrtUOM` (
                           `Frt_UOM_ID` INTEGER NOT NULL,
                           `Frt_Desc` VARCHAR(50),
                           CONSTRAINT SYS_PK_10908 PRIMARY KEY (`Frt_UOM_ID`)
@@ -139,7 +139,7 @@ CREATE TABLE METHODS (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_METHODS ON METHODS (`MethdTreat/Disposal`);
 
-CREATE TABLE `Off_Site_Location_Information` (
+CREATE TABLE `WasteData`.`Off_Site_Location_Information` (
                                                  OFFSITE VARCHAR(40) NOT NULL,
                                                  EPAID VARCHAR(13),
                                                  ADDRESS VARCHAR(40),
@@ -157,7 +157,7 @@ CREATE TABLE `Off_Site_Location_Information` (
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_OFF_SITE_LOC_INFO ON `Off_Site_Location_Information` (OFFSITE);
 
 
-CREATE TABLE `Opr_WasteSumRptTable` (
+CREATE TABLE `WasteData`.`Opr_WasteSumRptTable` (
                                         `Month` INTEGER DEFAULT 0,
                                         `Year` INTEGER DEFAULT 0,
                                         `ProfileNumber` VARCHAR(18),
@@ -171,7 +171,7 @@ CREATE TABLE `Opr_WasteSumRptTable` (
 );
 
 
-CREATE TABLE `Opr_WasteSumRptTableXtab` (
+CREATE TABLE `WasteData`.`Opr_WasteSumRptTableXtab` (
                                             `ProfileNumber` VARCHAR(18),
                                             `CommonWasteName` VARCHAR(50),
                                             `HAZ/NON` VARCHAR(20),
@@ -196,7 +196,7 @@ CREATE TABLE `Opr_WasteSumRptTableXtab` (
 );
 CREATE INDEX OPR_WASTESUMRPTTABLEXTAB_PROFILE ON `Opr_WasteSumRptTableXtab` (`ProfileNumber`,`CommonWasteName`,`HAZ/NON`,`Routine`,`CostCenter`,`SourceDept`);
 
-CREATE TABLE `Pick_Destination_Treatment_Codes` (
+CREATE TABLE `WasteData`.`Pick_Destination_Treatment_Codes` (
                                                     DESTINATION VARCHAR(33) NOT NULL,
                                                     DESTCODE VARCHAR(65) NOT NULL,
                                                     `OnOffSite` VARCHAR(8),
@@ -207,26 +207,26 @@ CREATE TABLE `Pick_Destination_Treatment_Codes` (
 CREATE INDEX PICK_DESTINATION_TREATMENT_CODES_DESTINATION ON `Pick_Destination_Treatment_Codes` (DESTINATION,DESTCODE);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_PICK_DEST_LOC_TREAT_CODE ON `Pick_Destination_Treatment_Codes` (DESTINATION,DESTCODE);
 
-CREATE TABLE `Pick_State_Names` (
+CREATE TABLE `WasteData`.`Pick_State_Names` (
                                     STATE VARCHAR(2),
                                     NAME VARCHAR(20)
 );
 
-CREATE TABLE `Pick_TRI_Chemicals` (
+CREATE TABLE `WasteData`.`Pick_TRI_Chemicals` (
                                       CAS_NUM VARCHAR(9),
                                       CHEM_NAME VARCHAR(70),
                                       LISTED_YR VARCHAR(2),
                                       DELIST_YR VARCHAR(2)
 );
 
-CREATE TABLE `Pick_Waste_Type_Code` (
+CREATE TABLE `WasteData`.`Pick_Waste_Type_Code` (
                                         `TYPE` VARCHAR(1) NOT NULL,
                                         `DESC` VARCHAR(60),
                                         CONSTRAINT SYS_PK_10928 PRIMARY KEY (`TYPE`)
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_PICK_WST_TYPE ON `Pick_Waste_Type_Code` (`TYPE`);
 
-CREATE TABLE `ProfileCharacterization` (
+CREATE TABLE `WasteData`.`ProfileCharacterization` (
                                            ID INTEGER NOT NULL,
                                            `Characterized` VARCHAR(50),
                                            CONSTRAINT SYS_PK_10948 PRIMARY KEY (ID)
@@ -234,7 +234,7 @@ CREATE TABLE `ProfileCharacterization` (
 CREATE INDEX PROFILECHARACTERIZATION_ID ON `ProfileCharacterization` (ID);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_PROFCHAR ON `ProfileCharacterization` (ID);
 
-CREATE TABLE `ShipContainerType` (
+CREATE TABLE `WasteData`.`ShipContainerType` (
                                      `ContainerID` INTEGER NOT NULL,
                                      `ContainerType` VARCHAR(50),
                                      CONSTRAINT SYS_PK_10953 PRIMARY KEY (`ContainerID`)
@@ -259,7 +259,7 @@ CREATE TABLE SYSTEM_DESCRIPTION (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_SYS_DESCRIPTION ON SYSTEM_DESCRIPTION (`UnitSystemCode`);
 
-CREATE TABLE `Tech_WasteSumRptTable` (
+CREATE TABLE `WasteData`.`Tech_WasteSumRptTable` (
                                          `Month` INTEGER DEFAULT 0,
                                          `Year` INTEGER DEFAULT 0,
                                          `ProfileNumber` VARCHAR(18),
@@ -272,7 +272,7 @@ CREATE TABLE `Tech_WasteSumRptTable` (
                                          `Units` VARCHAR(3)
 );
 
-CREATE TABLE `Tech_WasteSumRptTableXtab` (
+CREATE TABLE `WasteData`.`Tech_WasteSumRptTableXtab` (
                                              `ProfileNumber` VARCHAR(18),
                                              `CommonWasteName` VARCHAR(50),
                                              `HAZ/NON` VARCHAR(20),
@@ -298,7 +298,7 @@ CREATE TABLE `Tech_WasteSumRptTableXtab` (
 CREATE INDEX TECH_WASTESUMRPTTABLEXTAB_PROFILE ON `Tech_WasteSumRptTableXtab` (`ProfileNumber`,`CommonWasteName`,`HAZ/NON`,`Routine`,`CostCenter`,`SourceDept`);
 
 
-CREATE TABLE `TimeFrame` (
+CREATE TABLE `WasteData`.`TimeFrame` (
     `TmeFrame` VARCHAR(20)
 );
 
@@ -323,7 +323,7 @@ CREATE TABLE UNIT_TYPES (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_UNIT_TYPES ON UNIT_TYPES (UNITS);
 
-CREATE TABLE `WasteSumRptTable` (
+CREATE TABLE `WasteData`.`WasteSumRptTable` (
                                     `Month` INTEGER DEFAULT 0,
                                     `Year` INTEGER DEFAULT 0,
                                     `ProfileNumber` VARCHAR(18),
@@ -434,7 +434,7 @@ CREATE INDEX SYS_IDX_PROFILE_INFORMATION_REFERENCE9_11135 ON PROFILE_INFORMATION
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_PROFILE_INFO ON PROFILE_INFORMATION (`ProfileNumber`);
 
 
-CREATE TABLE `TrashSite` (
+CREATE TABLE `WasteData`.`TrashSite` (
                              `ContainerSite` VARCHAR(22) NOT NULL,
                              `CostCenter` VARCHAR(7) NOT NULL,
                              `SourceDept` VARCHAR(20) NOT NULL,
