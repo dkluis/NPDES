@@ -1,4 +1,3 @@
-using BVPVWebServer.Services;
 using BVPVWebServer.Services.Admin;
 using BVPVWebServer.Services.General;
 using BVPVWebServer.Services.Water;
@@ -13,7 +12,6 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddMudMarkdownServices();
 
-builder.Services.AddScoped<WeatherForecastService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<StateService>();
 builder.Services.AddScoped<UserService>();

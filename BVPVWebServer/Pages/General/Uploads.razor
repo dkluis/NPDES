@@ -88,11 +88,11 @@
                                 <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.FileName</MudLink>
                             </MudTd>
                             <MudTd DataLabel="Function">@context.Function</MudTd>
-                            @{ var dld = @context.DownloadDateTime.Year != 0001 ? @context.DownloadDateTime.ToString("G") : ""; }
+                            @{ var dld = context.DownloadDateTime.Year != 0001 ? context.DownloadDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Download Date">@dld</MudTd>
-                            @{ var vld = @context.ValidateDateTime.Year != 0001 ? @context.ValidateDateTime.ToString("G") : ""; }
+                            @{ var vld = context.ValidateDateTime.Year != 0001 ? context.ValidateDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Validate Date">@vld</MudTd>
-                            @{ var pd = @context.ProcessDateTime.Year != 0001 ? @context.ProcessDateTime.ToString("G") : ""; }
+                            @{ var pd = context.ProcessDateTime.Year != 0001 ? context.ProcessDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Process Date">@pd</MudTd>
                             @{var exists = CheckFileStillThere(context); }
                             @{
@@ -215,18 +215,9 @@
     }
 }
 
-
 @code
 {
-    private void GetDirFiles()
-    {
-        var result = FileHandling.GetFilesInDir($"{BaseConfig.DownloadsPath}");
-    }
-}
-
-@code
-{
-    private bool CheckFileStillThere(DownloadRec dlRec)
+    private static bool CheckFileStillThere(DownloadRec dlRec)
     {
         var directory = "Downloads";
         if (dlRec.ValidateDateTime.Year != 0001) directory = "Validated";

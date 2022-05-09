@@ -11,8 +11,8 @@ public class RoleService
         db.Open();
         var sql = searchString switch
         {
-            "" => $"select * from `NPDES`.`Admin-Roles` where `RoleID` = ' ' order by `RoleLevel`",
-            "*" => $"select * from `NPDES`.`Admin-Roles` order by `RoleLevel`",
+            "" => "select * from `NPDES`.`Admin-Roles` where `RoleID` = ' ' order by `RoleLevel`",
+            "*" => "select * from `NPDES`.`Admin-Roles` order by `RoleLevel`",
             _ => $"select * from `NPDES`.`Admin-Roles` where `RoleID` like '%{searchString}%' order by `RoleLevel`"
         };
 
@@ -39,7 +39,7 @@ public class RoleService
         var allRoleIds = new List<string>(32);
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select `RoleID` from `NPDES`.`Admin-Roles` order by `RoleLevel`, `RoleID`");
+        var rdr = db.ExecQuery("select `RoleID` from `NPDES`.`Admin-Roles` order by `RoleLevel`, `RoleID`");
         if (!rdr!.HasRows) return allRoleIds;
         while (rdr.Read())
         {
@@ -112,7 +112,7 @@ public class RoleService
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-Roles` where `RoleID` = '{role}'");
-        return (rdr is {HasRows: true});
+        return rdr is {HasRows: true};
     }
 }
 

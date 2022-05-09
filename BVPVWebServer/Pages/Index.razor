@@ -37,14 +37,14 @@ else
 
 @code {
     
-    public string? EntryPage;
+    private string? _entryPage;
 
     protected override async Task OnInitializedAsync()
     {
-        EntryPage = "/Home";
+        _entryPage = "/Home";
         await SessionStore.SetAsync("CurrentApp", "Login");
         var entry = await SessionStore.GetAsync<string>("EntryPage");
-        if (entry.Value is {Length: >= 1}) EntryPage = entry.Value;
+        if (entry.Value is {Length: >= 1}) _entryPage = entry.Value;
         await SessionStore.DeleteAsync("EntryPage");
 
         if (StateService.UserId != "Init")
@@ -66,8 +66,8 @@ else
         await SessionStore.SetAsync("User", _model.Username!);
         StateService.InitSystemState(_model.Username!);
         StateService.IsLoggedIn = true;
-        NavMgr.NavigateTo(EntryPage == "" ? "/Home" : EntryPage!);
-        EntryPage = string.Empty;
+        NavMgr.NavigateTo(_entryPage == "" ? "/Home" : _entryPage!);
+        _entryPage = string.Empty;
         StateHasChanged();
     }
 
@@ -94,18 +94,18 @@ else
         _userInfo = UserService.LoadUser(StateService.GetAppInfo(), _model.Username!, _model.Password!, false);
         if (!_userInfo.ValidUser)
         {
-            Snackbar.Add($"Username is wrong", Severity.Error);
+            Snackbar.Add("Username is wrong", Severity.Error);
             return;
         }
         StateService.IsEnabled = _userInfo.Enabled;
         if (!_userInfo.Enabled)
         {
-            Snackbar.Add($"This user is not Enabled.  Contact your system administrator", Severity.Error);
+            Snackbar.Add("This user is not Enabled.  Contact your system administrator", Severity.Error);
             return;
         }
         if (!_userInfo.ValidPassword)
         {
-            Snackbar.Add($"Password is wrong", Severity.Error);
+            Snackbar.Add("Password is wrong", Severity.Error);
             return;
         }
         StateHasChanged();

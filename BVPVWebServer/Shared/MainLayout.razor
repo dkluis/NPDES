@@ -15,6 +15,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="_themeManager.AppBarElevation">
+        @* ReSharper disable once UnusedParameter.Local *@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(e => DrawerToggle())"/>
         <MudSpacer></MudSpacer>
         <MudIconButton Icon="@Icons.Material.Filled.HelpCenter" Color="Color.Inherit" OnClick="Help"></MudIconButton>
@@ -85,7 +86,7 @@
     {
         var result = await SessionStore.GetAsync<string>("CurrentApp");
         var currentApp = result.Value;
-        var help = MarkdownService.GetMarkDownFile(StateService.GetAppInfo(), $"{currentApp}.md");
+        var help = MarkdownService.GetMarkDownFile($"{currentApp}.md");
         var parameters = new DialogParameters
         {
             {"CurrentApp", currentApp},

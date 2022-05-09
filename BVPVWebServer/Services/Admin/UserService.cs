@@ -1,4 +1,5 @@
 using Libraries;
+// ReSharper disable All
 
 namespace BVPVWebServer.Services.Admin;
 

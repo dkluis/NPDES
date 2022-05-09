@@ -269,6 +269,7 @@
             return true;
         if (apps.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
         if (apps.FunctionId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
@@ -295,6 +296,7 @@
             return true;
         if (appRoles.AppId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
         if (appRoles.RoleId.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;

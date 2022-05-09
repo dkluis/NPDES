@@ -62,7 +62,7 @@ public class WaterDatService
                 METHOD = !DBNull.Value.Equals(rdr["METHOD"]) ? (string) rdr["METHOD"] : "",
                 ANALDATE = !DBNull.Value.Equals(rdr["ANALDATE"]) ? (DateTime) rdr["ANALDATE"] : appInfo.BaseDate,
                 ANALYST = !DBNull.Value.Equals(rdr["ANALYST"]) ? (string) rdr["ANALYST"] : "",
-                DATAUSE = !DBNull.Value.Equals(rdr["DATAUSE"]) ? (string) rdr["DATAUSE"] : "",
+                DATAUSE = !DBNull.Value.Equals(rdr["DATAUSE"]) ? (string) rdr["DATAUSE"] : ""
             };
             allRecords.Add(rec);
         }

@@ -6,7 +6,6 @@
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
-@inject WaterDatService WaterDatService
 
 <PageTitle>ARCO Sample Info Table</PageTitle>
 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
@@ -103,17 +102,17 @@
                             <MudTd DataLabel="SAMPLEID">@context.SAMPLEID</MudTd>
                             <MudTd DataLabel="SAMPTYPE">@context.SAMPTYPE</MudTd>
                             <MudTd DataLabel="SAMPBY">@context.SAMPBY</MudTd>
-                            @{ var collD = @context.COLLDATE.Year != 1990 ? @context.COLLDATE.ToString("d") : ""; }
+                            @{ var collD = context.COLLDATE.Year != 1990 ? context.COLLDATE.ToString("d") : ""; }
                             <MudTd DataLabel="COLLDATE">@collD</MudTd>
-                            @{ var collT = @context.COLLTIME.Hour != 12 && @context.COLLTIME.Minute != 00 && @context.COLLTIME.Second != 00 ? @context.COLLTIME.ToString("T") : ""; }
+                            @{ var collT = context.COLLTIME.Hour != 12 && context.COLLTIME.Minute != 00 && context.COLLTIME.Second != 00 ? context.COLLTIME.ToString("T") : ""; }
                             <MudTd DataLabel="COLLTIME">@collT</MudTd>
-                            @{ var sampD = @context.SAMPDATE.Year != 1990 ? @context.SAMPDATE.ToString("d") : ""; }
+                            @{ var sampD = context.SAMPDATE.Year != 1990 ? context.SAMPDATE.ToString("d") : ""; }
                             <MudTd DataLabel="SAMPDATE">@sampD</MudTd>
                             <MudTd DataLabel="LABNAME">@context.LABNAME</MudTd>
-                            @{ var recD = @context.RECDATE.Year != 1990 ? @context.RECDATE.ToString("d") : ""; }
+                            @{ var recD = context.RECDATE.Year != 1990 ? context.RECDATE.ToString("d") : ""; }
                             <MudTd DataLabel="RECDATE">@recD</MudTd>
                             <MudTd DataLabel="COMMENT">@context.COMMENT</MudTd>
-                            @{ var enterD = @context.ENTERDATE.Year != 1990 ? @context.ENTERDATE.ToString("d") : ""; }
+                            @{ var enterD = context.ENTERDATE.Year != 1990 ?context.ENTERDATE.ToString("d") : ""; }
                             <MudTd DataLabel="ENTERDATE">@enterD</MudTd>
                             <MudTd DataLabel="SOURCE">@context.SOURCE</MudTd>
                         </RowTemplate>

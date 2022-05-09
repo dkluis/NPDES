@@ -81,8 +81,6 @@ public class StateService
     }
 }
 
-
-
 public class SystemState
 {
     public bool DarkTheme { get; set; }

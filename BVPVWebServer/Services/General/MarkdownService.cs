@@ -4,7 +4,7 @@ namespace BVPVWebServer.Services.General;
 
 public class MarkdownService
 {
-    public static List<string> GetMarkDownFile(AppInfo appInfo, string fileName)
+    public static List<string> GetMarkDownFile(string fileName)
     {
         var fileContent = new List<string>(512);
         var helpFilePath = BaseConfig.HelpFilesPath + "/" + fileName;

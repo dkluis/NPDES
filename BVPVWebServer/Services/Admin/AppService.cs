@@ -1,4 +1,5 @@
 using Libraries;
+// ReSharper disable All
 
 namespace BVPVWebServer.Services.Admin;
 
@@ -9,7 +10,7 @@ public class AppService
         var allAppIds = new List<string>(512);
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select `AppID` from `NPDES`.`Admin-Apps` order by `AppID`;");
+        var rdr = db.ExecQuery("select `AppID` from `NPDES`.`Admin-Apps` order by `AppID`;");
         if (!rdr!.HasRows) return allAppIds;
         while (rdr.Read())
         {
@@ -25,12 +26,12 @@ public class AppService
         var allApps = new List<App>(512);
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-Apps` order by `AppID`;");
+        var rdr = db.ExecQuery("select * from `NPDES`.`Admin-Apps` order by `AppID`;");
         if (!rdr!.HasRows) return allApps;
         while (rdr.Read())
         {
             if ((string) rdr["AppID"] == "None") continue;
-            var rec = new App()
+            var rec = new App
             {
                 AppId = (string) rdr["AppID"],
                 FunctionId = (string) rdr["FunctionID"],
@@ -48,12 +49,12 @@ public class AppService
         var allAppRoles = new List<AppRole>(32);
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-AppRoles` order by `AppID`, `RoleID`;");
+        var rdr = db.ExecQuery("select * from `NPDES`.`Admin-AppRoles` order by `AppID`, `RoleID`;");
         if (!rdr!.HasRows) return allAppRoles;
         while (rdr.Read())
         {
             if ((string) rdr["AppID"] == "None" || (string) rdr["RoleID"] == "SuperAdmin") continue;
-            var rec = new AppRole()
+            var rec = new AppRole
             {
                 AppId = (string) rdr["AppID"],
                 RoleId = (string) rdr["RoleID"]
@@ -69,12 +70,12 @@ public class AppService
         var allAppsWithoutRoles = new List<App>(32);
         var db = new MariaDb(appInfo);
         db.Open();
-        var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-AppsWithoutRoles` order by `App`;");
+        var rdr = db.ExecQuery("select * from `NPDES`.`Admin-AppsWithoutRoles` order by `App`;");
         if (!rdr!.HasRows) return allAppsWithoutRoles;
         while (rdr.Read())
         {
             if ((string) rdr["App"] == "None") continue;
-            var rec = new App()
+            var rec = new App
             {
                 AppId = (string) rdr["App"],
                 FunctionId = (string) rdr["Function"],
@@ -125,7 +126,7 @@ public class AppService
         db.Open();
         foreach (var role in appRoles)
         {
-            string sql = $"delete from `NPDES`.`Admin-AppRoles` where `AppID`= '{app}' and `RoleID` = '{role}';";
+            var sql = $"delete from `NPDES`.`Admin-AppRoles` where `AppID`= '{app}' and `RoleID` = '{role}';";
             db.ExecNonQuery(sql);
             if (!db.Success) success = false;
         }

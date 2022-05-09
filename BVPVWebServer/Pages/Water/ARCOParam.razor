@@ -6,7 +6,6 @@
 @inject ProtectedSessionStorage SessionStore
 @inject NavigationManager NavMgr
 @inject StateService StateService
-@inject WaterDatService WaterDatService
 
 <PageTitle>ARCO Param Table</PageTitle>
 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
@@ -49,12 +48,12 @@
                                 <MudTextField Label="Year" HelperText="Use the Year of the Sample Date" @bind-Value="_year"/>
                             </MudCardContent>
                             <MudCardActions>
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillARCOParam">Fill Table</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillArcoParam">Fill Table</MudButton>
                             </MudCardActions>
                         </MudCard>
                     </div>
 
-                    <MudTable Items="@_allARCOParams" Hover="true" Breakpoint="Breakpoint.Sm"
+                    <MudTable Items="@_allArcoParams" Hover="true" Breakpoint="Breakpoint.Sm"
                               Dense="true" Striped="true"
                               SortLabel="Sort By" Filter="new Func<ARCOParamRec, bool>(FilterFunc)"
                               RowsPerPage=50 FixedHeader="true" Height="700px">
@@ -97,7 +96,7 @@
                             <MudTd DataLabel="SAMPBY">@context.UNIT</MudTd>
                             <MudTd DataLabel="SAMPBY">@context.QUAL</MudTd>
                             <MudTd DataLabel="SAMPBY">@context.METHOD</MudTd>
-                            @{ var analD = @context.ANALDATE.Year != 0000 ? @context.ANALDATE.ToString("d") : ""; }
+                            @{ var analD = context.ANALDATE.Year != 0000 ? context.ANALDATE.ToString("d") : ""; }
                             <MudTd DataLabel="COLLDATE">@analD</MudTd>
                             <MudTd DataLabel="COMMENT">@context.ANALYST</MudTd>
                             <MudTd DataLabel="SOURCE">@context.DATAUSE</MudTd>
@@ -118,7 +117,7 @@
     private string? _progressMessage;
     private string _searchString = "";
     private string _year = "";
-    private List<ARCOParamRec> _allARCOParams = new(100000);
+    private List<ARCOParamRec> _allArcoParams = new(100000);
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,14 +135,14 @@
 
 @code
 {
-    private void FillARCOParam()
+    private void FillArcoParam()
     {
         _progressMessage = "(Re)Initializing the App";
         _isProgressOverlayVisible = true;
         var fromDate = $"{_year}-01-01";
         var toDate = $"{_year}-12-31";
         var allInfo = _year != "" ? WaterDatService.GetArcoParam(StateService.GetAppInfo(), $"WHERE `ANALDATE` BETWEEN '{fromDate}' AND '{toDate}'") : WaterDatService.GetArcoParam(StateService.GetAppInfo());
-        if (allInfo.Item1.Success) _allARCOParams = allInfo.Item2;
+        if (allInfo.Item1.Success) _allArcoParams = allInfo.Item2;
         _isProgressOverlayVisible = false;
     }
 }
