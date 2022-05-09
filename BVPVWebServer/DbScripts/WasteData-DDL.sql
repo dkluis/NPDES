@@ -60,7 +60,7 @@ CREATE TABLE `WasteData`.`BV_WasteSumRptTableXTab` (
 );
 CREATE INDEX BV_WASTESUMRPTTABLEXTAB_PROFILE ON `BV_WasteSumRptTableXTab` (`ProfileNumber`,`CommonWasteName`,`HAZ/NON`,`Routine`,`CostCenter`,`SourceDept`);
 
-CREATE TABLE CONSTITUENT (
+CREATE TABLE `WasteData`.CONSTITUENT (
                              `Constituent` VARCHAR(45) NOT NULL,
                              CASNUM VARCHAR(9),
                              TRICHEM BOOLEAN DEFAULT false NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE CONSTITUENT (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_CONSTITUENT ON CONSTITUENT (`Constituent`);
 
-CREATE TABLE CONTAINER_TYPE_CODES (
+CREATE TABLE `WasteData`.CONTAINER_TYPE_CODES (
                                       `ContainerType` VARCHAR(22) NOT NULL,
                                       `Abrv` VARCHAR(4),
                                       CONSTRAINT SYS_PK_10865 PRIMARY KEY (`ContainerType`)
@@ -84,7 +84,7 @@ CREATE TABLE `WasteData`.`Conversion Errors` (
                                      `Error Description` TEXT(21300)
 );
 
-CREATE TABLE COST_CENTERS (
+CREATE TABLE `WasteData`.COST_CENTERS (
                               `CostCenter` VARCHAR(7) NOT NULL,
                               `SourceDept` VARCHAR(20) NOT NULL,
                               `GrpName` VARCHAR(25),
@@ -92,7 +92,7 @@ CREATE TABLE COST_CENTERS (
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_COST_CENTERS ON COST_CENTERS (`CostCenter`);
 
-CREATE TABLE DISPOSAL_CODE (
+CREATE TABLE `WasteData`.DISPOSAL_CODE (
                                `DisposalCode` VARCHAR(11) NOT NULL,
                                `MethodTreat/Disposal` VARCHAR(60),
                                `PriceLowPerDrum` DOUBLE,
@@ -110,7 +110,7 @@ CREATE TABLE `WasteData`.`DrumLocation` (
 CREATE INDEX DRUMLOCATION_ID ON `DrumLocation` (ID);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_DRUMLOCATION ON `DrumLocation` (ID);
 
-CREATE TABLE FORM_CODE (
+CREATE TABLE `WasteData`.FORM_CODE (
                            `FormCode` VARCHAR(4) NOT NULL,
                            `FormCodeDescription` VARCHAR(60) NOT NULL,
                            CONSTRAINT SYS_PK_10897 PRIMARY KEY (`FormCode`)
@@ -133,7 +133,7 @@ CREATE TABLE `WasteData`.`FrtUOM` (
 CREATE INDEX FRTUOM_FRT_UOM_ID ON `FrtUOM` (`Frt_UOM_ID`);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_FRTUOM ON `FrtUOM` (`Frt_UOM_ID`);
 
-CREATE TABLE METHODS (
+CREATE TABLE `WasteData`.METHODS (
                          `MethdTreat/Disposal` VARCHAR(60) NOT NULL,
                          CONSTRAINT SYS_PK_10912 PRIMARY KEY (`MethdTreat/Disposal`)
 );
@@ -242,7 +242,7 @@ CREATE TABLE `WasteData`.`ShipContainerType` (
 CREATE INDEX SHIPCONTAINERTYPE_ID ON `ShipContainerType` (`ContainerID`);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_SHIPCONTTYPE ON `ShipContainerType` (`ContainerID`);
 
-CREATE TABLE SOURCE_CODE (
+CREATE TABLE `WasteData`.SOURCE_CODE (
                              `SourceCode` VARCHAR(4) NOT NULL,
                              `HAZ/NON` VARCHAR(3),
                              `SourceDescription` VARCHAR(56) NOT NULL,
@@ -251,7 +251,7 @@ CREATE TABLE SOURCE_CODE (
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_SOURCE_CODE ON SOURCE_CODE (`SourceCode`);
 
 
-CREATE TABLE SYSTEM_DESCRIPTION (
+CREATE TABLE`WasteData`.SYSTEM_DESCRIPTION (
                                     `UnitSystemCode` VARCHAR(4) NOT NULL,
                                     `HAZ/NON` VARCHAR(3),
                                     `SystemDescription` VARCHAR(42) NOT NULL,
@@ -302,14 +302,14 @@ CREATE TABLE `WasteData`.`TimeFrame` (
     `TmeFrame` VARCHAR(20)
 );
 
-CREATE TABLE TRANPORTER (
+CREATE TABLE `WasteData`.TRANPORTER (
                             `Transporter` VARCHAR(25) NOT NULL,
                             `StateTranspID` VARCHAR(6) NOT NULL,
                             CONSTRAINT SYS_PK_10970 PRIMARY KEY (`Transporter`)
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_TRANSPORTER ON TRANPORTER (`Transporter`);
 
-CREATE TABLE ULTIMATE_DISPOSAL (
+CREATE TABLE `WasteData`.ULTIMATE_DISPOSAL (
                                    `UltimateDisposal` VARCHAR(40) NOT NULL,
                                    `State` VARCHAR(2),
                                    CONSTRAINT SYS_PK_10986 PRIMARY KEY (`UltimateDisposal`)
@@ -317,7 +317,7 @@ CREATE TABLE ULTIMATE_DISPOSAL (
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_ULTIMATE_DISPOSAL ON ULTIMATE_DISPOSAL (`UltimateDisposal`);
 
 
-CREATE TABLE UNIT_TYPES (
+CREATE TABLE `WasteData`.UNIT_TYPES (
                             UNITS VARCHAR(3) NOT NULL,
                             CONSTRAINT SYS_PK_10991 PRIMARY KEY (UNITS)
 );
@@ -336,7 +336,7 @@ CREATE TABLE `WasteData`.`WasteSumRptTable` (
                                     `Units` VARCHAR(3)
 );
 
-CREATE TABLE PROFILE_INFORMATION (
+CREATE TABLE `WasteData`.PROFILE_INFORMATION (
                                      `ProfileNumber` VARCHAR(18) NOT NULL,
                                      `CommonWasteName` VARCHAR(50),
                                      `WasteDescription` VARCHAR(255),
@@ -383,13 +383,13 @@ CREATE TABLE PROFILE_INFORMATION (
                                      `SpecificGravity` DOUBLE DEFAULT 1,
                                      `Miscellaneous` VARCHAR(100),
                                      `GenProp` BOOLEAN DEFAULT false,
-                                     `GenPropDate` TIMESTAMP,
+                                     `GenPropDate` DATETIME,
                                      `ChemAnal` BOOLEAN DEFAULT false,
-                                     `ChemAnalDate` TIMESTAMP,
+                                     `ChemAnalDate` DATETIME,
                                      `ProcDesc` BOOLEAN DEFAULT false,
-                                     `ProcDescDate` TIMESTAMP,
+                                     `ProcDescDate` DATETIME,
                                      `SourReduct` BOOLEAN DEFAULT false,
-                                     `SourReductDate` TIMESTAMP,
+                                     `SourReductDate` DATETIME,
                                      `BenefUse` BOOLEAN DEFAULT false,
                                      `Active` BOOLEAN DEFAULT true,
                                      `25RApply` BOOLEAN,
@@ -403,12 +403,12 @@ CREATE TABLE PROFILE_INFORMATION (
                                      `ContainerType` INTEGER DEFAULT 0,
                                      `FreightUOM` INTEGER DEFAULT 0,
                                      `Manifest` VARCHAR(100),
-                                     `ProfileExpirationDate` TIMESTAMP,
-                                     `ProfileApprovalDate` TIMESTAMP,
+                                     `ProfileExpirationDate` DATETIME,
+                                     `ProfileApprovalDate` DATETIME,
                                      VPN VARCHAR(50),
                                      ERG VARCHAR(50),
                                      `Characterized` VARCHAR(50),
-                                     `AnalyticalDate` TIMESTAMP,
+                                     `AnalyticalDate` DATETIME,
                                      `AnalyticalTesting` BOOLEAN DEFAULT 0,
                                      `Expediate` BOOLEAN DEFAULT false,
                                      CONSTRAINT SYS_PK_10942 PRIMARY KEY (`ProfileNumber`),
@@ -448,8 +448,8 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_PK_TrashSite ON `TrashSite` (`ContainerSite`);
 CREATE INDEX SYS_IDX_TRASHSITE_REFERENCE17_11143 ON `TrashSite` (`ContainerType`);
 CREATE INDEX SYS_IDX_TRASHSITE_REFERENCE18_11155 ON `TrashSite` (`CostCenter`);
 
-CREATE TABLE WASTE_SHIPMENTS (
-                                 `ShippedOffSite` TIMESTAMP NOT NULL,
+CREATE TABLE `WasteData`.WASTE_SHIPMENTS (
+                                 `ShippedOffSite` DATETIME NOT NULL,
                                  `LineItem` VARCHAR(2) NOT NULL,
                                  `ProfileNumber` VARCHAR(18) NOT NULL,
                                  `HAZ/NON` VARCHAR(3) NOT NULL,
@@ -484,9 +484,9 @@ CREATE TABLE WASTE_SHIPMENTS (
                                  `Cost` DOUBLE DEFAULT 0,
                                  `TicketNo` VARCHAR(50),
                                  `ManifestReturned` BOOLEAN DEFAULT false,
-                                 `ManifestReturnedDate` TIMESTAMP,
+                                 `ManifestReturnedDate` DATETIME,
                                  `InvoicePaid` BOOLEAN DEFAULT false,
-                                 `InvoiceDate` TIMESTAMP,
+                                 `InvoiceDate` DATETIME,
                                  `ManifestComments` VARCHAR(255),
                                  `Manifest/DocumentNo` VARCHAR(20) NOT NULL,
                                  CONSTRAINT SYS_PK_10998 PRIMARY KEY (`ShippedOffSite`,`Manifest/DocumentNo`,`LineItem`,`ProfileNumber`),
@@ -516,15 +516,15 @@ CREATE INDEX SYS_IDX_WASTE_SHIPMENTS_REFERENCE5_11437 ON WASTE_SHIPMENTS (OFFSIT
 CREATE INDEX SYS_IDX_WASTE_SHIPMENTS_REFERENCE_11167 ON WASTE_SHIPMENTS (`ProfileNumber`);
 
 
-CREATE TABLE DRUM_TRACKING (
+CREATE TABLE `WasteData`.DRUM_TRACKING (
                                `DrumNumber` VARCHAR(10) NOT NULL,
                                `ProfileNumber` VARCHAR(18),
                                `HAZ/NON` VARCHAR(3),
                                `ContactPerson` VARCHAR(30),
                                `SourceProcess` VARCHAR(20),
                                `SourceActivity` VARCHAR(40),
-                               `AccumStartDate` TIMESTAMP,
-                               `ShippedOffSite` TIMESTAMP,
+                               `AccumStartDate` DATETIME,
+                               `ShippedOffSite` DATETIME,
                                `Comments` VARCHAR(60),
                                `CostCenter` VARCHAR(7),
                                `SourceDept` VARCHAR(20),
@@ -540,7 +540,7 @@ CREATE INDEX SYS_IDX_DRUM_TRACKING_REFERENCE21_11036 ON DRUM_TRACKING (`ProfileN
 CREATE INDEX SYS_IDX_DRUM_TRACKING_REFERENCE25_11043 ON DRUM_TRACKING (`CostCenter`);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_DRUM_TRACKING ON DRUM_TRACKING (`DrumNumber`);
 
-CREATE TABLE PROFILE_COMPOSITION (
+CREATE TABLE `WasteData`.PROFILE_COMPOSITION (
                                      `ProfileNumber` VARCHAR(18) NOT NULL,
                                      `Component` VARCHAR(2) NOT NULL,
                                      `Constituent` VARCHAR(45) NOT NULL,
@@ -556,3 +556,26 @@ CREATE TABLE PROFILE_COMPOSITION (
 CREATE INDEX SYS_IDX_PROFILE_COMPOSITION_REFERENCE3_11050 ON PROFILE_COMPOSITION (`Constituent`);
 CREATE INDEX SYS_IDX_PROFILE_COMPOSITION_REFERENCE8_11060 ON PROFILE_COMPOSITION (`ProfileNumber`);
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_PROFILE_COMP ON PROFILE_COMPOSITION (`ProfileNumber`,`Component`);
+
+-- WasteData.WasteShipmentsByYear source
+
+CREATE OR REPLACE
+    ALGORITHM = UNDEFINED VIEW `WasteData`.`WasteShipmentsByYear` AS
+select
+    `WS`.`ProfileNumber` AS `Profile Num`,
+    `PI`.`CommonWasteName` AS `Waste Name`,
+    year(`WS`.`ShippedOffSite`) AS `Shipment Year`,
+    sum(`WS`.`Quantity`) AS `Total Quantity`,
+    round(avg(`WS`.`Quantity`), 0) AS `Avg Quantity`,
+    min(`WS`.`Quantity`) AS `Min Quantity`,
+    max(`WS`.`Quantity`) AS `Max Quantity`,
+    count(0) AS `Number of Shipments`
+from
+    (`WasteData`.`WASTE_SHIPMENTS` `WS`
+        join `WasteData`.`PROFILE_INFORMATION` `PI` on
+        (`PI`.`ProfileNumber` = `WS`.`ProfileNumber`))
+where
+        `WS`.`HAZ/NON` = 'Haz'
+group by
+    year(`WS`.`ShippedOffSite`),
+    `WS`.`ProfileNumber`;

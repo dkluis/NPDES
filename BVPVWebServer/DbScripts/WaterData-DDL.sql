@@ -24,7 +24,7 @@ CREATE TABLE `ARCOObjectInfo` (
                                   OBJTYPE VARCHAR(50),
                                   COMMENT VARCHAR(100),
                                   `SOURCE` VARCHAR(40),
-                                  ENTERDATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                  ENTERDATE DATETIME DEFAULT CURRENT_TIMESTAMP,
                                   CONSTRAINT SYS_PK_10661 PRIMARY KEY (OBJID)
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_ARCOObjectInfo ON `ARCOObjectInfo` (OBJID);
@@ -44,11 +44,11 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_ARCOParamList ON `ARCOParamList` (PARAM);
 CREATE TABLE `ARCOPermit` (
                               `PermNum` VARCHAR(15) NOT NULL,
                               `PermDesc` VARCHAR(240),
-                              `IssueDate` TIMESTAMP,
-                              `ExpirDate` TIMESTAMP,
+                              `IssueDate` DATETIME,
+                              `ExpirDate` DATETIME,
                               `Comments` VARCHAR(240),
                               `Source` VARCHAR(40),
-                              `EnterDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                              `EnterDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
                               CONSTRAINT SYS_PK_10672 PRIMARY KEY (`PermNum`)
 );
 CREATE UNIQUE INDEX SYS_IDX_SYS_PK_ARCOPermit ON `ARCOPermit` (`PermNum`);
@@ -69,8 +69,8 @@ CREATE TABLE `Conversion Errors` (
 CREATE TABLE `Current Year` (
                                 `CurYear` SMALLINT,
                                 `CurMon` SMALLINT,
-                                `StartDate` TIMESTAMP,
-                                `EndDate` TIMESTAMP,
+                                `StartDate` DATETIME,
+                                `EndDate` DATETIME,
                                 `PermNum` VARCHAR(25)
 );
 CREATE INDEX `CURRENT YEAR_PERMNUM` ON `Current Year` (`PermNum`);
@@ -94,7 +94,7 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_PK_LabENTRY_Effluent ON `LABENTRY_Effluent and P
 
 CREATE TABLE `Paste Errors` (
                                 F1 VARCHAR(255),
-                                F2 TIMESTAMP,
+                                F2 DATETIME,
                                 F3 DOUBLE,
                                 F4 VARCHAR(255)
 );
@@ -115,7 +115,7 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_PK_ARCODMRPARAM ON ARCODMRPARAM (PERMNUM,DMRPAGE
 
 CREATE TABLE `ARCOFlow` (
                             OBJID VARCHAR(25) NOT NULL,
-                            SAMPDATE TIMESTAMP NOT NULL,
+                            SAMPDATE DATETIME NOT NULL,
                             FLOWRATE NUMERIC(65,7),
                             FLOWGPM NUMERIC(65,7),
                             WEIR1 NUMERIC(65,7),
@@ -154,13 +154,13 @@ CREATE TABLE `ARCOSampInfo` (
                                 SAMPLEID VARCHAR(7),
                                 SAMPTYPE VARCHAR(18),
                                 SAMPBY VARCHAR(15),
-                                COLLDATE TIMESTAMP,
-                                COLLTIME TIMESTAMP,
-                                SAMPDATE TIMESTAMP,
+                                COLLDATE DATETIME,
+                                COLLTIME DATETIME,
+                                SAMPDATE DATETIME,
                                 LABNAME VARCHAR(25),
-                                RECDATE TIMESTAMP,
+                                RECDATE DATETIME,
                                 COMMENT VARCHAR(140),
-                                ENTERDATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                ENTERDATE DATETIME DEFAULT CURRENT_TIMESTAMP,
                                 `SOURCE` VARCHAR(150),
                                 CONSTRAINT SYS_PK_10677 PRIMARY KEY (HLALABID),
                                 CONSTRAINT `ARCOSAMPINFO_ARCOObjectInfo` FOREIGN KEY (OBJID) REFERENCES `ARCOObjectInfo`(OBJID) ON UPDATE CASCADE,
@@ -199,7 +199,7 @@ CREATE TABLE `ARCOParam` (
                              UNIT VARCHAR(10),
                              QUAL VARCHAR(8) DEFAULT 'D',
                              `METHOD` VARCHAR(15),
-                             ANALDATE TIMESTAMP,
+                             ANALDATE DATETIME,
                              ANALYST VARCHAR(15),
                              DATAUSE VARCHAR(10) DEFAULT 'NPDES',
                              CONSTRAINT `ARCOPARAM_ARCOSampInfo` FOREIGN KEY (HLALABID) REFERENCES `ARCOSampInfo`(HLALABID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -208,3 +208,95 @@ CREATE TABLE `ARCOParam` (
 CREATE INDEX ARCOPARAM_FIELDNUM ON `ARCOParam` (FIELDNUM);
 CREATE INDEX `SYS_IDX_ARCOPARAM_ARCOSampInfo_10789` ON `ARCOParam` (HLALABID);
 CREATE INDEX `SYS_IDX_ARCOPARAM_ARCOParamList_10797` ON `ARCOParam` (PARAM);
+
+CREATE TABLE `zz_TestCycle` (
+                                `CycleID` VARCHAR(5) NOT NULL,
+                                `CycleDescription` VARCHAR(255),
+                                `ParamLst` VARCHAR(50),
+                                CONSTRAINT SYS_PK_10724 PRIMARY KEY (`CycleID`)
+);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_TESTCycleID ON `zz_TestCycle` (`CycleID`);
+CREATE INDEX ZZ_TESTCYCLE_TESTCYCLEID ON `zz_TestCycle` (`CycleID`);
+
+CREATE TABLE `zz_TestSchedule` (
+                                   `SampleDate` DATETIME NOT NULL,
+                                   W BOOLEAN DEFAULT 0,
+                                   BW BOOLEAN DEFAULT 0,
+                                   M1 BOOLEAN DEFAULT 0,
+                                   M2 BOOLEAN DEFAULT 0,
+                                   Q1 BOOLEAN DEFAULT 0,
+                                   Q2 BOOLEAN DEFAULT 0,
+                                   Q3 BOOLEAN DEFAULT 0,
+                                   A1 BOOLEAN DEFAULT 0,
+                                   A2 BOOLEAN DEFAULT 0,
+                                   A3 BOOLEAN DEFAULT 0,
+                                   `3Y` BOOLEAN DEFAULT 0,
+                                   `9Y` BOOLEAN DEFAULT 0,
+                                   CONSTRAINT SYS_PK_10729 PRIMARY KEY (`SampleDate`)
+);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10729_10730 ON `zz_TestSchedule` (`SampleDate`);
+
+CREATE TABLE `OLD_LABENTRY_Daily Effluent and Process Water Report` (
+                                                                        SAMPLEIDPREFIX VARCHAR(16) NOT NULL,
+                                                                        FIELDNUM SMALLINT NOT NULL,
+                                                                        FORMORDER SMALLINT,
+                                                                        OBJID VARCHAR(25),
+                                                                        SAMPTYPE VARCHAR(18),
+                                                                        PARAM VARCHAR(50),
+                                                                        PARAMUNITS VARCHAR(10),
+                                                                        `METHOD` VARCHAR(15),
+                                                                        DATAUSE VARCHAR(10) DEFAULT 'ALL',
+                                                                        ENTRYNOTE VARCHAR(120),
+                                                                        CONSTRAINT SYS_PK_10713 PRIMARY KEY (SAMPLEIDPREFIX,FIELDNUM)
+);
+CREATE INDEX `SYS_IDX_OLD_LABENTRY_DAILY EFFLUENT AND PROCESS WRPT_PARAM` ON `OLD_LABENTRY_Daily Effluent and Process Water Report` (PARAM);
+CREATE INDEX `SYS_IDX_OLD_LABENTRY_DAILY EFFLUENT AND PROCESS WRPT_OBJID` ON `OLD_LABENTRY_Daily Effluent and Process Water Report` (OBJID);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10713_10714 ON `OLD_LABENTRY_Daily Effluent and Process Water Report` (SAMPLEIDPREFIX,FIELDNUM);
+
+CREATE TABLE `OLD_LABENTRY_Weekly Effluent Report` (
+                                                       SAMPLEIDPREFIX VARCHAR(16) NOT NULL,
+                                                       FIELDNUM SMALLINT NOT NULL,
+                                                       FORMORDER SMALLINT,
+                                                       OBJID VARCHAR(25),
+                                                       SAMPTYPE VARCHAR(18),
+                                                       PARAM VARCHAR(50),
+                                                       PARAMUNITS VARCHAR(10),
+                                                       `METHOD` VARCHAR(15),
+                                                       DATAUSE VARCHAR(10) DEFAULT 'ALL',
+                                                       ENTRYNOTE VARCHAR(120),
+                                                       CONSTRAINT SYS_PK_10719 PRIMARY KEY (SAMPLEIDPREFIX,FIELDNUM)
+);
+CREATE INDEX `SYS_IDX_OLD_LABENTRY_WEEKLY EFFLUENT REPORT_PARAM` ON `OLD_LABENTRY_Weekly Effluent Report` (PARAM);
+CREATE INDEX `SYS_IDX_OLD_LABENTRY_WEEKLY EFFLUENT REPORT_OBJID` ON `OLD_LABENTRY_Weekly Effluent Report` (OBJID);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10719_10720 ON `OLD_LABENTRY_Weekly Effluent Report` (SAMPLEIDPREFIX,FIELDNUM);
+
+ALTER TABLE `OLD_LABENTRY_Daily Effluent and Process Water Report` ADD CONSTRAINT `OLD_LABENTRY_DAILY EFFLUENT AND PROCESS WATER REPORT_PARAMLIST` FOREIGN KEY (PARAM) REFERENCES `ARCOParamList`(PARAM) ON UPDATE CASCADE;
+ALTER TABLE `OLD_LABENTRY_Daily Effluent and Process Water Report` ADD CONSTRAINT `OLD_LABENTRY_DAILY EFFLUENT AND PROCESS WATER REPORT_OBJECT_INFO` FOREIGN KEY (OBJID) REFERENCES `ARCOObjectInfo`(OBJID) ON UPDATE CASCADE;
+
+ALTER TABLE `OLD_LABENTRY_Weekly Effluent Report` ADD CONSTRAINT `OLD_LABENTRY_WEEKLY EFFLUENT REPORT_ParamList` FOREIGN KEY (PARAM) REFERENCES `ARCOParamList`(PARAM) ON UPDATE CASCADE;
+ALTER TABLE `OLD_LABENTRY_Weekly Effluent Report` ADD CONSTRAINT `OLD_LABENTRY_WEEKLY EFFLUENT REPORT_OBJECTINFO` FOREIGN KEY (OBJID) REFERENCES `ARCOObjectInfo`(OBJID) ON UPDATE CASCADE;
+
+CREATE TABLE `ARCODMRPARAM_BackUp` (
+                                       PERMNUM VARCHAR(15) NOT NULL,
+                                       DMRPAGE VARCHAR(15) NOT NULL,
+                                       PAGENUM SMALLINT DEFAULT 1 NOT NULL,
+                                       ORDERNUM SMALLINT NOT NULL,
+                                       PARAM VARCHAR(50),
+                                       FREQ VARCHAR(15),
+                                       SAMPTYPE VARCHAR(15),
+                                       CONSTRAINT SYS_PK_10624 PRIMARY KEY (PERMNUM,DMRPAGE,PAGENUM,ORDERNUM)
+);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10624_10625 ON `ARCODMRPARAM_BackUp` (PERMNUM,DMRPAGE,PAGENUM,ORDERNUM);
+
+CREATE TABLE `Flow_Rate_Backup` (
+                                    OBJID VARCHAR(25) NOT NULL,
+                                    SAMPDATE TIMESTAMP NOT NULL,
+                                    FLOWRATE NUMERIC(65,7),
+                                    FLOWGPM NUMERIC(65,7),
+                                    WEIR1 NUMERIC(65,7),
+                                    WEIR2 NUMERIC(65,7),
+                                    WEIR3 NUMERIC(65,7),
+                                    ENTER VARCHAR(20),
+                                    CONSTRAINT SYS_PK_10696 PRIMARY KEY (OBJID,SAMPDATE)
+);
+CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10696_10697 ON `Flow_Rate_Backup` (OBJID,SAMPDATE);

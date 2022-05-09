@@ -2,7 +2,7 @@ CREATE TABLE `WaterEmsData`.`ComplianceStatus` (
                                     OBJID VARCHAR(25),
                                     MESSAGE VARCHAR(50),
                                     PARAM VARCHAR(50),
-                                    SAMPDATE TIMESTAMP,
+                                    SAMPDATE DATETIME,
                                     LIMTYPE VARCHAR(50),
                                     QUAL VARCHAR(8),
                                     `RESULT` NUMERIC(65,7),
@@ -20,7 +20,7 @@ CREATE TABLE `WaterEmsData`.`Conversion Errors` (
 CREATE TABLE `WaterEmsData`.`DMRBadUnits` (
                                OBJID VARCHAR(25),
                                PARAM VARCHAR(50),
-                               SAMPDATE TIMESTAMP,
+                               SAMPDATE DATETIME,
                                HLALABID VARCHAR(25),
                                `RESULT` NUMERIC(65,7),
                                UNIT VARCHAR(10),
@@ -32,7 +32,7 @@ CREATE INDEX DMRBADUNITS_OBJID ON `DMRBadUnits` (OBJID,PARAM,SAMPDATE);
 CREATE TABLE `WaterEmsData`.`DMRData` (
                            OBJID VARCHAR(25),
                            PARAM VARCHAR(50),
-                           SAMPDATE TIMESTAMP,
+                           SAMPDATE DATETIME,
                            QUAL VARCHAR(8) DEFAULT 'D',
                            `RESULT` NUMERIC(65,7),
                            UNIT VARCHAR(10),
@@ -42,8 +42,8 @@ CREATE TABLE `WaterEmsData`.`DMRData` (
                            MASSLOAD NUMERIC(65,7),
                            MASSUNIT VARCHAR(255),
                            MASSEXCUR BOOLEAN DEFAULT false,
-                           `StartDate` TIMESTAMP,
-                           `EndDate` TIMESTAMP,
+                           `StartDate` DATETIME,
+                           `EndDate` DATETIME,
                            `Sign` VARCHAR(255)
 );
 
@@ -71,7 +71,7 @@ CREATE INDEX DMRDATA_MONTHAVERAGE_OBJID ON `DMRData_MonthAverage` (OBJID,PARAM);
 CREATE TABLE `WaterEmsData`.`DMRDataLTD` (
                               OBJID VARCHAR(25),
                               PARAM VARCHAR(50),
-                              SAMPDATE TIMESTAMP,
+                              SAMPDATE DATETIME,
                               QUAL VARCHAR(8) DEFAULT 'D',
                               `RESULT` NUMERIC(65,7),
                               UNIT VARCHAR(10),
@@ -81,16 +81,16 @@ CREATE TABLE `WaterEmsData`.`DMRDataLTD` (
                               MASSLOAD NUMERIC(65,7),
                               MASSUNIT VARCHAR(255),
                               MASSEXCUR BOOLEAN DEFAULT false,
-                              `StartDate` TIMESTAMP,
-                              `EndDate` TIMESTAMP
+                              `StartDate` DATETIME,
+                              `EndDate` DATETIME
 );
 CREATE INDEX DMRDATALTD_OBJID ON `DMRDataLTD` (OBJID,PARAM,SAMPDATE);
 
 CREATE TABLE `WaterEmsData`.`DMRExport` (
                              `Permnum` VARCHAR(15),
                              `DMRPage` VARCHAR(15),
-                             `StartDate` TIMESTAMP,
-                             `EndDate` TIMESTAMP,
+                             `StartDate` DATETIME,
+                             `EndDate` DATETIME,
                              `PageNum` SMALLINT,
                              `PageTot` SMALLINT,
                              `OrderNum` SMALLINT,
@@ -118,7 +118,7 @@ CREATE TABLE `WaterEmsData`.`DMRFormat` (
                              `OrderNum` SMALLINT,
                              OBJID VARCHAR(25),
                              `Param` VARCHAR(50),
-                             `SampDate` TIMESTAMP,
+                             `SampDate` DATETIME,
                              `ConcQual` VARCHAR(8),
                              `ConcResult` NUMERIC(65,7),
                              `ConcUnit` VARCHAR(10),
@@ -141,8 +141,8 @@ CREATE TABLE `WaterEmsData`.`DMRFormat` (
                              `MaxMassQual` VARCHAR(8),
                              `MaxMass` NUMERIC(65,7),
                              `TotalExcur` SMALLINT DEFAULT 0,
-                             `StartDate` TIMESTAMP,
-                             `EndDate` TIMESTAMP
+                             `StartDate` DATETIME,
+                             `EndDate` DATETIME
 );
 CREATE INDEX DMRFORMAT_DMRPAGES ON `DMRFormat` (`DMRPage`,`PageNum`,`OrderNum`);
 CREATE INDEX DMRFORMAT_OBJID ON `DMRFormat` (OBJID);
@@ -150,7 +150,7 @@ CREATE INDEX DMRFORMAT_PERMNUM ON `DMRFormat` (`Permnum`);
 
 CREATE TABLE `WaterEmsData`.`DMRMissFlows` (
                                 OBJID VARCHAR(25),
-                                SAMPDATE TIMESTAMP
+                                SAMPDATE DATETIME
 );
 CREATE INDEX DMRMISSFLOWS_OBJID ON `DMRMissFlows` (OBJID);
 
@@ -164,7 +164,7 @@ CREATE TABLE `WaterEmsData`.`Entry_Lab_Param_Temp` (
                                         PARAMUNITS VARCHAR(10),
                                         QUAL VARCHAR(8) DEFAULT 'D',
                                         `METHOD` VARCHAR(15),
-                                        ANALDATE TIMESTAMP,
+                                        ANALDATE DATETIME,
                                         ANALYST VARCHAR(15),
                                         DATAUSE VARCHAR(10),
                                         ENTRYNOTE VARCHAR(120),
@@ -180,9 +180,9 @@ CREATE TABLE `WaterEmsData`.`Entry_Lab_SampInfo_Temp` (
                                            PERMNUM VARCHAR(15),
                                            SAMPTYPE VARCHAR(18),
                                            SAMPBY VARCHAR(15),
-                                           COLLDATE TIMESTAMP,
-                                           COLLTIME TIMESTAMP,
-                                           SAMPDATE TIMESTAMP,
+                                           COLLDATE DATETIME,
+                                           COLLTIME DATETIME,
+                                           SAMPDATE DATETIME,
                                            LABNAME VARCHAR(25),
                                            COMMENT VARCHAR(140),
                                            CONSTRAINT SYS_PK_10763 PRIMARY KEY (HLALABID)
@@ -201,9 +201,9 @@ CREATE TABLE `WaterEmsData`.`Entry_Lab_Temp` (
                                   PERMNUM VARCHAR(15),
                                   SAMPTYPE VARCHAR(18),
                                   SAMPBY VARCHAR(15),
-                                  COLLDATE TIMESTAMP,
-                                  COLLTIME TIMESTAMP,
-                                  SAMPDATE TIMESTAMP,
+                                  COLLDATE DATETIME,
+                                  COLLTIME DATETIME,
+                                  SAMPDATE DATETIME,
                                   LABNAME VARCHAR(25),
                                   COMMENT VARCHAR(140),
                                   PARAM VARCHAR(50),
@@ -211,7 +211,7 @@ CREATE TABLE `WaterEmsData`.`Entry_Lab_Temp` (
                                   PARAMUNITS VARCHAR(10),
                                   QUAL VARCHAR(8) DEFAULT 'D',
                                   `METHOD` VARCHAR(15),
-                                  ANALDATE TIMESTAMP,
+                                  ANALDATE DATETIME,
                                   ANALYST VARCHAR(15),
                                   DATAUSE VARCHAR(10),
                                   ENTRYNOTE VARCHAR(120),
@@ -233,7 +233,7 @@ CREATE INDEX EXCEPTIONS_MONTHLY_TEMP_OBJID ON `Exceptions_Monthly_Temp` (OBJID,P
 
 CREATE TABLE `WaterEmsData`.`Import_FLOW` (
                                OBJID VARCHAR(25),
-                               SAMPDATE TIMESTAMP,
+                               SAMPDATE DATETIME,
                                IMPDATE VARCHAR(20),
                                FLOWGPM NUMERIC(65,7),
                                FLOWMGD NUMERIC(65,7),
@@ -261,7 +261,7 @@ CREATE TABLE `WaterEmsData`.`Import_Param` (
                                 UNIT VARCHAR(10),
                                 QUAL VARCHAR(8) DEFAULT 'D',
                                 `METHOD` VARCHAR(15),
-                                ANALDATE TIMESTAMP,
+                                ANALDATE DATETIME,
                                 ANALYST VARCHAR(25),
                                 DATAUSE VARCHAR(10)
 );
@@ -284,14 +284,14 @@ CREATE TABLE `WaterEmsData`.`Import_SampInfo` (
                                    SAMPLEID VARCHAR(7),
                                    SAMPTYPE VARCHAR(18),
                                    SAMPBY VARCHAR(15),
-                                   COLLDATE TIMESTAMP,
-                                   COLLTIME TIMESTAMP,
-                                   SAMPDATE TIMESTAMP,
+                                   COLLDATE DATETIME,
+                                   COLLTIME DATETIME,
+                                   SAMPDATE DATETIME,
                                    LABNAME VARCHAR(25),
-                                   RECDATE TIMESTAMP,
+                                   RECDATE DATETIME,
                                    COMMENT VARCHAR(50),
                                    `SOURCE` VARCHAR(150),
-                                   ENTERDATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                   ENTERDATE DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IMPORT_SAMPINFO_HLALABID ON `Import_SampInfo` (HLALABID);
 CREATE INDEX IMPORT_SAMPINFO_OBJID ON `Import_SampInfo` (OBJID);
@@ -307,14 +307,14 @@ CREATE TABLE `WaterEmsData`.`Import_Temp` (
                                SAMPLEID VARCHAR(7),
                                SAMPTYPE VARCHAR(18),
                                SAMPBY VARCHAR(15),
-                               COLLDATE TIMESTAMP,
-                               COLLTIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-                               SAMPDATE TIMESTAMP,
+                               COLLDATE DATETIME,
+                               COLLTIME DATETIME,
+                               SAMPDATE DATETIME,
                                LABNAME VARCHAR(25),
-                               RECDATE TIMESTAMP,
+                               RECDATE DATETIME,
                                `COMMENT` VARCHAR(50),
                                `SOURCE` VARCHAR(150),
-                               ENTERDATE TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+                               ENTERDATE DATETIME DEFAULT CURRENT_TIMESTAMP,
                                FIELDNUM SMALLINT DEFAULT 1,
                                PARAM VARCHAR(50),
                                LABRESULT VARCHAR(10),
@@ -324,7 +324,7 @@ CREATE TABLE `WaterEmsData`.`Import_Temp` (
                                UNIT VARCHAR(10),
                                QUAL VARCHAR(8) DEFAULT 'D',
                                `METHOD` VARCHAR(15),
-                               ANALDATE TIMESTAMP,
+                               ANALDATE DATETIME,
                                ANALYST VARCHAR(25),
                                DATAUSE VARCHAR(10) DEFAULT 'NPDES'
 );
@@ -369,7 +369,7 @@ CREATE TABLE `WaterEmsData`.`SARA_Release_Estimates` (
                                           `YEAR` VARCHAR(255),
                                           OBJID VARCHAR(25),
                                           PARAM VARCHAR(50),
-                                          SAMPDATE TIMESTAMP,
+                                          SAMPDATE DATETIME,
                                           QUAL VARCHAR(8),
                                           `RESULT` NUMERIC(65,7),
                                           UNIT VARCHAR(10),
@@ -387,5 +387,5 @@ CREATE TABLE `WaterEmsData`.`ZZTempTest` (
                               PARAM VARCHAR(50),
                               `RESULT` NUMERIC(65,7),
                               LABRESULT VARCHAR(10),
-                              ANALDATE TIMESTAMP
+                              ANALDATE DATETIME
 );

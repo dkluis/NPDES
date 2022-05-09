@@ -57,7 +57,8 @@
                     <MudTable Items="@_allArcoSampInfos" Hover="true" Breakpoint="Breakpoint.Sm"
                               Dense="true" Striped="true"
                               SortLabel="Sort By" Filter="new Func<ARCOSampInfoRec, bool>(FilterFunc)"
-                              RowsPerPage=50 FixedHeader="true" Height="700px">
+                              RowsPerPage=50 FixedHeader="true" Height="650px"
+                              HorizontalScrollbar="true" Virtualize="true">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Sample Info Table</MudText>
                             <MudSpacer></MudSpacer>

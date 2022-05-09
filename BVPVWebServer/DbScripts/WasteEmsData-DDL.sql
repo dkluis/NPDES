@@ -275,14 +275,14 @@ CREATE TABLE `WasteEmsData`.`Current Year` (
 	`CurYear` SMALLINT,
 	`BegMon` SMALLINT,
 	`CurMon` SMALLINT,
-	`StartDate` TIMESTAMP,
-	`EndDate` TIMESTAMP,
-	`PreStartDate` TIMESTAMP,
-	`PreEndDate` TIMESTAMP
+	`StartDate` DATETIME,
+	`EndDate` DATETIME,
+	`PreStartDate` DATETIME,
+	`PreEndDate` DATETIME
 );
 
 CREATE TABLE `WasteEmsData`.`Form 26R1` (
-	`ShippedOffSite` TIMESTAMP,
+	`ShippedOffSite` DATETIME,
 	`Manifest/DocumentNo` VARCHAR(13),
 	`HAZ/NON` VARCHAR(3),
 	`SourceDept` VARCHAR(20),
@@ -307,9 +307,9 @@ CREATE TABLE `WasteEmsData`.`Form26R_Backup1` (
 	`Color` VARCHAR(15),
 	`Layers` VARCHAR(5),
 	`LayerDescription` VARCHAR(120),
-	`GenPropDate` TIMESTAMP,
-	`ChemAnalDate` TIMESTAMP,
-	`ProcDescDate` TIMESTAMP,
+	`GenPropDate` DATETIME,
+	`ChemAnalDate` DATETIME,
+	`ProcDescDate` DATETIME,
 	`BenefUse` BOOLEAN,
 	`ResponsibleOfficial` VARCHAR(40),
 	`ResponsibleTitle` VARCHAR(40),
@@ -344,9 +344,9 @@ CREATE TABLE `WasteEmsData`.`Form26RPrt1` (
 	`Color` VARCHAR(15),
 	`Layers` VARCHAR(5),
 	`LayerDescription` VARCHAR(120),
-	`GenPropDate` TIMESTAMP,
-	`ChemAnalDate` TIMESTAMP,
-	`ProcDescDate` TIMESTAMP,
+	`GenPropDate` DATETIME,
+	`ChemAnalDate` DATETIME,
+	`ProcDescDate` DATETIME,
 	`BenefUse` BOOLEAN,
 	`ResponsibleOfficial` VARCHAR(40),
 	`ResponsibleTitle` VARCHAR(40),
@@ -403,7 +403,7 @@ CREATE INDEX FORM26RPRT2B_PERMIT_NUM ON `Form26RPrt2B` (`Permit_Num`);
 CREATE INDEX FORM26RPRT2B_PROFILE ON `Form26RPrt2B` (`ProfileNumber`,OFFSITE);
 
 CREATE TABLE `WasteEmsData`.`Paste Errors` (
-	`ShippedOffSite` TIMESTAMP,
+	`ShippedOffSite` DATETIME,
 	`Manifest/DocumnetNo` VARCHAR(255),
 	`lineItem` DOUBLE,
 	`ProfileNumber` VARCHAR(255),
@@ -531,7 +531,7 @@ CREATE TABLE `WasteEmsData`.`RecycleSumRptTableXtab` (
 CREATE INDEX RECYCLESUMRPTTABLEXTAB_PROFILE ON `RecycleSumRptTableXtab` (`ProfileNumber`,`CommonWasteName`,`HAZ/NON`,`Routine`,`CostCenter`,`SourceDept`);
 
 CREATE TABLE `WasteEmsData`.`RELEASE` (
-	`ShippedOffSite` TIMESTAMP,
+	`ShippedOffSite` DATETIME,
 	`CostCenter` VARCHAR(7),
 	`SourceDept` VARCHAR(15),
 	`ProfileNumber` VARCHAR(18),
@@ -643,7 +643,7 @@ CREATE TABLE `WasteEmsData`.`WasteSumRptTableXtab` (
 CREATE INDEX WASTESUMRPTTABLEXTAB_PROFILE ON `WasteSumRptTableXtab` (`ProfileNumber`,`CommonWasteName`,`HAZ/NON`,`Routine`,`CostCenter`,`SourceDept`);
 
 CREATE TABLE `WasteEmsData`.`WS_SHIP_RPT_HeritageData` (
-	`ShippedOffSite` TIMESTAMP,
+	`ShippedOffSite` DATETIME,
 	`Manifest/DocumnetNo` VARCHAR(20),
 	`lineItem` VARCHAR(2),
 	`ProfileNumber` VARCHAR(18),
@@ -674,13 +674,13 @@ CREATE UNIQUE INDEX SYS_IDX_SYS_PK_10967_10968 ON `ZZ_Month` (ID);
 CREATE INDEX ZZ_MONTH_ID ON `ZZ_Month` (ID);
 
 CREATE TABLE `WasteEmsData`.`zz_SummaryApprover` (
-	`ShippedOffSite` TIMESTAMP,
+	`ShippedOffSite` DATETIME,
 	`TicketNo` DOUBLE,
 	`ProfileNumber` VARCHAR(50),
 	`Manifest/DocumentNo` VARCHAR(50),
 	`QuantityShipped` DOUBLE,
 	`ManifestReturned` VARCHAR(255),
-	`InvoiceDate` TIMESTAMP,
+	`InvoiceDate` DATETIME,
 	`InvoicePaid` VARCHAR(255),
 	`ManifestComments` VARCHAR(255)
 );

@@ -16,21 +16,21 @@ public class WaterDatService
         {
             var rec = new ARCOSampInfoRec
             {
-                HLALABID = rdr["HLALABID"].ToString() != null ? (string) rdr["HlALABID"] : "",
-                OBJID = rdr["OBJID"].ToString() != null ? (string) rdr["OBJID"] : "",
-                PERMNUM = rdr["PERMNUM"].ToString() != null ? (string) rdr["PERMNUM"] : "",
-                ORDERNUM = rdr["ORDERNUM"].ToString() != null ? (string) rdr["ORDERNUM"] : "",
-                SAMPLEID = rdr["SAMPLEID"].ToString() != null ? (string) rdr["SAMPLEID"] : "",
-                SAMPTYPE = rdr["SAMPTYPE"].ToString() != null ? (string) rdr["SAMPTYPE"] : "",
-                SAMPBY = rdr["SAMPBY"].ToString() != null ? (string) rdr["SAMPBY"] : "",
-                COLLDATE = rdr["COLLDATE"].ToString() != null ? (DateTime) rdr["COLLDATE"] : appInfo.BaseDate,
-                COLLTIME = rdr["COLLTIME"].ToString() != null ? (DateTime) rdr["COLLTIME"] : appInfo.BaseDate,
-                SAMPDATE = rdr["SAMPDATE"].ToString() != null ? (DateTime) rdr["SAMPDATE"] : appInfo.BaseDate,
-                LABNAME = rdr["LABNAME"].ToString() != null ? (string) rdr["LABNAME"] : "",
-                RECDATE = rdr["RECDATE"].ToString() != null ? (DateTime) rdr["RECDATE"] : appInfo.BaseDate,
-                COMMENT = rdr["COMMENT"].ToString() != null ? (string) rdr["COMMENT"] : "",
-                ENTERDATE = rdr["ENTERDATE"].ToString() != null ? (DateTime) rdr["ENTERDATE"] : appInfo.BaseDate,
-                SOURCE = rdr["SOURCE"].ToString() != null ? (string) rdr["SOURCE"] : ""
+                HLALABID = !DBNull.Value.Equals(rdr["HLALABID"]) ? (string) rdr["HlALABID"] : "",
+                OBJID = !DBNull.Value.Equals(rdr["OBJID"]) ? (string) rdr["OBJID"] : "",
+                PERMNUM = !DBNull.Value.Equals(rdr["PERMNUM"]) ? (string) rdr["PERMNUM"] : "",
+                ORDERNUM = !DBNull.Value.Equals(rdr["ORDERNUM"]) ? (string) rdr["ORDERNUM"] : "",
+                SAMPLEID = !DBNull.Value.Equals(rdr["SAMPLEID"]) ? (string) rdr["SAMPLEID"] : "",
+                SAMPTYPE = !DBNull.Value.Equals(rdr["SAMPTYPE"]) ? (string) rdr["SAMPTYPE"] : "",
+                SAMPBY = !DBNull.Value.Equals(rdr["SAMPBY"]) ? (string) rdr["SAMPBY"] : "",
+                COLLDATE = !DBNull.Value.Equals(rdr["COLLDATE"]) ? (DateTime) rdr["COLLDATE"] : appInfo.BaseDate,
+                COLLTIME = !DBNull.Value.Equals(rdr["COLLTIME"]) ? (DateTime) rdr["COLLTIME"] : appInfo.BaseDate,
+                SAMPDATE = !DBNull.Value.Equals(rdr["SAMPDATE"]) ? (DateTime) rdr["SAMPDATE"] : appInfo.BaseDate,
+                LABNAME = !DBNull.Value.Equals(rdr["LABNAME"]) ? (string) rdr["LABNAME"] : "",
+                RECDATE = !DBNull.Value.Equals(rdr["RECDATE"]) ? (DateTime) rdr["RECDATE"] : appInfo.BaseDate,
+                COMMENT = !DBNull.Value.Equals(rdr["COMMENT"]) ? (string) rdr["COMMENT"] : "",
+                ENTERDATE = !DBNull.Value.Equals(rdr["ENTERDATE"]) ? (DateTime) rdr["ENTERDATE"] : appInfo.BaseDate,
+                SOURCE = !DBNull.Value.Equals(rdr["SOURCE"]) ? (string) rdr["SOURCE"] : ""
             };
             allRecords.Add(rec);
         }
