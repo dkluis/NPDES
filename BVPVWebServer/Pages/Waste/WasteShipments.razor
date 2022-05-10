@@ -1,0 +1,156 @@
+@page "/WasteShipments"
+
+@inject ProtectedSessionStorage SessionStore
+@inject NavigationManager NavMgr
+@inject StateService StateService
+
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
+
+<PageTitle>Container Types</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "ContainerTypes") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+
+            <MudText Typo="Typo.h4" Align="Align.Center">Waste Shipments Totals by Profile/Year</MudText>
+            
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Waste Shipments Totals by Profile/Year" IsInitiallyExpanded="true">
+
+                    <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
+                        <MudCard Outlined="true" Elevation="4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Analysis Date Year</MudText>
+                                <MudTextField Label="Year" HelperText="Use the Year of the Sample Date" @bind-Value="_year"/>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillWasteShipments">Fill Table</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
+
+                    <MudTable Items="@_allWasteShipments" Hover="true" Breakpoint="Breakpoint.Sm"
+                              Dense="true" Striped="true"
+                              SortLabel="Sort By" Filter="new Func<WasteShipmentsByYearRec, bool>(FilterFunc)"
+                              RowsPerPage=50 FixedHeader="true" Height="700px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Waste Shipment Totals</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search Waste Shipments Totals" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<WasteShipmentsByYearRec, object>(x => x.ProfileNum!)">Profile Num</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh >
+                                <MudTableSortLabel SortBy="new Func<WasteShipmentsByYearRec, object>(x => x.WasteName!)">Waste Name</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<WasteShipmentsByYearRec, object>(x => x.Year!)">Shipment Year</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<WasteShipmentsByYearRec, object>(x => x.TotalQuantity!)">Total Qty</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Avg Qty</MudTh>
+                            <MudTh>Min Qty</MudTh>
+                            <MudTh >Max Qty</MudTh>
+                            <MudTh>Num of Shipments</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd >@context.ProfileNum</MudTd>
+                            <MudTd >@context.WasteName</MudTd>
+                            <MudTd >@context.Year</MudTd>
+                            @{ var tq = $"{context.TotalQuantity:0,0}"; }
+                            <MudTd Style="text-align: right">@tq</MudTd>
+                            @{ var aq = $"{context.AvgQuantity:0,0}"; }
+                            <MudTd Style="text-align: right">@aq</MudTd>
+                            @{ var mq = $"{context.MinQuantity:0,0}"; }
+                            <MudTd Style="text-align: right">@mq</MudTd>
+                            @{ var maq = $"{context.MaxQuantity:0,0}"; }
+                            <MudTd Style="text-align: right">@maq</MudTd>
+                            <MudTd Style="text-align: right">@context.NumberOfShipments</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {50, 150, 500}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+}
+
+@code {
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
+    private string _searchString = "";
+    private string _year = "";
+    private IEnumerable<WasteShipmentsByYearRec> _allWasteShipments = new List<WasteShipmentsByYearRec>(1024);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "ARCOParam");
+        _year = DateTime.Now.ToString("yyyy");
+        FillWasteShipments();
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private void FillWasteShipments()
+    {
+        _progressMessage = "(Re)loading the Table";
+        _isProgressOverlayVisible = true;
+        var result2 = 
+            _year != "" ? WasteDatService.GetWasteShipmentsByYear(StateService.GetAppInfo(), $"WHERE `Shipment Year` = {_year}") : 
+            WasteDatService.GetWasteShipmentsByYear(StateService.GetAppInfo());
+        if (result2.Item1.Success) _allWasteShipments = result2.Item2;
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private bool FilterFunc(WasteShipmentsByYearRec rec)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (rec.ProfileNum!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.WasteName!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (rec.Year.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+}

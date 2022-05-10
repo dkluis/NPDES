@@ -1,4 +1,7 @@
 // ReSharper disable InconsistentNaming
+
+using System.Numerics;
+
 namespace Libraries;
 
 public class RData25Rec
@@ -26,5 +29,17 @@ public class ContainerTypeCodeRec
 {
     public string? ContainerType { get; set; }
     public string? Abrv { get; set; }
+}
+
+public class WasteShipmentsByYearRec
+{
+    public string? ProfileNum { get; set; }
+    public string? WasteName { get; set; }
+    public int Year { get; set; }
+    public double TotalQuantity { get; set; }
+    public double AvgQuantity { get; set; }
+    public double MinQuantity { get; set; }
+    public double MaxQuantity { get; set; }
+    public BigInteger NumberOfShipments { get; set; }
 }
 
