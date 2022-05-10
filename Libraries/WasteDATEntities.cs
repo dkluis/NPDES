@@ -1,7 +1,7 @@
 // ReSharper disable InconsistentNaming
 namespace Libraries;
 
-public class RData25
+public class RData25Rec
 {
     public int ID { get; set; }   
     public string? ProfileID { get; set; }   
@@ -20,5 +20,11 @@ public class RData25
     public string? DS1 { get; set; }
     public string? DS2 { get; set; }
     public string? RCLeader { get; set; }
+}
+
+public class ContainerTypeCodeRec
+{
+    public string? ContainerType { get; set; }
+    public string? Abrv { get; set; }
 }
 
