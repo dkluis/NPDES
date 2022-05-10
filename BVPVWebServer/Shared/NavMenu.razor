@@ -14,24 +14,47 @@
     <MudNavLink Href="/Home" Match="NavLinkMatch.All">NPDES Home</MudNavLink>
 
     <MudDivider Class="my-2"/>
+
     <MudNavGroup Title="Waste Management" Expanded="false">
-        <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch Data</MudNavLink>
-        <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
+        <MudNavGroup Title="Background" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Profile" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Drum" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Municipal" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Waste" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Reports" Expanded="false">
+        </MudNavGroup>
     </MudNavGroup>
+
     <MudNavGroup Title="Water Management" Expanded="false">
-        <MudNavLink Href="/ARCOParam" Match="NavLinkMatch.Prefix">Param Table</MudNavLink>
-        <MudNavLink Href="/ARCOSampInfo" Match="NavLinkMatch.Prefix">Sample Info Table</MudNavLink>
+        <MudNavGroup Title="Import/Export" Expanded="false">
+            <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Imports</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Background" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Data Tables" Expanded="false">
+            <MudNavLink Href="/ARCOParam" Match="NavLinkMatch.Prefix">Parameters</MudNavLink>
+            <MudNavLink Href="/ARCOSampInfo" Match="NavLinkMatch.Prefix">Samples</MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Views" Expanded="false">
+        </MudNavGroup>
+        <MudNavGroup Title="Reports" Expanded="false">
+        </MudNavGroup>
     </MudNavGroup>
+
     <MudNavGroup Title="Potable Water Mgt" Expanded="false">
-        <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch Data</MudNavLink>
-        <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
+
     </MudNavGroup>
-    
+
     <MudDivider Class="mt-2"></MudDivider>
-    <MudNavGroup Title="General Admin" Expanded="true">
-        <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Uploads</MudNavLink> 
+    <MudNavGroup Title="General Admin" Expanded="false">
+        <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Uploads</MudNavLink>
     </MudNavGroup>
-    
+
     <MudDivider Class="my-2"/>
     <MudNavGroup Title="User Admin" Expanded="false">
         <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
@@ -54,4 +77,5 @@
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
+
 }
