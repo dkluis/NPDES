@@ -1,0 +1,57 @@
+@page "/ContainerTypes"
+
+@inject ProtectedSessionStorage SessionStore
+@inject NavigationManager NavMgr
+@inject StateService StateService
+
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
+
+<PageTitle>Container Types</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "ContainerTypes") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+
+            <MudText Typo="Typo.h4" Align="Align.Center">Container Types</MudText>
+        }
+    }
+}
+
+
+
+@code
+{
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "ExcelTry");
+        _isProgressOverlayVisible = false;
+    }
+}

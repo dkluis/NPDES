@@ -17,6 +17,7 @@
 
     <MudNavGroup Title="Waste Management" Expanded="false">
         <MudNavGroup Title="Background" Expanded="false">
+            <MudNavLink Href="/ContainerTypes" Match="NavLinkMatch.Prefix">Container Types</MudNavLink>
         </MudNavGroup>
         <MudNavGroup Title="Profile" Expanded="false">
         </MudNavGroup>
@@ -30,10 +31,10 @@
         </MudNavGroup>
     </MudNavGroup>
 
+    <MudDivider Class="my-2"/>
+
     <MudNavGroup Title="Water Management" Expanded="false">
-        <MudNavGroup Title="Import/Export" Expanded="false">
-            <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Imports</MudNavLink>
-        </MudNavGroup>
+        <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Import/Export</MudNavLink>
         <MudNavGroup Title="Background" Expanded="false">
         </MudNavGroup>
         <MudNavGroup Title="Data Tables" Expanded="false">
@@ -46,26 +47,20 @@
         </MudNavGroup>
     </MudNavGroup>
 
+    <MudDivider Class="my-2"/>
+
     <MudNavGroup Title="Potable Water Mgt" Expanded="false">
 
     </MudNavGroup>
 
-    <MudDivider Class="mt-2"></MudDivider>
-    <MudNavGroup Title="General Admin" Expanded="false">
-        <MudNavLink Href="/Uploads" Match="NavLinkMatch.Prefix">Uploads</MudNavLink>
-    </MudNavGroup>
-
     <MudDivider Class="my-2"/>
+
     <MudNavGroup Title="User Admin" Expanded="false">
         <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
         <MudNavLink Href="/roles" Match="NavLinkMatch.Prefix">Roles</MudNavLink>
         <MudNavLink Href="/apps" Match="NavLinkMatch.Prefix">Apps</MudNavLink>
     </MudNavGroup>
-
-    @code{
-
-    }
-
+    
 </MudNavMenu>
 
 
@@ -77,5 +72,5 @@
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
-
+}
 }
