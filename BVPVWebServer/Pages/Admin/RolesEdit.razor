@@ -28,9 +28,14 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="Delete Role" IsInitiallyExpanded="false">
                     <MudGrid>
                         <MudItem>
-                            <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
-                                <MudButton @onclick="OnButtonDeleteClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete Role: @PassedRoleId</MudButton>
-                            </MudButtonGroup>
+                            @{
+                                if (UserService.IsUserSuperAdmin(StateService.GetAppInfo(), StateService.UserId!))
+                                {
+                                    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
+                                        <MudButton @onclick="OnButtonDeleteClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete Role: @PassedRoleId</MudButton>
+                                    </MudButtonGroup>
+                                }
+                            }
                         </MudItem>
                     </MudGrid>
                 </MudExpansionPanel>
@@ -66,23 +71,23 @@
     }
 }
 
-        <MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
-            <MessageContent>
-                <MudText Color="Color.Error">Deleting Role: @PassedRoleId CANNOT be undone!!!</MudText>
-                <MudText Color="Color.Warning">Consider seting @PassedRoleId enabled to Off</MudText>
-                <MudText Color="Color.Info">See Help for Enabled versus Delete explanation</MudText>
-            </MessageContent>
-            <YesButton>
-                <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
-            </YesButton>
-        </MudMessageBox>
+<MudMessageBox @ref="DelBox" Title="Delete Warning" CancelText="Cancel">
+    <MessageContent>
+        <MudText Color="Color.Error">Deleting Role: @PassedRoleId CANNOT be undone!!!</MudText>
+        <MudText Color="Color.Warning">Consider seting @PassedRoleId enabled to Off</MudText>
+        <MudText Color="Color.Info">See Help for Enabled versus Delete explanation</MudText>
+    </MessageContent>
+    <YesButton>
+        <MudButton OnClick="@(Delete)" Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
+    </YesButton>
+</MudMessageBox>
 
 
 @code {
 
     [Parameter]
     public string? PassedRoleId { get; set; }
-    
+
 }
 
 @code {
@@ -107,13 +112,14 @@
 @code
 {
     MudMessageBox? DelBox { get; set; }
-    
+
     private async void OnButtonDeleteClicked()
     {
         await DelBox!.Show();
         StateHasChanged();
     }
 }
+
 @code
 {
     private void Delete()
@@ -124,7 +130,7 @@
             NavMgr.NavigateTo("/users");
             return;
         }
-        
+
         var success = RoleService.DeleteRole(StateService.GetAppInfo(), PassedRoleId!);
         if (!success)
         {

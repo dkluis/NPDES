@@ -75,11 +75,15 @@
                                 <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.Function!)">Function</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.DownloadDateTime)">Download DT</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.DownloadDateTime)">Download DateTime</MudTableSortLabel>
                             </MudTh>
-                            <MudTh>Validate DT</MudTh>
-                            <MudTh>Process DT</MudTh>
-                            <MudTh>File Exists</MudTh>
+                            <MudTh>Validate DateTime</MudTh>
+                            <MudTh>Validate User</MudTh>
+                            <MudTh>Process DateTime</MudTh>
+                            <MudTh>Process User</MudTh>
+                            <MudTh>Validate DateTime</MudTh>
+                            <MudTh>Validate User</MudTh>                            
+                            <MudTh>File on Server</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="User">@context.User</MudTd>
@@ -88,12 +92,17 @@
                                 <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.FileName</MudLink>
                             </MudTd>
                             <MudTd DataLabel="Function">@context.Function</MudTd>
-                            @{ var dld = context.DownloadDateTime.Year != 0001 ? context.DownloadDateTime.ToString("G") : ""; }
+                            @{ var dld = context.DownloadDateTime.Year != 0001 && context.DownloadDateTime.Year != 1990 ? context.DownloadDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Download Date">@dld</MudTd>
-                            @{ var vld = context.ValidateDateTime.Year != 0001 ? context.ValidateDateTime.ToString("G") : ""; }
+                            @{ var vld = context.ValidateDateTime.Year != 0001  && context.ValidateDateTime.Year != 1990 ? context.ValidateDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Validate Date">@vld</MudTd>
-                            @{ var pd = context.ProcessDateTime.Year != 0001 ? context.ProcessDateTime.ToString("G") : ""; }
+                            <MudTd DataLabel="Process User">@context.ValidateUser</MudTd>
+                            @{ var pd = context.ProcessDateTime.Year != 0001  && context.ProcessDateTime.Year != 1990 ? context.ProcessDateTime.ToString("G") : ""; }
                             <MudTd DataLabel="Process Date">@pd</MudTd>
+                            <MudTd DataLabel="Process User">@context.ProcessUser</MudTd>
+                            @{ var ad = context.ArchiveDateTime.Year != 0001  && context.ArchiveDateTime.Year != 1990 ? context.ArchiveDateTime.ToString("G") : ""; }
+                            <MudTd DataLabel="Archive Date">@pd</MudTd>
+                            <MudTd DataLabel="Archive User">@context.ProcessUser</MudTd>
                             @{var exists = CheckFileStillThere(context); }
                             @{
                                 if (exists) { 
@@ -220,8 +229,8 @@
     private static bool CheckFileStillThere(DownloadRec dlRec)
     {
         var directory = "Downloads";
-        if (dlRec.ValidateDateTime.Year != 0001) directory = "Validated";
-        if (dlRec.ProcessDateTime.Year != 0001) directory = "Processed";
+        if (dlRec.ValidateDateTime.Year != 0001 && dlRec.ValidateDateTime.Year != 1990) directory = "Validated";
+        if (dlRec.ProcessDateTime.Year != 0001 && dlRec.ProcessDateTime.Year != 1990) directory = "Processed";
         return FileHandling.CheckFileExist(dlRec.FileName!, directory);
     }
 }

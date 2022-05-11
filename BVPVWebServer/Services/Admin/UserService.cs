@@ -241,6 +241,16 @@ public class UserService
         db.Close();
         return result;
     }
+
+    public static bool IsUserSuperAdmin(AppInfo appInfo, string userid)
+    {
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"select * from `NPDES`.`Admin-UserRoles` where `UserID` = '{userid}' and `RoleID` = 'SuperAdmin'";
+        var rdr = db.ExecQuery(sql);
+        if (rdr!.HasRows) return true;
+        return false;
+    }
 }
 
 public class User

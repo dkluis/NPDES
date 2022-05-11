@@ -26,7 +26,7 @@ public class DownloadService
         var result = new Result();
         using var db = new MariaDb(appInfo);
         db.Open();
-        var sql = $"insert into `NPDES`.`General-Download` values ('{user}', '{filename}', '{originalFilename}', Null, NOW(3), Null, Null, Null, Null);";
+        var sql = $"insert into `NPDES`.`General-Download` values ('{user}', '{filename}', '{originalFilename}', Null, NOW(3), Null, Null, Null, Null, Null, Null);";
         db.ExecNonQuery(sql);
         result.Success = db.Success;
         result.Message = db.ErrorMessage;
@@ -47,44 +47,19 @@ public class DownloadService
         if (!rdr!.HasRows) return (result, recList);
         while (rdr.Read())
         {
-
-            var function = string.Empty;
-            var validateUser = string.Empty;
-            var processUser = string.Empty;
-            if (! DBNull.Value.Equals(rdr["FunctionID"]))
-            {
-                function = (string) rdr["FunctionID"];
-            }
-            if (! DBNull.Value.Equals(rdr["ValidateUserID"]))
-            {
-                validateUser = (string) rdr["ValidateUserID"];
-            }
-            if (! DBNull.Value.Equals(rdr["ProcessUserID"]))
-            {
-                processUser = (string) rdr["ProcessUserID"];
-            }
-
-            var validateDt = new DateTime();
-            var processDt = new DateTime();
-            if (! DBNull.Value.Equals(rdr["ValidatedDateTime"]))
-            {
-                validateDt = (DateTime) rdr["ValidatedDateTime"];
-            }
-            if (! DBNull.Value.Equals(rdr["ProcessedDateTime"]))
-            {
-                processDt = (DateTime) rdr["ProcessedDateTime"];
-            }
-            
             var rec = new DownloadRec
             {
                 User = (string) rdr["UserID"],
                 FileName = (string) rdr["FileName"],
-                Function = function,
+                OriginalFileName = (string) rdr["OriginalFileName"],
+                Function = !DBNull.Value.Equals(rdr["FunctionID"]) ? (string) rdr["FunctionID"] : "",
                 DownloadDateTime = (DateTime) rdr["DownloadDateTime"],
-                ValidateUser = validateUser,
-                ProcessUser = processUser,
-                ValidateDateTime = validateDt,
-                ProcessDateTime = processDt
+                ValidateUser = !DBNull.Value.Equals(rdr["ValidateUserID"]) ? (string) rdr["ValidateUserID"] : "",
+                ProcessUser = !DBNull.Value.Equals(rdr["ProcessUserID"]) ?  (string) rdr["ProcessUserID"] : "",
+                ValidateDateTime = !DBNull.Value.Equals(rdr["ValidatedDateTime"]) ? (DateTime) rdr["ValidatedDateTime"] : appInfo.BaseDate,
+                ProcessDateTime = !DBNull.Value.Equals(rdr["ProcessedDateTime"]) ? (DateTime) rdr["ProcessedDateTime"] : appInfo.BaseDate,
+                ArchiveDateTime = !DBNull.Value.Equals(rdr["ArchivedDateTime"]) ? (DateTime) rdr["ArchivedDateTime"] : appInfo.BaseDate,
+                ArchiveUser = !DBNull.Value.Equals(rdr["ArchiveUserID"]) ? (string) rdr["ArchiveUserID"] : ""
             };
             recList.Add(rec);
         }
