@@ -55,4 +55,41 @@ public class WasteDatService
 
         return (result, allRecords);
     }
+
+    public static (Result, List<DrumTrackingRec>) GetDrumTracking(AppInfo appInfo, string whereClause = "")
+    {
+        var allRecords = new List<DrumTrackingRec>(2048);
+        var sql = whereClause == ""
+            ? "select * from `WasteData`.`DRUM_TRACKING`;"
+            : $"select * from `WasteData`.`DRUM_TRACKING` {whereClause};";
+        var db = new MariaDb(appInfo);
+        db.Open();
+        var rdr = db.ExecQuery(sql);
+        var result = new Result {Message = db.ErrorMessage, Success = db.Success};
+        while (rdr!.Read() && rdr.HasRows)
+        {
+            var rec = new DrumTrackingRec()
+            {
+                DrumNumber = !DBNull.Value.Equals(rdr["DrumNumber"]) ? (string) rdr["DrumNumber"] : "",
+                ProfileNumber = !DBNull.Value.Equals(rdr["ProfileNumber"]) ? (string) rdr["ProfileNumber"] : "",
+                HAZNON = !DBNull.Value.Equals(rdr["HAZ/NON"]) ? (string) rdr["HAZ/NON"] : "",
+                ContactPerson = !DBNull.Value.Equals(rdr["ContactPerson"]) ? (string) rdr["ContactPerson"] : "",
+                SourceProcess = !DBNull.Value.Equals(rdr["SourceProcess"]) ? (string) rdr["SourceProcess"] : "",
+                SourceActivity = !DBNull.Value.Equals(rdr["SourceProcess"]) ? (string) rdr["SourceProcess"] : "",
+                AccumStartDate = !DBNull.Value.Equals(rdr["AccumStartDate"]) ? (DateTime) rdr["AccumStartDate"] : appInfo.BaseDate,
+                ShipppedOffSite = !DBNull.Value.Equals(rdr["ShippedOffSite"]) ? (DateTime) rdr["ShippedOffSite"] : appInfo.BaseDate,
+                Comments = !DBNull.Value.Equals(rdr["Comments"]) ? (string) rdr["Comments"] : "",
+                CostCenter = !DBNull.Value.Equals(rdr["CostCenter"]) ? (string) rdr["CostCenter"] : "",
+                SourceDept = !DBNull.Value.Equals(rdr["SourceDept"]) ? (string) rdr["SourceDept"] : "",
+                DrumType = !DBNull.Value.Equals(rdr["DrumType"]) ? (string) rdr["DrumType"] : "",
+                verified = (bool) rdr["verified"],
+                Location = !DBNull.Value.Equals(rdr["Location"]) ? (string) rdr["Location"] : "",
+                AccumulationArea = !DBNull.Value.Equals(rdr["AccumulationArea"]) ? (string) rdr["AccumulationArea"] : ""
+
+            };
+            allRecords.Add(rec);
+        }
+
+        return (result, allRecords);
+    }
 }

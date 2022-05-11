@@ -1,0 +1,179 @@
+@page "/DrumTracking"
+
+
+@inject ProtectedSessionStorage SessionStore
+@inject NavigationManager NavMgr
+@inject StateService StateService
+
+@inject ISnackbar Snackbar
+@using Severity = MudBlazor.Severity
+
+<PageTitle>Container Types</PageTitle>
+<MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
+@{
+    if (!StateService.IsLoggedIn)
+    {
+        NavMgr.NavigateTo("/");
+    }
+    else
+    {
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "ContainerTypes") == false)
+        {
+            <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
+        }
+        else
+        {
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+
+            <MudText Typo="Typo.h4" Align="Align.Center">Drum Tracking</MudText>
+            
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="Drum Tracking" IsInitiallyExpanded="true">
+
+                    <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
+                        <MudCard Outlined="true" Elevation="4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Acummulation Date Year</MudText>
+                                <MudTextField Label="Year" HelperText="Use the Year of the Accumulation Date" @bind-Value="_year"/>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillDrumTracking">Fill Table</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
+
+                    <MudTable Items="@_allDrumTrackingRecs" Hover="true" Breakpoint="Breakpoint.Sm"
+                              Dense="true" Striped="true"
+                              SortLabel="Sort By" Filter="new Func<DrumTrackingRec, bool>(FilterFunc)"
+                              RowsPerPage=50 FixedHeader="true" Height="700px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Waste Shipment Totals</MudText>
+                            <MudSpacer></MudSpacer>
+                            <MudTextField @bind-Value="_searchString" Placeholder="Search Drum Tracking" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                            </MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DrumTrackingRec, object>(x => x.DrumNumber!)">Drum Num</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh >
+                                <MudTableSortLabel SortBy="new Func<DrumTrackingRec, object>(x => x.ProfileNumber!)">Profile Num</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DrumTrackingRec, object>(x => x.HAZNON!)">Haz/Non</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Contact Person</MudTh>
+                            <MudTh>Source Process</MudTh>
+                            <MudTh>Source Activity</MudTh>
+                            <MudTh >
+                                <MudTableSortLabel SortBy="new Func<DrumTrackingRec, object>(x => x.AccumStartDate!)">Accum Start</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<DrumTrackingRec, object>(x => x.ShipppedOffSite!)">Shipped Offsite</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>Comments</MudTh>
+                            <MudTh>CostCenter</MudTh>
+                            <MudTh>Source Dept</MudTh>
+                            <MudTh>Drum Type</MudTh>
+                            <MudTh>Verified</MudTh>
+                            <MudTh>Location</MudTh>
+                            <MudTh>Accum Area</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd >@context.DrumNumber</MudTd>
+                            <MudTd >@context.ProfileNumber</MudTd>
+                            <MudTd >@context.HAZNON</MudTd>
+                            <MudTd >@context.ContactPerson</MudTd>
+                            <MudTd >@context.SourceProcess</MudTd>
+                            <MudTd >@context.SourceActivity</MudTd>
+                            <MudTd >@context.AccumStartDate.ToString("d")</MudTd>
+                            @{ var sos = context.ShipppedOffSite.Year == 1990 ? "" : context.ShipppedOffSite.ToString("d");}
+                            <MudTd >@sos</MudTd>
+                            <MudTd >@context.Comments</MudTd>
+                            <MudTd >@context.CostCenter</MudTd>
+                            <MudTd >@context.SourceDept</MudTd>
+                            <MudTd >@context.DrumType</MudTd>
+                            <MudTd >@context.verified</MudTd>
+                            <MudTd >@context.Location</MudTd>
+                            <MudTd >@context.AccumulationArea</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {50, 150, 500}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    }
+}
+
+@code {
+    private bool _isProgressOverlayVisible;
+    private string? _progressMessage;
+    private string _searchString = "";
+    private string _year = "";
+    private IEnumerable<DrumTrackingRec> _allDrumTrackingRecs = new List<DrumTrackingRec>(1024);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
+        var result = await SessionStore.GetAsync<string>("User");
+        if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
+        await SessionStore.SetAsync("CurrentApp", "DrumTracking");
+        _year = DateTime.Now.ToString("yyyy");
+        FillDrumTracking();
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private void FillDrumTracking()
+    {
+        _progressMessage = "(Re)loading the Table";
+        _isProgressOverlayVisible = true;
+        var fromDate = $"{_year}-01-01";
+        var toDate = $"{_year}-12-31";
+        var result2 = 
+            _year != "" ? WasteDatService.GetDrumTracking(StateService.GetAppInfo(), $"WHERE `AccumStartDate` BETWEEN '{fromDate}' AND '{toDate}'") : 
+            WasteDatService.GetDrumTracking(StateService.GetAppInfo());
+        if (result2.Item1.Success) _allDrumTrackingRecs = result2.Item2;
+        _isProgressOverlayVisible = false;
+    }
+}
+
+@code
+{
+    private bool FilterFunc(DrumTrackingRec rec)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+        if (rec.DrumNumber!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.ProfileNumber!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.HAZNON!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.SourceProcess!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (rec.AccumulationArea!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+    // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (rec.AccumStartDate.ToString("yyyy").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+}
+

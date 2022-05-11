@@ -43,3 +43,22 @@ public class WasteShipmentsByYearRec
     public BigInteger NumberOfShipments { get; set; }
 }
 
+public class DrumTrackingRec
+{
+    public string? DrumNumber { get; set; }
+    public string? ProfileNumber { get; set; }
+    public string? HAZNON { get; set; }
+    public string? ContactPerson { get; set; }
+    public string? SourceProcess { get; set; }
+    public string? SourceActivity { get; set; }
+    public DateTime AccumStartDate { get; set; }
+    public DateTime ShipppedOffSite { get; set; }
+    public string? Comments { get; set; }
+    public string? CostCenter { get; set; }
+    public string? SourceDept { get; set; }
+    public string? DrumType { get; set; }
+    public bool verified { get; set; }
+    public string? Location { get; set; }
+    public string? AccumulationArea { get; set; }
+}
+
