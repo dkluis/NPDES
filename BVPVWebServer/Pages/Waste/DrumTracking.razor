@@ -119,7 +119,7 @@
 
 @code {
     private bool _isProgressOverlayVisible;
-    private string? _progressMessage;
+    private string _progressMessage = string.Empty;
     private string _searchString = "";
     private string _year = "";
     private IEnumerable<DrumTrackingRec> _allDrumTrackingRecs = new List<DrumTrackingRec>(1024);

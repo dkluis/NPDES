@@ -105,7 +105,7 @@
 
 @code {
     private bool _isProgressOverlayVisible;
-    private string? _progressMessage;
+    private string _progressMessage = string.Empty;
     private string _searchString = "";
     private string _year = "";
     private IEnumerable<WasteShipmentsByYearRec> _allWasteShipments = new List<WasteShipmentsByYearRec>(1024);

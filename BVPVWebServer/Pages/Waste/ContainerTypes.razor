@@ -99,7 +99,7 @@
 @code
 {
     private bool _isProgressOverlayVisible;
-    private string? _progressMessage;
+    private string _progressMessage = string.Empty;
     private IEnumerable<ContainerTypeCodeRec> _allContainerTypes = new List<ContainerTypeCodeRec>(32);
 
     protected override async Task OnInitializedAsync()
