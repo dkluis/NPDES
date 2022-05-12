@@ -32,21 +32,21 @@
                         <div style="max-width: 400px;">
                             <MudCard Outlined="true">
                                 <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
-                                <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                                <MudForm Model="@_roleRec" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
                                     <MudCardContent>
-                                        <MudTextField @bind-Value="_role.RoleId"
-                                                      For="@(() => _role.RoleId)"
+                                        <MudTextField @bind-Value="_roleRec.RoleId"
+                                                      For="@(() => _roleRec.RoleId)"
                                                       Immediate="true"
                                                       Label="Enter Role"
                                                       HelperText="Role: Max. 15 characters">
                                         </MudTextField>
-                                        <MudNumericField @bind-Value="_role.RoleLevel"
-                                                         For="@(() => _role.RoleLevel)"
+                                        <MudNumericField @bind-Value="_roleRec.RoleLevel"
+                                                         For="@(() => _roleRec.RoleLevel)"
                                                          Immediate="true"
                                                          Label="Enter Role Level"
                                                          HelperText="Role Level: between 1 and 99">
                                         </MudNumericField>
-                                        <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
+                                        <MudCheckBox T="bool" @bind-Checked="_roleRec.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
                                     </MudCardContent>
                                 </MudForm>
                                 <MudCardActions>
@@ -63,7 +63,7 @@
             }
 
             <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-                      Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
+                      Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<RoleRec, bool>(FilterFunc)">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Roles Table</MudText>
                     <MudSpacer></MudSpacer>
@@ -77,16 +77,16 @@
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleId!)">Role</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<RoleRec, object>(x => x.RoleId!)">Role</MudTableSortLabel>
                     </MudTh>
                     <MudTh T="int">
-                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.RoleLevel)">Level</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<RoleRec, object>(x => x.RoleLevel)">Level</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<RoleRec, object>(x => x.ReadOnly)">ReadOnly</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<Role, object>(x => x.Enabled)">Enabled</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<RoleRec, object>(x => x.Enabled)">Enabled</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -111,7 +111,7 @@
     // Form Handling Code
     MudForm? _form;
     readonly RoleFluentValidator _roleValidator = new();
-    readonly Role _role = new();
+    readonly RoleRec _roleRec = new();
     private static bool _valid;
     private string _linkedContext = string.Empty;
 
@@ -121,26 +121,26 @@
         await _form!.Validate();
         if (_valid)
         {
-            var success = RoleService.AddRole(StateService.GetAppInfo(), _role);
+            var success = RoleService.AddRole(StateService.GetAppInfo(), _roleRec);
             if (success)
             {
-                _role.RoleId = "";
-                _role.RoleLevel = 0;
-                _role.ReadOnly = false;
-                _role.Enabled = true;
-                Snackbar.Add($"Role: {_role.RoleId} is added", Severity.Info);
-                NavMgr.NavigateTo($"/Roles/{_role.RoleId}");
+                _roleRec.RoleId = "";
+                _roleRec.RoleLevel = 0;
+                _roleRec.ReadOnly = false;
+                _roleRec.Enabled = true;
+                Snackbar.Add($"Role: {_roleRec.RoleId} is added", Severity.Info);
+                NavMgr.NavigateTo($"/Roles/{_roleRec.RoleId}");
             }
             else
             {
-                Snackbar.Add($"Adding Role: {_role.RoleId} already exists", Severity.Error);
+                Snackbar.Add($"Adding Role: {_roleRec.RoleId} already exists", Severity.Error);
             }
         }
     }
 
 
     // Validation Code
-    public class RoleFluentValidator : AbstractValidator<Role>
+    public class RoleFluentValidator : AbstractValidator<RoleRec>
     {
         public RoleFluentValidator()
         {
@@ -155,7 +155,7 @@
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<RoleRec>.CreateWithOptions((RoleRec) model, x => x.IncludeProperties(propertyName)));
             _valid = result.IsValid;
             return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };
@@ -190,7 +190,7 @@
     private bool _loading;
     private string _searchString = "";
     private string _sqlSearchString = "";
-    private IEnumerable<Role> _roles = new List<Role>(64);
+    private IEnumerable<RoleRec> _roles = new List<RoleRec>(64);
 
     protected override void OnInitialized()
     {
@@ -218,11 +218,11 @@
 
 @code
 {
-    private bool FilterFunc(Role role)
+    private bool FilterFunc(RoleRec roleRec)
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (role.RoleId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (roleRec.RoleId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         int number;
         try
@@ -235,10 +235,10 @@
         {
             number = 99999;
         }
-        if (role.RoleLevel.Equals(number))
+        if (roleRec.RoleLevel.Equals(number))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if ($"{role.RoleId}".Contains(_searchString))
+        if ($"{roleRec.RoleId}".Contains(_searchString))
             return true;
         return false;
     }

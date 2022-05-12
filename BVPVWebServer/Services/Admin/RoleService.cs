@@ -1,12 +1,13 @@
 using Libraries;
+using Libraries.Entities;
 
 namespace BVPVWebServer.Services.Admin;
 
 public class RoleService
 {
-    public static IEnumerable<Role> GetAllRoles(AppInfo appInfo, string searchString = "")
+    public static IEnumerable<RoleRec> GetAllRoles(AppInfo appInfo, string searchString = "")
     {
-        var allRoles = new List<Role>(32);
+        var allRoles = new List<RoleRec>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var sql = searchString switch
@@ -21,7 +22,7 @@ public class RoleService
         while (rdr.Read())
         {
             if ((string) rdr["RoleId"] == "None" || (string) rdr["RoleId"] =="SuperAdmin") continue;
-            var role = new Role
+            var role = new RoleRec
             {
                 RoleId = (string) rdr["RoleID"],
                 RoleLevel = (int) rdr["RoleLevel"],
@@ -50,9 +51,9 @@ public class RoleService
         return allRoleIds;
     }
 
-    public static Role GetRole(AppInfo appInfo, string role)
+    public static RoleRec GetRole(AppInfo appInfo, string role)
     {
-        var gottenRole = new Role();
+        var gottenRole = new RoleRec();
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-Roles` where `RoleID` = '{role}'");
@@ -68,26 +69,26 @@ public class RoleService
         return gottenRole;
     }
 
-    public static bool ChangeRole(AppInfo appInfo, Role role)
+    public static bool ChangeRole(AppInfo appInfo, RoleRec roleRec)
     {
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
         
-        var sql = $"update `NPDES`.`Admin-Roles` set `RoleLevel` = {role.RoleLevel}, `ReadOnly` = {role.ReadOnly}, `Enabled` = {role.Enabled} where `RoleID` = '{role.RoleId}';";
+        var sql = $"update `NPDES`.`Admin-Roles` set `RoleLevel` = {roleRec.RoleLevel}, `ReadOnly` = {roleRec.ReadOnly}, `Enabled` = {roleRec.Enabled} where `RoleID` = '{roleRec.RoleId}';";
         db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();
         return success;
     }
 
-    public static bool AddRole(AppInfo appInfo, Role role)
+    public static bool AddRole(AppInfo appInfo, RoleRec roleRec)
     {
         var success = true;
         using var db = new MariaDb(appInfo);
         db.Open();
         
-        var sql = $"insert into `NPDES`.`Admin-Roles` values ('{role.RoleId}', {role.RoleLevel}, {role.ReadOnly}, {role.Enabled});";
+        var sql = $"insert into `NPDES`.`Admin-Roles` values ('{roleRec.RoleId}', {roleRec.RoleLevel}, {roleRec.ReadOnly}, {roleRec.Enabled});";
         db.ExecNonQuery(sql);
         if (!db.Success) success = false;
         db.Close();
@@ -114,12 +115,4 @@ public class RoleService
         var rdr = db.ExecQuery($"select * from `NPDES`.`Admin-Roles` where `RoleID` = '{role}'");
         return rdr is {HasRows: true};
     }
-}
-
-public class Role
-{
-    public string RoleId { get; set; }  = string.Empty;
-    public int RoleLevel { get; set; }
-    public bool ReadOnly { get; set; }
-    public bool Enabled { get; set; }
 }

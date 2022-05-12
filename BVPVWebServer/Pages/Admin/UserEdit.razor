@@ -126,7 +126,7 @@
                               GroupBy="@_roleGroup"
                               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
                               GroupFooterClass="mb-4"
-                              Filter="new Func<AppsByUser, bool>(FilterFunc1)">
+                              Filter="new Func<AppsByUserRec, bool>(FilterFunc1)">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">@PassedUserId's Apps by Role</MudText>
                             <MudSpacer></MudSpacer>
@@ -149,11 +149,11 @@
                         <HeaderContent>
                             <MudTh>Username</MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<AppsByUser, object?>(x => x.Role)">Role</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<AppsByUserRec, object?>(x => x.Role)">Role</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Role Enabled</MudTh>
                             <MudTh>
-                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppsByUser, object?>(x => x.App)">App</MudTableSortLabel>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppsByUserRec, object?>(x => x.App)">App</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Function</MudTh>
                             <MudTh>Report</MudTh>
@@ -200,10 +200,10 @@
     private List<string> _allUserRoles = new(64);
     private List<string> _assignedRoles = new(64);
     private List<string> _originalAssignedRoles = new(64);
-    private List<AppsByUser> _appsByUsers = new(128);
-    private MudTable<AppsByUser>? _mudTableAppsByUsers;
+    private List<AppsByUserRec> _appsByUsers = new(128);
+    private MudTable<AppsByUserRec>? _mudTableAppsByUsers;
     private bool _isEnabled;
-    private User? _currentUser;
+    private UserLoginRec? _currentUser;
 
     [Parameter]
     public string? PassedUserId { get; set; }
@@ -396,7 +396,7 @@
 
 @code
 {
-    private readonly TableGroupDefinition<AppsByUser> _roleGroup = new()
+    private readonly TableGroupDefinition<AppsByUserRec> _roleGroup = new()
     {
         GroupName = "Roles",
         Indentation = true,
@@ -407,18 +407,18 @@
 
     private string _searchAppsByRole = string.Empty;
 
-    private bool FilterFunc1(AppsByUser appsByUser) => FilterFunc(appsByUser, _searchAppsByRole);
+    private bool FilterFunc1(AppsByUserRec appsByUserRec) => FilterFunc(appsByUserRec, _searchAppsByRole);
 
-    private static bool FilterFunc(AppsByUser appsByUser, string searchString)
+    private static bool FilterFunc(AppsByUserRec appsByUserRec, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (appsByUser.Role.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (appsByUserRec.Role.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (appsByUser.App.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (appsByUserRec.App.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (appsByUser.Function.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (appsByUserRec.Function.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

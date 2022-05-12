@@ -41,19 +41,19 @@
                     <MudExpansionPanel Style="font-weight: bold" Text="Change Role" IsInitiallyExpanded="true">
                         <div style="max-width: 400px;">
                             <MudCard Outlined="true">
-                                <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Change Role @_role.RoleId</MudText>
-                                <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                                <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Change Role @_roleRec.RoleId</MudText>
+                                <MudForm Model="@_roleRec" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
                                     <MudCardContent>
-                                        <MudNumericField @bind-Value="_role.RoleLevel"
-                                                         For="@(() => _role.RoleLevel)"
+                                        <MudNumericField @bind-Value="_roleRec.RoleLevel"
+                                                         For="@(() => _roleRec.RoleLevel)"
                                                          Immediate="true"
                                                          Label="Enter Role Level">
                                         </MudNumericField>
                                         <MudItem>
-                                            <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary" Style="margin-top: 15px">Role Readonly</MudCheckBox>
+                                            <MudCheckBox T="bool" @bind-Checked="_roleRec.ReadOnly" Color="Color.Primary" Style="margin-top: 15px">Role Readonly</MudCheckBox>
                                         </MudItem>
                                         <MudItem>
-                                            <MudCheckBox T="bool" @bind-Checked="_role.Enabled" Color="Color.Primary">Role Enabled</MudCheckBox>
+                                            <MudCheckBox T="bool" @bind-Checked="_roleRec.Enabled" Color="Color.Primary">Role Enabled</MudCheckBox>
                                         </MudItem>
                                     </MudCardContent>
                                 </MudForm>
@@ -94,7 +94,7 @@
 
 @code {
     private string _thisApp = "Roles";
-    private Role _role = new();
+    private RoleRec _roleRec = new();
     private bool _noUpdatingAllowed;
 
     protected override async Task OnInitializedAsync()
@@ -104,7 +104,7 @@
         PassedRoleId ??= "No Role";
         await SessionStore.SetAsync("CurrentApp", "Role Details");
         await SessionStore.SetAsync("EntryPage", $"/Roles/{PassedRoleId}");
-        _role = RoleService.GetRole(StateService.GetAppInfo(), PassedRoleId);
+        _roleRec = RoleService.GetRole(StateService.GetAppInfo(), PassedRoleId);
         CheckUserPrivileges();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
@@ -165,26 +165,26 @@
         await _form!.Validate();
         if (_valid)
         {
-            var success = RoleService.ChangeRole(StateService.GetAppInfo(), _role);
+            var success = RoleService.ChangeRole(StateService.GetAppInfo(), _roleRec);
             if (success)
             {
-                _role.RoleId = "";
-                _role.RoleLevel = 0;
-                _role.ReadOnly = false;
-                _role.Enabled = true;
-                Snackbar.Add($"Role: {_role.RoleId} is changed", Severity.Info);
+                _roleRec.RoleId = "";
+                _roleRec.RoleLevel = 0;
+                _roleRec.ReadOnly = false;
+                _roleRec.Enabled = true;
+                Snackbar.Add($"Role: {_roleRec.RoleId} is changed", Severity.Info);
                 NavMgr.NavigateTo("/Roles");
             }
             else
             {
-                Snackbar.Add($"Changing Role: {_role.RoleId} failed", Severity.Error);
+                Snackbar.Add($"Changing Role: {_roleRec.RoleId} failed", Severity.Error);
             }
         }
     }
 
 
     // Validation Code
-    public class RoleFluentValidator : AbstractValidator<Role>
+    public class RoleFluentValidator : AbstractValidator<RoleRec>
     {
         public RoleFluentValidator()
         {
@@ -199,7 +199,7 @@
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<Role>.CreateWithOptions((Role) model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<RoleRec>.CreateWithOptions((RoleRec) model, x => x.IncludeProperties(propertyName)));
             _valid = result.IsValid;
             return result.IsValid ? Array.Empty<string>() : result.Errors.Select(e => e.ErrorMessage);
         };

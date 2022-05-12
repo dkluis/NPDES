@@ -1,12 +1,13 @@
 using Libraries;
+using Libraries.Entities;
 
 namespace BVPVWebServer.Services.Admin;
 
 public class UserService
 {
-    public static User LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
+    public static UserLoginRec LoadUser(AppInfo appInfo, string username, string unencryptedPassword, bool checkPw = true)
     {
-        var user = new User
+        var user = new UserLoginRec
         {
             ValidPassword = false,
             ValidUser = false,
@@ -51,7 +52,7 @@ public class UserService
 
     public static bool AddUser(AppInfo appInfo, string userName, string password, bool enabled = true)
     {
-        var user = new User();
+        var user = new UserLoginRec();
         LoadUser(appInfo, userName, password, false);
         var success = false;
         if (user.ValidUser)
@@ -185,9 +186,9 @@ public class UserService
         return success;
     }
 
-    public static IEnumerable<UserElement> GetUsers(AppInfo appInfo, string searchString)
+    public static IEnumerable<UserRec> GetUsers(AppInfo appInfo, string searchString)
     { 
-        var ue = new List<UserElement>(512);
+        var ue = new List<UserRec>(512);
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from `NPDES`.`Admin-Users` where `UserID` like '{searchString}'";
@@ -197,7 +198,7 @@ public class UserService
             while (rdr.Read())
             {
                 if ((string) rdr["UserID"] == "Init" || (string) rdr["UserID"] == "SuperAdmin") continue;
-                var rec = new UserElement
+                var rec = new UserRec
                 {
                     UserId = (string) rdr["UserID"],
                     Password = (string) rdr["Password"],
@@ -211,9 +212,9 @@ public class UserService
         return ue;
     }
 
-    public static List<AppsByUser> GetAppsByUser(AppInfo appInfo, string userid)
+    public static List<AppsByUserRec> GetAppsByUser(AppInfo appInfo, string userid)
     {
-        var result = new List<AppsByUser>(512);
+        var result = new List<AppsByUserRec>(512);
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from `NPDES`.`Admin-AppsByUserView` where `User` = '{userid}'";
@@ -223,7 +224,7 @@ public class UserService
             while (rdr.Read())
             {
                 if ((string) rdr["User"] == "Init" || (string) rdr["User"] == "SuperAdmin") continue;
-                var rec = new AppsByUser
+                var rec = new AppsByUserRec
                 {
                     User = (string) rdr["User"],
                     Role = (string) rdr["Role"],
@@ -269,52 +270,3 @@ public class UserService
     
 }
 
-public class User
-{
-    public string UserId { get; set; }  = string.Empty;
-    public bool ValidUser { get; set; }
-    public bool ValidPassword { get; set; }
-    public bool Enabled { get; set; }
-    
-}
-
-public class UserElement
-{
-    public UserElement()
-    {
-        UserId = string.Empty;
-        Password = string.Empty;
-        Salt = string.Empty;
-        Enabled = true;
-    }
-
-    public string UserId { get; set; }
-    public string Password { get; set; }
-    public string Salt { get; set; }
-    public bool Enabled { get; set; }
-        
-}
-
-public class AppsByUser
-{
-    public AppsByUser()
-    {
-        User = string.Empty;
-        Role = string.Empty;
-        ReadOnly = false;
-        RoleLevel = 99;
-        RoleEnabled = true;
-        App = string.Empty;
-        Report = true;
-        Function = string.Empty;
-    }
-    
-    public string User { get; set; }
-    public string Role { get; set; }
-    public bool ReadOnly { get; set; }
-    public int RoleLevel { get; set; }
-    public bool RoleEnabled { get; set; }
-    public string App { get; set; }
-    public bool Report { get; set; }
-    public string Function { get; set; }
-}

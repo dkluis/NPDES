@@ -89,10 +89,10 @@
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserElement, object?>(x => x.UserId)">Username</MudTableSortLabel>
+                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserRec, object?>(x => x.UserId)">Username</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<UserElement, object?>(x => x.Enabled)">Enabled</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<UserRec, object?>(x => x.Enabled)">Enabled</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -150,8 +150,8 @@
 
 @code
 {
-    private MudTable<UserElement>? _mudTableUsers;
-    private IEnumerable<UserElement> _userElements = new List<UserElement>(512);
+    private MudTable<UserRec>? _mudTableUsers;
+    private IEnumerable<UserRec> _userElements = new List<UserRec>(512);
     private string _linkedContext = string.Empty;
 }
 
