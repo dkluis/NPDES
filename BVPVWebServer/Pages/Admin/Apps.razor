@@ -3,7 +3,6 @@
 @inject ProtectedSessionStorage SessionStore
 
 @using Severity = MudBlazor.Severity
-@using App = BVPVWebServer.Services.Admin.App
 
 @inject StateService StateService
 @inject NavigationManager NavMgr
@@ -41,7 +40,7 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="Apps Without a Role Assigned (Orphans)" IsInitiallyExpanded="false">
                         <MudTable Items="@_appsWithoutRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
-                              Filter="new Func<App, bool>(FilterFunc1)">
+                              Filter="new Func<AppRec, bool>(FilterFunc1)">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">All Apps without Roles (Orphans)</MudText>
                             <MudSpacer></MudSpacer>
@@ -65,10 +64,10 @@
                         </ColGroup>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<AppRec, object?>(x => x.AppId)">App</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRec, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Report</MudTh>
                         </HeaderContent>
@@ -90,7 +89,7 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Function" IsInitiallyExpanded="false">
                     <MudTable Items="@_allApps" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
-                              Filter="new Func<App, bool>(FilterFunc1)"
+                              Filter="new Func<AppRec, bool>(FilterFunc1)"
                               GroupBy="@_appGroup"
                               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
                               GroupFooterClass="mb-4">
@@ -117,10 +116,10 @@
                         </ColGroup>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<App, object?>(x => x.AppId)">App</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<AppRec, object?>(x => x.AppId)">App</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<App, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRec, object?>(x => x.FunctionId)">Functional Area</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Report</MudTh>
                         </HeaderContent>
@@ -128,7 +127,6 @@
                             <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"Functional Area: {context.Key}")</MudTh>
                         </GroupHeaderTemplate>
                         <RowTemplate>
-                            @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
                             <MudTd DataLabel="App">
                                 @{ _linkedContext = $"/apps/{context.AppId}"; }
                                 <MudLink  Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.AppId</MudLink>
@@ -149,7 +147,7 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Role" IsInitiallyExpanded="true">
                     <MudTable Items="@_allAppRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableAppRoles" RowsPerPage=25
-                              Filter="new Func<AppRole, bool>(FilterAppRolesFunc)"
+                              Filter="new Func<AppRoleRec, bool>(FilterAppRolesFunc)"
                               GroupBy="@_appRoleGroup"
                               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
                               GroupFooterClass="mb-4">
@@ -176,10 +174,10 @@
                         </ColGroup>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<AppRole, object?>(x => x.AppId)">App</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<AppRoleRec, object?>(x => x.AppId)">App</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRole, object?>(x => x.RoleId)">Role</MudTableSortLabel>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AppRoleRec, object?>(x => x.RoleId)">Role</MudTableSortLabel>
                             </MudTh>
                         </HeaderContent>
                         <GroupHeaderTemplate>
@@ -209,12 +207,12 @@
 @code
 {
     
-    private MudTable<App>? _mudTableApps;
-    private List<App> _allApps = new(128);
+    private MudTable<AppRec>? _mudTableApps;
+    private List<AppRec> _allApps = new(128);
     private string _linkedContext = string.Empty;
-    private List<AppRole> _allAppRoles = new(32);
-    private List<App> _appsWithoutRoles = new(128);
-    private MudTable<AppRole>? _mudTableAppRoles;
+    private List<AppRoleRec> _allAppRoles = new(32);
+    private List<AppRec> _appsWithoutRoles = new(128);
+    private MudTable<AppRoleRec>? _mudTableAppRoles;
     
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
@@ -251,7 +249,7 @@
 
 @code
 {
-    private readonly TableGroupDefinition<App> _appGroup = new()
+    private readonly TableGroupDefinition<AppRec> _appGroup = new()
     {
         GroupName = "Functional Area",
         Indentation = true,
@@ -261,9 +259,9 @@
     };
 
     private string _searchApps = string.Empty;
-    private bool FilterFunc1(App apps) => FilterFunc(apps, _searchApps);
+    private bool FilterFunc1(AppRec apps) => FilterFunc(apps, _searchApps);
 
-    private static bool FilterFunc(App apps, string searchString)
+    private static bool FilterFunc(AppRec apps, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
@@ -278,7 +276,7 @@
 
 @code
 {
-    private readonly TableGroupDefinition<AppRole> _appRoleGroup = new()
+    private readonly TableGroupDefinition<AppRoleRec> _appRoleGroup = new()
     {
         GroupName = "App",
         Indentation = true,
@@ -288,9 +286,9 @@
     };
 
     private string _searchAppRoles = string.Empty;
-    private bool FilterAppRolesFunc(AppRole appRoles) => FilterAppRoleMainFunc(appRoles, _searchAppRoles);
+    private bool FilterAppRolesFunc(AppRoleRec appRoles) => FilterAppRoleMainFunc(appRoles, _searchAppRoles);
 
-    private static bool FilterAppRoleMainFunc(AppRole appRoles, string searchString)
+    private static bool FilterAppRoleMainFunc(AppRoleRec appRoles, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;

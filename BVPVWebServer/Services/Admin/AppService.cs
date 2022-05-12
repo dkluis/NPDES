@@ -1,5 +1,7 @@
-using Libraries;
 // ReSharper disable All
+
+using Libraries;
+using Libraries.Entities;
 
 namespace BVPVWebServer.Services.Admin;
 
@@ -21,9 +23,9 @@ public class AppService
         return allAppIds;
     }
 
-    public static List<App> GetAllApps(AppInfo appInfo)
+    public static List<AppRec> GetAllApps(AppInfo appInfo)
     {
-        var allApps = new List<App>(512);
+        var allApps = new List<AppRec>(512);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery("select * from `NPDES`.`Admin-Apps` order by `AppID`;");
@@ -31,7 +33,7 @@ public class AppService
         while (rdr.Read())
         {
             if ((string) rdr["AppID"] == "None") continue;
-            var rec = new App
+            var rec = new AppRec
             {
                 AppId = (string) rdr["AppID"],
                 FunctionId = (string) rdr["FunctionID"],
@@ -44,9 +46,9 @@ public class AppService
 
     }
 
-    public static List<AppRole> GetAllAppRoles(AppInfo appInfo)
+    public static List<AppRoleRec> GetAllAppRoles(AppInfo appInfo)
     {
-        var allAppRoles = new List<AppRole>(32);
+        var allAppRoles = new List<AppRoleRec>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery("select * from `NPDES`.`Admin-AppRoles` order by `AppID`, `RoleID`;");
@@ -54,7 +56,7 @@ public class AppService
         while (rdr.Read())
         {
             if ((string) rdr["AppID"] == "None" || (string) rdr["RoleID"] == "SuperAdmin") continue;
-            var rec = new AppRole
+            var rec = new AppRoleRec
             {
                 AppId = (string) rdr["AppID"],
                 RoleId = (string) rdr["RoleID"]
@@ -65,9 +67,9 @@ public class AppService
         return allAppRoles;
     }
     
-    public static List<App> GetAppsWithoutRoles(AppInfo appInfo)
+    public static List<AppRec> GetAppsWithoutRoles(AppInfo appInfo)
     {
-        var allAppsWithoutRoles = new List<App>(32);
+        var allAppsWithoutRoles = new List<AppRec>(32);
         var db = new MariaDb(appInfo);
         db.Open();
         var rdr = db.ExecQuery("select * from `NPDES`.`Admin-AppsWithoutRoles` order by `App`;");
@@ -75,7 +77,7 @@ public class AppService
         while (rdr.Read())
         {
             if ((string) rdr["App"] == "None") continue;
-            var rec = new App
+            var rec = new AppRec
             {
                 AppId = (string) rdr["App"],
                 FunctionId = (string) rdr["Function"],
@@ -134,30 +136,4 @@ public class AppService
         db.Close();
         return success;
     }
-}
-
-public class App
-{
-    public App()
-    {
-        AppId = string.Empty;
-        FunctionId = string.Empty;
-        ReportApp = false;
-    }
-
-    public string AppId { get; set; }
-    public string FunctionId { get; set; }
-    public bool ReportApp { get; set; }
-}
-
-public class AppRole
-{
-    public AppRole()
-    {
-        AppId = string.Empty;
-        RoleId = string.Empty;
-    }
-    
-    public string AppId { get; set; }
-    public string RoleId { get; set; }
 }

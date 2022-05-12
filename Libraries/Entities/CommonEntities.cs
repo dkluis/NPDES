@@ -1,4 +1,4 @@
-namespace Libraries;
+namespace Libraries.Entities;
 
 public class Result
 {

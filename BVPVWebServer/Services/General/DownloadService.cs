@@ -1,4 +1,5 @@
 using Libraries;
+using Libraries.Entities;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BVPVWebServer.Services.General;

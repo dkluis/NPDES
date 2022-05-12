@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.CData.Access;
+using Libraries.Entities;
 
 namespace Libraries;
 

@@ -2,7 +2,7 @@
 
 using System.Numerics;
 
-namespace Libraries;
+namespace Libraries.Entities;
 
 public class RData25Rec
 {

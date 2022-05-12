@@ -1,5 +1,6 @@
 using System.Numerics;
 using Libraries;
+using Libraries.Entities;
 
 namespace BVPVWebServer.Services.Waste;
 

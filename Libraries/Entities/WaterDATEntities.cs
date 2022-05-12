@@ -1,7 +1,7 @@
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedType.Global
-namespace Libraries;
+namespace Libraries.Entities;
 
 public class ARCOSampInfoRec
 {
