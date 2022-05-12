@@ -85,7 +85,6 @@ public class WasteDatService
                 verified = (bool) rdr["verified"],
                 Location = !DBNull.Value.Equals(rdr["Location"]) ? (string) rdr["Location"] : "",
                 AccumulationArea = !DBNull.Value.Equals(rdr["AccumulationArea"]) ? (string) rdr["AccumulationArea"] : ""
-
             };
             allRecords.Add(rec);
         }

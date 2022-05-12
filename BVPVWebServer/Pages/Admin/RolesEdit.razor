@@ -29,7 +29,8 @@
                     <MudGrid>
                         <MudItem>
                             @{
-                                if (UserService.IsUserSuperAdmin(StateService.GetAppInfo(), StateService.UserId!))
+                                var result = UserService.IsUserSuperAdminOrReadOnly(StateService.GetAppInfo(), StateService.UserId!);
+                                if (result.Item1)
                                 {
                                     <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
                                         <MudButton @onclick="OnButtonDeleteClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete Role: @PassedRoleId</MudButton>

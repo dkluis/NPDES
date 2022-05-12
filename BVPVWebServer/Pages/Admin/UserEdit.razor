@@ -44,7 +44,9 @@
                             <MudCheckBox T="bool" @bind-Checked="_isEnabled" @onclick="EnableChange" Color="Color.Primary">@PassedUserId Enabled</MudCheckBox>
                         </MudItem>
                         <MudItem>
-                            @{if (UserService.IsUserSuperAdmin(StateService.GetAppInfo(), StateService.UserId!))
+                            @{
+                                var result = UserService.IsUserSuperAdminOrReadOnly(StateService.GetAppInfo(), StateService.UserId!);
+                                if (result.Item1)
                                 {
                                     <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 5px; margin-left: 20px;">
                                         <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>

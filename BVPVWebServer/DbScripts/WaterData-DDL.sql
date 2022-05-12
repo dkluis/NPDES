@@ -201,7 +201,7 @@ CREATE TABLE `ARCOParam` (
                              `METHOD` VARCHAR(15),
                              ANALDATE DATETIME,
                              ANALYST VARCHAR(15),
-                             DATAUSE VARCHAR(10) DEFAULT 'NPDES',
+                             DATAUSE VARCHAR(10) DEFAULT 'NPDES ONLY',
                              CONSTRAINT `ARCOPARAM_ARCOSampInfo` FOREIGN KEY (HLALABID) REFERENCES `ARCOSampInfo`(HLALABID) ON DELETE CASCADE ON UPDATE CASCADE,
                              CONSTRAINT `ARCOPARAM_ARCOParamList` FOREIGN KEY (PARAM) REFERENCES `ARCOParamList`(PARAM) ON UPDATE CASCADE
 );

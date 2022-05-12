@@ -326,7 +326,7 @@ CREATE TABLE `WaterEmsData`.`Import_Temp` (
                                `METHOD` VARCHAR(15),
                                ANALDATE DATETIME,
                                ANALYST VARCHAR(25),
-                               DATAUSE VARCHAR(10) DEFAULT 'NPDES'
+                               DATAUSE VARCHAR(10) DEFAULT 'NPDES ONLY'
 );
 CREATE INDEX IMPORT_TEMP_FIELDNUM ON `Import_Temp` (FIELDNUM);
 CREATE INDEX IMPORT_TEMP_HLALABID ON `Import_Temp` (HLALABID);
