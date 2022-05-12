@@ -25,37 +25,42 @@
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
-
-            <MudExpansionPanels Style="flex: 1;">
-                <MudExpansionPanel Style="font-weight: bold" Text="Add A New User">
-                    <div style="max-width: 400px;">
-                        <MudCard Outlined="true">
-                            <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
-                            <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
-                                <DataAnnotationsValidator/>
-                                <MudGrid>
-                                    <MudItem xs="12">
-                                        <MudCard>
-                                            <MudCardContent>
-                                                <MudTextField Label="Username" HelperText="Username: Max. 30 characters"
-                                                              @bind-Value="_addUserForm.UsernameAdd" For="@(() => _addUserForm.UsernameAdd)"/>
-                                                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                                              @bind-Value="_addUserForm.Password" For="@(() => _addUserForm.Password)" InputType="InputType.Password"/>
-                                                <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                                              @bind-Value="_addUserForm.Password2" For="@(() => _addUserForm.Password2)" InputType="InputType.Password"/>
-                                            </MudCardContent>
-                                            <MudCardActions>
-                                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add User</MudButton>
-                                            </MudCardActions>
-                                        </MudCard>
-                                    </MudItem>
-                                </MudGrid>
-                            </EditForm>
-                        </MudCard>
-                    </div>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-
+            if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
+            {
+                <MudExpansionPanels Style="flex: 1;">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Add A New User">
+                        <div style="max-width: 400px;">
+                            <MudCard Outlined="true">
+                                <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
+                                <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
+                                    <DataAnnotationsValidator/>
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudCard>
+                                                <MudCardContent>
+                                                    <MudTextField Label="Username" HelperText="Username: Max. 30 characters"
+                                                                  @bind-Value="_addUserForm.UsernameAdd" For="@(() => _addUserForm.UsernameAdd)"/>
+                                                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                                                  @bind-Value="_addUserForm.Password" For="@(() => _addUserForm.Password)" InputType="InputType.Password"/>
+                                                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                                                  @bind-Value="_addUserForm.Password2" For="@(() => _addUserForm.Password2)" InputType="InputType.Password"/>
+                                                </MudCardContent>
+                                                <MudCardActions>
+                                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add User</MudButton>
+                                                </MudCardActions>
+                                            </MudCard>
+                                        </MudItem>
+                                    </MudGrid>
+                                </EditForm>
+                            </MudCard>
+                        </div>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
+            }
 
             <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
                 <MudCard Outlined="true" Elevation="4">
@@ -114,6 +119,9 @@
 
 @code
 {
+    private string _thisApp = "Users";
+    private bool _noUpdatingAllowed;
+    
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
@@ -122,7 +130,14 @@
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
+        CheckUserPrivileges();
         FillTable();
+    }
+    
+    private void CheckUserPrivileges()
+    {
+        _noUpdatingAllowed = false;
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 
     private void FillTable()

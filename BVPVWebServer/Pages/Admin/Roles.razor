@@ -25,7 +25,7 @@
             <PageTitle>Roles</PageTitle>
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
-            if (StateService.IsSuperAdmin || !_noAddAllowed)
+            if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
             {
                 <MudExpansionPanels Style="flex: 1;" Elevation="4">
                     <MudExpansionPanel Style="font-weight: bold" Text="Add Role" IsInitiallyExpanded="false">
@@ -56,6 +56,10 @@
                         </div>
                     </MudExpansionPanel>
                 </MudExpansionPanels>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
             }
 
             <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
@@ -161,7 +165,7 @@
 
 @code
 {
-    private bool _noAddAllowed;
+    private bool _noUpdatingAllowed;
     private string _thisApp = "Roles";
     
     protected override async Task OnInitializedAsync()
@@ -178,8 +182,8 @@
     
     private void CheckUserPrivileges()
     {
-        _noAddAllowed = false;
-        _noAddAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
+        _noUpdatingAllowed = false;
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 
     // Table Handling Code

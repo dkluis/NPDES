@@ -37,81 +37,88 @@
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <MudText Typo="Typo.h4" Align="Align.Center">Editing User: @PassedUserId</MudText>
 
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Enable/Disable">
-                    <MudGrid>
+            if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
+            {
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Enable/Disable">
+                        <MudGrid>
+                            <MudItem>
+                                <MudCheckBox T="bool" @bind-Checked="_isEnabled" @onclick="EnableChange" Color="Color.Primary">@PassedUserId Enabled</MudCheckBox>
+                            </MudItem>
+                            <MudItem>
+                                @{
+                                    if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
+                                    {
+                                        <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 5px; margin-left: 20px;">
+                                            <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
+                                        </MudButtonGroup>
+                                    }
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
+                        <div style="max-width: 400px;">
+                            <MudCard Outlined="true">
+                                <MudText Typo="Typo.h5" Align="Align.Center">Change Password</MudText>
+                                <EditForm Model="@_changeUserPasswordForm" OnValidSubmit="OnValidSubmitChange">
+                                    <DataAnnotationsValidator/>
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudCard>
+                                                <MudCardContent>
+                                                    <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                                                  @bind-Value="_changeUserPasswordForm.PasswordChange" For="@(() => _changeUserPasswordForm.PasswordChange)" InputType="InputType.Password"/>
+                                                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                                                  @bind-Value="_changeUserPasswordForm.PasswordChange2" For="@(() => _changeUserPasswordForm.PasswordChange2)" InputType="InputType.Password"/>
+                                                </MudCardContent>
+                                                <MudCardActions>
+                                                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Change Password</MudButton>
+                                                </MudCardActions>
+                                            </MudCard>
+                                        </MudItem>
+                                    </MudGrid>
+                                </EditForm>
+                            </MudCard>
+                        </div>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
+                        <MudText Typo="Typo.h6">Current Roles of @PassedUserId:</MudText>
                         <MudItem>
-                            <MudCheckBox T="bool" @bind-Checked="_isEnabled" @onclick="EnableChange" Color="Color.Primary">@PassedUserId Enabled</MudCheckBox>
-                        </MudItem>
-                        <MudItem>
+
+                            <MudChipSet AllClosable="true" OnClose="RemoveRoleChip">
+                                @{
+                                    foreach (var role in _assignedRoles)
+                                    {
+                                        <MudChip Text="@role"></MudChip>
+                                    }
+                                }
+                            </MudChipSet>
+
+                            <MudText Typo="Typo.h6">Add the appropriate Role(s):</MudText>
                             @{
-                                if (StateService.IsSuperAdmin || !_noDeleteAllowed)
+                                foreach (var role in _allUserRoles)
                                 {
-                                    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 5px; margin-left: 20px;">
-                                        <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
-                                    </MudButtonGroup>
+                                    <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Variant="Variant.Filled"
+                                               Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">
+                                        @role
+                                    </MudButton>
                                 }
                             }
+
                         </MudItem>
-                    </MudGrid>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Change Password">
-                    <div style="max-width: 400px;">
-                        <MudCard Outlined="true">
-                            <MudText Typo="Typo.h5" Align="Align.Center">Change Password</MudText>
-                            <EditForm Model="@_changeUserPasswordForm" OnValidSubmit="OnValidSubmitChange">
-                                <DataAnnotationsValidator/>
-                                <MudGrid>
-                                    <MudItem xs="12">
-                                        <MudCard>
-                                            <MudCardContent>
-                                                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
-                                                              @bind-Value="_changeUserPasswordForm.PasswordChange" For="@(() => _changeUserPasswordForm.PasswordChange)" InputType="InputType.Password"/>
-                                                <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                                              @bind-Value="_changeUserPasswordForm.PasswordChange2" For="@(() => _changeUserPasswordForm.PasswordChange2)" InputType="InputType.Password"/>
-                                            </MudCardContent>
-                                            <MudCardActions>
-                                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Change Password</MudButton>
-                                            </MudCardActions>
-                                        </MudCard>
-                                    </MudItem>
-                                </MudGrid>
-                            </EditForm>
-                        </MudCard>
-                    </div>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Manage User's Roles" IsInitiallyExpanded="true">
-                    <MudText Typo="Typo.h6">Current Roles of @PassedUserId:</MudText>
-                    <MudItem>
-
-                        <MudChipSet AllClosable="true" OnClose="RemoveRoleChip">
-                            @{
-                                foreach (var role in _assignedRoles)
-                                {
-                                    <MudChip Text="@role"></MudChip>
-                                }
-                            }
-                        </MudChipSet>
-
-                        <MudText Typo="Typo.h6">Add the appropriate Role(s):</MudText>
-                        @{
-                            foreach (var role in _allUserRoles)
-                            {
-                                <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Tertiary" Variant="Variant.Filled"
-                                           Style="margin-right: 10px; margin-bottom: 10px;" @onclick="() => AddRoleChip(role)">
-                                    @role
-                                </MudButton>
-                            }
-                        }
-
-                    </MudItem>
-                    <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
+                        <MudButton Style="margin-top: 20px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="UpdateRoles">Submit Role Update</MudButton>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
+            }
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="View Apps by User" IsInitiallyExpanded="true">
                     <MudTable Items="@_appsByUsers" Dense="true" Hover="true" FixedHeader="true" Height="375px"
@@ -206,7 +213,7 @@
 @code
 {
     private readonly string _thisApp = "Users";
-    private bool _noDeleteAllowed;
+    private bool _noUpdatingAllowed;
     
     protected override async Task OnInitializedAsync()
     {
@@ -232,8 +239,8 @@
 
     private void CheckUserPrivileges()
     {
-        _noDeleteAllowed = false;
-        _noDeleteAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
+        _noUpdatingAllowed = false;
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 }
 

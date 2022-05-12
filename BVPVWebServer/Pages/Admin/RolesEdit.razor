@@ -24,7 +24,7 @@
             <PageTitle>Role @PassedRoleId</PageTitle>
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             
-            if (StateService.IsSuperAdmin || !_noDeleteAllowed)
+            if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
             {
                 <MudExpansionPanels Style="flex: 1;" Elevation="4">
                     <MudExpansionPanel Style="font-weight: bold" Text="Delete Role" IsInitiallyExpanded="false">
@@ -67,7 +67,7 @@
             }
             else
             {
-                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update functions in this App based on your Role profile.</MudAlert>
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
             }
         }
     }
@@ -95,7 +95,7 @@
 @code {
     private string _thisApp = "Roles";
     private Role _role = new();
-    private bool _noDeleteAllowed;
+    private bool _noUpdatingAllowed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,8 +113,8 @@
     
     private void CheckUserPrivileges()
     {
-        _noDeleteAllowed = false;
-        _noDeleteAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
+        _noUpdatingAllowed = false;
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 
 }
