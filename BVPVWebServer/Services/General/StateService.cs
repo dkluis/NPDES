@@ -38,7 +38,7 @@ public class StateService
 
     private void InitUserPrivileges()
     {
-        IsSuperAdmin = UserService.IsUserSuperAdmin(AppInfo, UserId!);
+        IsSuperAdmin = UserService.IsUserSuperAdmin(AppInfo, UserId);
     }
     
     public void InitSystemState(string userid)
@@ -89,14 +89,14 @@ public class StateService
 
     public void ReloadSystemState()
     {
-        InitSystemState(UserId!);
+        InitSystemState(UserId);
     }
 }
 
 public class SystemState
 {
     public bool DarkTheme { get; set; }
-    public string LastPage { get; set; } = string.Empty;
+    public string LastPage { get; set; }
 
     public SystemState()
     {

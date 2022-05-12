@@ -51,7 +51,7 @@
                 <MudExpansionPanel Style="font-weight: bold" Text="Downloads Table" IsInitiallyExpanded="true">
                     <MudTable Items="@_allDownloadRecs" Hover="true" Breakpoint="Breakpoint.Sm"
                               Dense="true" Striped="true" 
-                              SortLabel="Sort By" Filter="new Func<DownloadRec, bool>(FilterFunc)" 
+                              SortLabel="Sort By" Filter="new Func<ExternalFilesAuditRec, bool>(FilterFunc)" 
                               RowsPerPage=25 FixedHeader="true" Height="500px">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Downloads Table</MudText>
@@ -66,16 +66,16 @@
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.User!)">User</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ExternalFilesAuditRec, object>(x => x.User!)">User</MudTableSortLabel>
                             </MudTh>
                             <MudTh T="int">
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.FileName!)">File Name</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ExternalFilesAuditRec, object>(x => x.FileName!)">File Name</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.Function!)">Function</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ExternalFilesAuditRec, object>(x => x.Function!)">Function</MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortBy="new Func<DownloadRec, object>(x => x.DownloadDateTime)">Download DateTime</MudTableSortLabel>
+                                <MudTableSortLabel SortBy="new Func<ExternalFilesAuditRec, object>(x => x.DownloadDateTime)">Download DateTime</MudTableSortLabel>
                             </MudTh>
                             <MudTh>Validate DateTime</MudTh>
                             <MudTh>Validate User</MudTh>
@@ -101,7 +101,7 @@
                             <MudTd DataLabel="Process Date">@pd</MudTd>
                             <MudTd DataLabel="Process User">@context.ProcessUser</MudTd>
                             @{ var ad = context.ArchiveDateTime.Year != 0001  && context.ArchiveDateTime.Year != 1990 ? context.ArchiveDateTime.ToString("G") : ""; }
-                            <MudTd DataLabel="Archive Date">@pd</MudTd>
+                            <MudTd DataLabel="Archive Date">@ad</MudTd>
                             <MudTd DataLabel="Archive User">@context.ProcessUser</MudTd>
                             @{var exists = CheckFileStillThere(context); }
                             @{
@@ -130,7 +130,7 @@
     private string? _progressMessage;
     private string _searchString = "";
     private string _linkedContext = string.Empty;
-    private List<DownloadRec> _allDownloadRecs = new (1024);
+    private List<ExternalFilesAuditRec> _allDownloadRecs = new (1024);
 
     protected override async Task OnInitializedAsync()
     {
@@ -210,14 +210,14 @@
 
 @code
 {
-    private bool FilterFunc(DownloadRec downloadRec)
+    private bool FilterFunc(ExternalFilesAuditRec externalFilesAuditRec)
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (downloadRec.User.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (externalFilesAuditRec.User.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (downloadRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
+        if (externalFilesAuditRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
             return true;
 
         return false;
@@ -226,7 +226,7 @@
 
 @code
 {
-    private static bool CheckFileStillThere(DownloadRec dlRec)
+    private static bool CheckFileStillThere(ExternalFilesAuditRec dlRec)
     {
         var directory = "Downloads";
         if (dlRec.ValidateDateTime.Year != 0001 && dlRec.ValidateDateTime.Year != 1990) directory = "Validated";

@@ -71,7 +71,7 @@ public class MariaDb : IDisposable
             }
         }
 
-        public MySqlCommand Command(string sql)
+        private MySqlCommand Command(string sql)
         {
             Success = true;
             try

@@ -89,7 +89,7 @@
     private string? _progressMessage;
     
     private bool _noUpdatingAllowed;
-    private string _thisApp = "Apps";
+    private const string ThisApp = "Apps";
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,7 +117,7 @@
     private void CheckUserPrivileges()
     {
         _noUpdatingAllowed = false;
-        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, _thisApp);
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, ThisApp);
     }
 
 }

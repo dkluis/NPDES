@@ -35,10 +35,10 @@ public class DownloadService
         return result;
     }
 
-    public static (Result, List<DownloadRec>) GetAllDownloadRecs(AppInfo appInfo)
+    public static (Result, List<ExternalFilesAuditRec>) GetAllDownloadRecs(AppInfo appInfo)
     {
         var result = new Result {Success = true};
-        var recList = new List<DownloadRec>(1024);
+        var recList = new List<ExternalFilesAuditRec>(1024);
         
         var db = new MariaDb(appInfo);
         db.Open();
@@ -48,7 +48,7 @@ public class DownloadService
         if (!rdr!.HasRows) return (result, recList);
         while (rdr.Read())
         {
-            var rec = new DownloadRec
+            var rec = new ExternalFilesAuditRec
             {
                 User = (string) rdr["UserID"],
                 FileName = (string) rdr["FileName"],

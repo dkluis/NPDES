@@ -212,7 +212,7 @@
 
 @code
 {
-    private readonly string _thisApp = "Users";
+    private const string ThisApp = "Users";
     private bool _noUpdatingAllowed;
     
     protected override async Task OnInitializedAsync()
@@ -240,7 +240,7 @@
     private void CheckUserPrivileges()
     {
         _noUpdatingAllowed = false;
-        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, _thisApp);
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, ThisApp);
     }
 }
 

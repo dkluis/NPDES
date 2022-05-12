@@ -9,9 +9,9 @@ public class AppRec
         ReportApp = false;
     }
 
-    public string AppId { get; set; }
-    public string FunctionId { get; set; }
-    public bool ReportApp { get; set; }
+    public string AppId { get; init; }
+    public string FunctionId { get; init; }
+    public bool ReportApp { get; init; }
 }
 
 public class AppRoleRec
@@ -22,8 +22,8 @@ public class AppRoleRec
         RoleId = string.Empty;
     }
     
-    public string AppId { get; set; }
-    public string RoleId { get; set; }
+    public string AppId { get; init; }
+    public string RoleId { get; init; }
 }
 
 public class RoleRec
@@ -44,10 +44,10 @@ public class UserRec
         Enabled = true;
     }
 
-    public string UserId { get; set; }
+    public string UserId { get; init; }
     public string Password { get; set; }
     public string Salt { get; set; }
-    public bool Enabled { get; set; }
+    public bool Enabled { get; init; }
         
 }
 
@@ -65,14 +65,14 @@ public class AppsByUserRec
         Function = string.Empty;
     }
     
-    public string User { get; set; }
-    public string Role { get; set; }
+    public string User { get; init; }
+    public string Role { get; init; }
     public bool ReadOnly { get; set; }
     public int RoleLevel { get; set; }
-    public bool RoleEnabled { get; set; }
-    public string App { get; set; }
-    public bool Report { get; set; }
-    public string Function { get; set; }
+    public bool RoleEnabled { get; init; }
+    public string App { get; init; }
+    public bool Report { get; init; }
+    public string Function { get; init; }
 }
 
 public class UserLoginRec
@@ -82,4 +82,24 @@ public class UserLoginRec
     public bool ValidPassword { get; set; }
     public bool Enabled { get; set; }
     
+}
+
+/// <summary>
+/// Record actions done with and too external files
+/// Like the excel files to import or generated excel files to download
+/// or Reports, etc.
+/// </summary>
+public class ExternalFilesAuditRec
+{
+    public string User { get; init; } = string.Empty;
+    public string FileName { get; init; } = string.Empty;
+    public string OriginalFileName { get; init; } = string.Empty;
+    public string Function { get; init; } = string.Empty;
+    public DateTime DownloadDateTime { get; init; }
+    public DateTime ValidateDateTime { get; init; }
+    public string ValidateUser { get; init; } = string.Empty;
+    public DateTime ProcessDateTime { get; init; }
+    public string ProcessUser { get; init; } = string.Empty;
+    public DateTime ArchiveDateTime { get; init; }
+    public string ArchiveUser { get; init; } = string.Empty;
 }

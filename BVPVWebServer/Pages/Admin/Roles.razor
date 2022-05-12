@@ -15,7 +15,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, _thisApp) == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, ThisApp) == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -166,7 +166,7 @@
 @code
 {
     private bool _noUpdatingAllowed;
-    private string _thisApp = "Roles";
+    private const string ThisApp = "Roles";
     
     protected override async Task OnInitializedAsync()
     {
@@ -183,7 +183,7 @@
     private void CheckUserPrivileges()
     {
         _noUpdatingAllowed = false;
-        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, _thisApp);
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, ThisApp);
     }
 
     // Table Handling Code

@@ -123,9 +123,9 @@
     private bool _canCancelEdit;
     private bool _blockSwitch;
     private string _searchString = "";
-    private ContainerTypeCodeRec _selectedItem1 = new ContainerTypeCodeRec();
+    private ContainerTypeCodeRec _selectedItem1 = new();
     private ContainerTypeCodeRec? _elementBeforeEdit;
-    private HashSet<ContainerTypeCodeRec>? _selectedItems1HashSet = new HashSet<ContainerTypeCodeRec>();
+    //private HashSet<ContainerTypeCodeRec>? _selectedItems1HashSet = new HashSet<ContainerTypeCodeRec>();
 
     private void ClearEventLog()
     {
@@ -140,10 +140,10 @@
 
     private void BackupItem(object element)
     {
-        _elementBeforeEdit = new()
+        _elementBeforeEdit = new ContainerTypeCodeRec
         {
             ContainerType = ((ContainerTypeCodeRec) element).ContainerType,
-            Abrv = ((ContainerTypeCodeRec) element).Abrv,
+            Abrv = ((ContainerTypeCodeRec) element).Abrv
         };
         AddEditionEvent($"RowEditPreview event: made a backup of Element {((ContainerTypeCodeRec) element).ContainerType}");
     }

@@ -69,7 +69,7 @@ public class WasteDatService
         var result = new Result {Message = db.ErrorMessage, Success = db.Success};
         while (rdr!.Read() && rdr.HasRows)
         {
-            var rec = new DrumTrackingRec()
+            var rec = new DrumTrackingRec
             {
                 DrumNumber = !DBNull.Value.Equals(rdr["DrumNumber"]) ? (string) rdr["DrumNumber"] : "",
                 ProfileNumber = !DBNull.Value.Equals(rdr["ProfileNumber"]) ? (string) rdr["ProfileNumber"] : "",

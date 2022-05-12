@@ -1,5 +1,6 @@
 using Libraries;
 using Libraries.Entities;
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 namespace BVPVWebServer.Services.Admin;
 
@@ -103,15 +104,13 @@ public class UserService
         return success;
     }
     
-    public static bool ChangeDarkTheme(AppInfo appInfo, string userName, bool darkTheme)
+    public static void ChangeDarkTheme(AppInfo appInfo, string userName, bool darkTheme)
     {
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"update `NPDES`.`Admin-UserSystemState` set `DarkTheme` = {darkTheme} where `UserID` = '{userName}';";
         db.ExecNonQuery(sql);
-        var success = db.Success;
         db.Close();
-        return success;
     }
 
     public static bool DeleteUser(AppInfo appInfo, string userName)
