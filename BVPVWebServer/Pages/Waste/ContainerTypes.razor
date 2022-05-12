@@ -47,10 +47,10 @@
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<ContainerTypeCodeRec, object>(x => x.ContainerType)">Nr</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<ContainerTypeCodeRec, object>(x => x.ContainerType!)">Container Type</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortBy="new Func<ContainerTypeCodeRec, object>(x => x.Abrv)">Sign</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<ContainerTypeCodeRec, object>(x => x.Abrv!)">Abreviation</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -123,9 +123,9 @@
     private bool canCancelEdit = false;
     private bool blockSwitch = false;
     private string searchString = "";
-    private ContainerTypeCodeRec selectedItem1 = null;
-    private ContainerTypeCodeRec elementBeforeEdit;
-    private HashSet<ContainerTypeCodeRec> selectedItems1 = new HashSet<ContainerTypeCodeRec>();
+    private ContainerTypeCodeRec? selectedItem1 = null;
+    private ContainerTypeCodeRec? elementBeforeEdit;
+    private HashSet<ContainerTypeCodeRec>? selectedItems1 = new HashSet<ContainerTypeCodeRec>();
 
     private void ClearEventLog()
     {

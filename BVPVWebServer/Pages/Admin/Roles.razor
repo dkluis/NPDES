@@ -15,7 +15,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Roles") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, _thisApp) == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -23,38 +23,40 @@
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
             <PageTitle>Roles</PageTitle>
-
             <MudText Typo="Typo.h4" Align="Align.Center">Role Management</MudText>
 
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Add Role" IsInitiallyExpanded="false">
-                    <div style="max-width: 400px;">
-                        <MudCard Outlined="true">
-                            <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
-                            <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
-                                <MudCardContent>
-                                    <MudTextField @bind-Value="_role.RoleId"
-                                                  For="@(() => _role.RoleId)"
-                                                  Immediate="true"
-                                                  Label="Enter Role"
-                                                  HelperText="Role: Max. 15 characters">
-                                    </MudTextField>
-                                    <MudNumericField @bind-Value="_role.RoleLevel"
-                                                     For="@(() => _role.RoleLevel)"
-                                                     Immediate="true"
-                                                     Label="Enter Role Level"
-                                                     HelperText="Role Level: between 1 and 99">
-                                    </MudNumericField>
-                                    <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
-                                </MudCardContent>
-                            </MudForm>
-                            <MudCardActions>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
-                            </MudCardActions>
-                        </MudCard>
-                    </div>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
+            if (StateService.IsSuperAdmin || !_noAddAllowed)
+            {
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Add Role" IsInitiallyExpanded="false">
+                        <div style="max-width: 400px;">
+                            <MudCard Outlined="true">
+                                <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Add New Role</MudText>
+                                <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                                    <MudCardContent>
+                                        <MudTextField @bind-Value="_role.RoleId"
+                                                      For="@(() => _role.RoleId)"
+                                                      Immediate="true"
+                                                      Label="Enter Role"
+                                                      HelperText="Role: Max. 15 characters">
+                                        </MudTextField>
+                                        <MudNumericField @bind-Value="_role.RoleLevel"
+                                                         For="@(() => _role.RoleLevel)"
+                                                         Immediate="true"
+                                                         Label="Enter Role Level"
+                                                         HelperText="Role Level: between 1 and 99">
+                                        </MudNumericField>
+                                        <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary">Role Readonly</MudCheckBox>
+                                    </MudCardContent>
+                                </MudForm>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </div>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
 
             <MudTable Items="@_roles" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
                       Dense="true" Bordered="true" Striped="true" SortLabel="Sort By" Filter="new Func<Role, bool>(FilterFunc)">
@@ -159,6 +161,9 @@
 
 @code
 {
+    private bool _noAddAllowed;
+    private string _thisApp = "Roles";
+    
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
@@ -167,7 +172,14 @@
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
+        CheckUserPrivileges();
         ProcessTableFill();
+    }
+    
+    private void CheckUserPrivileges()
+    {
+        _noAddAllowed = false;
+        _noAddAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 
     // Table Handling Code

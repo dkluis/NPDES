@@ -45,8 +45,7 @@
                         </MudItem>
                         <MudItem>
                             @{
-                                var result = UserService.IsUserSuperAdminOrReadOnly(StateService.GetAppInfo(), StateService.UserId!);
-                                if (result.Item1)
+                                if (StateService.IsSuperAdmin || !_noDeleteAllowed)
                                 {
                                     <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 5px; margin-left: 20px;">
                                         <MudButton @onclick="OnButtonClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete User: @PassedUserId</MudButton>
@@ -206,6 +205,9 @@
 
 @code
 {
+    private readonly string _thisApp = "Users";
+    private bool _noDeleteAllowed;
+    
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");
@@ -213,6 +215,7 @@
         PassedUserId ??= "No User";
         await SessionStore.SetAsync("EntryPage", $"/users/{PassedUserId}");
         await SessionStore.SetAsync("CurrentApp", "User Details");
+        CheckUserPrivileges();
 
         _currentUser = UserService.LoadUser(StateService.GetAppInfo(), PassedUserId, "", false);
         _isEnabled = _currentUser.Enabled;
@@ -225,6 +228,12 @@
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
+    }
+
+    private void CheckUserPrivileges()
+    {
+        _noDeleteAllowed = false;
+        _noDeleteAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 }
 

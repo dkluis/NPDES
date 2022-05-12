@@ -1,3 +1,4 @@
+using BVPVWebServer.Services.Admin;
 using Libraries;
 
 namespace BVPVWebServer.Services.General;
@@ -12,6 +13,7 @@ public class StateService
     public string? UserId { get; set; }
     public bool IsLoggedIn { get; set; }
     public bool IsEnabled { get; set; }
+    public bool IsSuperAdmin { get; set; }
     public string ApiServerBase { get; }
 
     public StateService()
@@ -26,11 +28,17 @@ public class StateService
         UserId = userid;
         InitSystemState(userid);
         InitAppStates(userid);
+        InitUserPrivileges();
     }
 
     public AppInfo GetAppInfo()
     {
         return AppInfo;
+    }
+
+    private void InitUserPrivileges()
+    {
+        IsSuperAdmin = UserService.IsUserSuperAdmin(AppInfo, UserId!);
     }
     
     public void InitSystemState(string userid)
@@ -49,6 +57,10 @@ public class StateService
         }
 
         Db.Close();
+        if (userid != "Init")
+        {
+            InitUserPrivileges();
+        }
     }
 
     public void InitAppStates(string userid)

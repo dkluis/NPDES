@@ -241,41 +241,30 @@ public class UserService
         return result;
     }
 
-    /// <summary>
-    /// Check to see if a user is a SuperAdmin or if a User is a ReadOnly user.
-    /// Can be both by the way depending on the app.
-    /// </summary>
-    /// <param name="appInfo">Standard Info about the underlying System</param>
-    /// <param name="userid">The UserId</param>
-    /// <param name="app">The AppId, The AppId is defaulted to "" if you are only intested in Checking SuperAdmin</param>
-    /// <returns>A Tuple of Bools.   Item1 is the bool for SuperAdmin, Item2 is the bool for ReadOnly</returns>
-    public static (bool, bool) IsUserSuperAdminOrReadOnly(AppInfo appInfo, string userid, string app = "")
+    public static bool IsUserSuperAdmin(AppInfo appInfo, string userid)
     {
         var superAdmin = false;
-        var readOnly = false;
         using var db = new MariaDb(appInfo);
         db.Open();
         var sql = $"select * from `NPDES`.`Admin-UserRoles` where `UserID` = '{userid}' and `RoleID` = 'SuperAdmin'";
         var rdr = db.ExecQuery(sql);
         if (rdr!.HasRows) superAdmin = true;
         db.Close();
-        if (app == "") return (superAdmin, false);
-        db.Open();
-        sql = $"select * from `NPDES`.`Admin-AppsByUserView` where `User` = '{userid}' and `App` = '{app}'";
-        rdr = db.ExecQuery(sql);
-        if (rdr!.HasRows)
-        {
-            while (rdr.Read())
-            {
-                if ((bool) rdr["Report"])
-                {
-                    readOnly = true;
-                    break;
-                }
-            }
-        }
 
-        return (superAdmin, readOnly);
+        return superAdmin;
+    }
+
+    public static bool IsReadOnly(AppInfo appInfo, string userid, string appid)
+    {
+        var readOnly = false;
+        using var db = new MariaDb(appInfo);
+        db.Open();
+        var sql = $"select * from `NPDES`.`Admin-AppsByUserView` where `User` = '{userid}' and `App` = '{appid}' and `ReadOnly` = false;";
+        var rdr = db.ExecQuery(sql);
+        if (!rdr!.HasRows) readOnly = true;
+        db.Close();
+
+        return readOnly;
     }
     
 }

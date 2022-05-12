@@ -15,7 +15,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Roles") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, _thisApp) == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -23,51 +23,52 @@
         {
             <PageTitle>Role @PassedRoleId</PageTitle>
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Delete Role" IsInitiallyExpanded="false">
-                    <MudGrid>
-                        <MudItem>
-                            @{
-                                var result = UserService.IsUserSuperAdminOrReadOnly(StateService.GetAppInfo(), StateService.UserId!);
-                                if (result.Item1)
-                                {
-                                    <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
-                                        <MudButton @onclick="OnButtonDeleteClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete Role: @PassedRoleId</MudButton>
-                                    </MudButtonGroup>
-                                }
-                            }
-                        </MudItem>
-                    </MudGrid>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-            <MudExpansionPanels Style="flex: 1;" Elevation="4">
-                <MudExpansionPanel Style="font-weight: bold" Text="Change Role" IsInitiallyExpanded="true">
-                    <div style="max-width: 400px;">
-                        <MudCard Outlined="true">
-                            <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Change Role @_role.RoleId</MudText>
-                            <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
-                                <MudCardContent>
-                                    <MudNumericField @bind-Value="_role.RoleLevel"
-                                                     For="@(() => _role.RoleLevel)"
-                                                     Immediate="true"
-                                                     Label="Enter Role Level">
-                                    </MudNumericField>
-                                    <MudItem>
-                                        <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary" Style="margin-top: 15px">Role Readonly</MudCheckBox>
-                                    </MudItem>
-                                    <MudItem>
-                                        <MudCheckBox T="bool" @bind-Checked="_role.Enabled" Color="Color.Primary">Role Enabled</MudCheckBox>
-                                    </MudItem>
-                                </MudCardContent>
-                            </MudForm>
-                            <MudCardActions>
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
-                            </MudCardActions>
-                        </MudCard>
-                    </div>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
+            
+            if (StateService.IsSuperAdmin || !_noDeleteAllowed)
+            {
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Delete Role" IsInitiallyExpanded="false">
+                        <MudGrid>
+                            <MudItem>
+                                <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Style="margin-top: 10px; margin-bottom: 20px; margin-left: 20px;">
+                                    <MudButton @onclick="OnButtonDeleteClicked" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">Delete Role: @PassedRoleId</MudButton>
+                                </MudButtonGroup>
+                            </MudItem>
+                        </MudGrid>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+                <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Change Role" IsInitiallyExpanded="true">
+                        <div style="max-width: 400px;">
+                            <MudCard Outlined="true">
+                                <MudText Class="py-2" Align="Align.Center" Typo="Typo.h4">Change Role @_role.RoleId</MudText>
+                                <MudForm Model="@_role" @ref="@_form" Validation="@(_roleValidator.ValidateValue)" ValidationDelay="0">
+                                    <MudCardContent>
+                                        <MudNumericField @bind-Value="_role.RoleLevel"
+                                                         For="@(() => _role.RoleLevel)"
+                                                         Immediate="true"
+                                                         Label="Enter Role Level">
+                                        </MudNumericField>
+                                        <MudItem>
+                                            <MudCheckBox T="bool" @bind-Checked="_role.ReadOnly" Color="Color.Primary" Style="margin-top: 15px">Role Readonly</MudCheckBox>
+                                        </MudItem>
+                                        <MudItem>
+                                            <MudCheckBox T="bool" @bind-Checked="_role.Enabled" Color="Color.Primary">Role Enabled</MudCheckBox>
+                                        </MudItem>
+                                    </MudCardContent>
+                                </MudForm>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Submit</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </div>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update functions in this App based on your Role profile.</MudAlert>
+            }
         }
     }
 }
@@ -92,8 +93,9 @@
 }
 
 @code {
-
+    private string _thisApp = "Roles";
     private Role _role = new();
+    private bool _noDeleteAllowed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,9 +105,16 @@
         await SessionStore.SetAsync("CurrentApp", "Role Details");
         await SessionStore.SetAsync("EntryPage", $"/Roles/{PassedRoleId}");
         _role = RoleService.GetRole(StateService.GetAppInfo(), PassedRoleId);
+        CheckUserPrivileges();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
+    }
+    
+    private void CheckUserPrivileges()
+    {
+        _noDeleteAllowed = false;
+        _noDeleteAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
     }
 
 }
