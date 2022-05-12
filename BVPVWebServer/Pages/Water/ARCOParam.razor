@@ -153,19 +153,19 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (rec.HLALABID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.HLALABID.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.PARAM!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.PARAM.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.ANALYST!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.ANALYST.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.LABQUAL!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.LABQUAL.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.QUAL!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.QUAL.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (rec.ANALDATE.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.DATAUSE!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.DATAUSE.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (rec.ANALDATE.ToString(CultureInfo.InvariantCulture).Contains(_searchString))

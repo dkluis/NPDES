@@ -9,7 +9,7 @@ public class AppInfo
     private string Application { get; }
     private string Program { get; }
     public string ApiServerBase { get; }
-    private string? FullConfigPath { get; }
+    private string FullConfigPath { get; }
     private string FileName { get; }
     private string FilePath{ get; }
     private int LogLevel{ get; }
@@ -221,7 +221,7 @@ public static class ConvertJsonTxt
 
 public class ReadKeyFromFile
 {
-    public string FindInArray(string? fullPath, string find)
+    public string FindInArray(string fullPath, string find)
     {
         if (!File.Exists(fullPath)) return "";
         var fileText = File.ReadAllText(fullPath);

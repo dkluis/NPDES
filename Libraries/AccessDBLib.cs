@@ -72,21 +72,21 @@ public class AccessDb
             {
                 var rec = new ARCOSampInfoRec()
                 {
-                    HLALABID = rdr["HLALABID"].ToString() != "" ? (string) rdr["HlALABID"] : null,
-                    OBJID = rdr["OBJID"].ToString() != "" ? (string) rdr["OBJID"] : null,
-                    PERMNUM = rdr["PERMNUM"].ToString() != "" ? (string) rdr["PERMNUM"] : null,
-                    ORDERNUM = rdr["ORDERNUM"].ToString() != "" ? (string) rdr["ORDERNUM"] : null,
-                    SAMPLEID = rdr["SAMPLEID"].ToString() != "" ? (string) rdr["SAMPLEID"] : null,
-                    SAMPTYPE = rdr["SAMPTYPE"].ToString() != "" ? (string) rdr["SAMPTYPE"] : null,
-                    SAMPBY = rdr["SAMPBY"].ToString() != "" ? (string) rdr["SAMPBY"] : null,
+                    HLALABID = rdr["HLALABID"].ToString() != "" ? (string) rdr["HlALABID"] : string.Empty,
+                    OBJID = rdr["OBJID"].ToString() != "" ? (string) rdr["OBJID"] : string.Empty,
+                    PERMNUM = rdr["PERMNUM"].ToString() != "" ? (string) rdr["PERMNUM"] : string.Empty,
+                    ORDERNUM = rdr["ORDERNUM"].ToString() != "" ? (string) rdr["ORDERNUM"] : string.Empty,
+                    SAMPLEID = rdr["SAMPLEID"].ToString() != "" ? (string) rdr["SAMPLEID"] : string.Empty,
+                    SAMPTYPE = rdr["SAMPTYPE"].ToString() != "" ? (string) rdr["SAMPTYPE"] : string.Empty,
+                    SAMPBY = rdr["SAMPBY"].ToString() != "" ? (string) rdr["SAMPBY"] : string.Empty,
                     COLLDATE = rdr["COLLDATE"].ToString() != "" ? (DateTime) rdr["COLLDATE"] : AppInfo.BaseDate,
                     COLLTIME = rdr["COLLTIME"].ToString() != "" ? (DateTime) rdr["COLLTIME"] : AppInfo.BaseDate,
                     SAMPDATE = rdr["SAMPDATE"].ToString() != "" ? (DateTime) rdr["SAMPDATE"] : AppInfo.BaseDate,
-                    LABNAME = rdr["LABNAME"].ToString() != "" ? (string) rdr["LABNAME"] : null,
+                    LABNAME = rdr["LABNAME"].ToString() != "" ? (string) rdr["LABNAME"] : string.Empty,
                     RECDATE = rdr["RECDATE"].ToString() != "" ? (DateTime) rdr["RECDATE"] : AppInfo.BaseDate,
-                    COMMENT = rdr["COMMENT"].ToString() != "" ? (string) rdr["COMMENT"] : null,
+                    COMMENT = rdr["COMMENT"].ToString() != "" ? (string) rdr["COMMENT"] : string.Empty,
                     ENTERDATE = rdr["ENTERDATE"].ToString() != "" ? (DateTime) rdr["ENTERDATE"] : AppInfo.BaseDate,
-                    SOURCE = rdr["SOURCE"].ToString() != "" ? (string) rdr["SOURCE"] : null
+                    SOURCE = rdr["SOURCE"].ToString() != "" ? (string) rdr["SOURCE"] : string.Empty
                 };
                 recsFound.Add(rec);
             }

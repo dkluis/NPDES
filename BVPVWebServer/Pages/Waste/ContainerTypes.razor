@@ -36,14 +36,14 @@
             <MudText Typo="Typo.h4" Align="Align.Center">Container Types</MudText>
 
 
-            <MudTable Items="@_allContainerTypes" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="true" Filter="new Func<ContainerTypeCodeRec, bool>(FilterFunc)"
-                      @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+            <MudTable Items="@_allContainerTypes" Dense="@_dense" Hover="@_hover" ReadOnly="@_rOnly" CanCancelEdit="true" Filter="new Func<ContainerTypeCodeRec, bool>(FilterFunc)"
+                      @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
                       OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch">
+                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@_blockSwitch">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Periodic Elements</MudText>
                     <MudSpacer/>
-                    <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTh>
@@ -68,20 +68,20 @@
                 </PagerContent>
             </MudTable>
 
-            <MudSwitch @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
-            <MudSwitch @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
-            <MudSwitch @bind-Checked="@ronly" Color="Color.Tertiary">Read Only</MudSwitch>
-            <MudSwitch @bind-Checked="@canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
-            <MudSwitch @bind-Checked="@blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
-            <MudText Inline="true">Selected1: @selectedItem1?.ContainerType</MudText>
+            <MudSwitch @bind-Checked="@_hover" Color="Color.Primary">Hover</MudSwitch>
+            <MudSwitch @bind-Checked="@_dense" Color="Color.Secondary">Dense</MudSwitch>
+            <MudSwitch @bind-Checked="@_rOnly" Color="Color.Tertiary">Read Only</MudSwitch>
+            <MudSwitch @bind-Checked="@_canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
+            <MudSwitch @bind-Checked="@_blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
+            <MudText Inline="true">Selected1: @_selectedItem1.ContainerType</MudText>
 
             <MudExpansionPanels Style="flex: 1;">
                 <MudExpansionPanel Text="Show inline-edit event log">
-                    @foreach (var message in editEvents)
+                    @foreach (var message in _editEvents)
                     {
                         <MudText>@message</MudText>
                     }
-                    @if (editEvents.Count > 0)
+                    @if (_editEvents.Count > 0)
                     {
                         <div class="d-flex">
                             <MudSpacer/>
@@ -116,31 +116,31 @@
 }
 
 @code {
-    private List<string> editEvents = new();
-    private bool dense = false;
-    private bool hover = true;
-    private bool ronly = false;
-    private bool canCancelEdit = false;
-    private bool blockSwitch = false;
-    private string searchString = "";
-    private ContainerTypeCodeRec? selectedItem1 = null;
-    private ContainerTypeCodeRec? elementBeforeEdit;
-    private HashSet<ContainerTypeCodeRec>? selectedItems1 = new HashSet<ContainerTypeCodeRec>();
+    private readonly List<string> _editEvents = new();
+    private bool _dense;
+    private bool _hover = true;
+    private bool _rOnly;
+    private bool _canCancelEdit;
+    private bool _blockSwitch;
+    private string _searchString = "";
+    private ContainerTypeCodeRec _selectedItem1 = new ContainerTypeCodeRec();
+    private ContainerTypeCodeRec? _elementBeforeEdit;
+    private HashSet<ContainerTypeCodeRec>? _selectedItems1HashSet = new HashSet<ContainerTypeCodeRec>();
 
     private void ClearEventLog()
     {
-        editEvents.Clear();
+        _editEvents.Clear();
     }
 
     private void AddEditionEvent(string message)
     {
-        editEvents.Add(message);
+        _editEvents.Add(message);
         StateHasChanged();
     }
 
     private void BackupItem(object element)
     {
-        elementBeforeEdit = new()
+        _elementBeforeEdit = new()
         {
             ContainerType = ((ContainerTypeCodeRec) element).ContainerType,
             Abrv = ((ContainerTypeCodeRec) element).Abrv,
@@ -155,19 +155,19 @@
 
     private void ResetItemToOriginalValues(object element)
     {
-        ((ContainerTypeCodeRec) element).ContainerType = elementBeforeEdit.ContainerType;
-        ((ContainerTypeCodeRec) element).Abrv = elementBeforeEdit.Abrv;
+        ((ContainerTypeCodeRec) element).ContainerType = _elementBeforeEdit!.ContainerType;
+        ((ContainerTypeCodeRec) element).Abrv = _elementBeforeEdit.Abrv;
         AddEditionEvent($"RowEditCancel event: Editing of Element {((ContainerTypeCodeRec) element).ContainerType} cancelled");
     }
 
     private bool FilterFunc(ContainerTypeCodeRec containerTypes)
     {
-        if (string.IsNullOrWhiteSpace(searchString))
+        if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (containerTypes.ContainerType!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (containerTypes.ContainerType.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
-        if (containerTypes.Abrv!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (containerTypes.Abrv.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
     }

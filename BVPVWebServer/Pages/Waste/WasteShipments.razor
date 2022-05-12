@@ -143,9 +143,9 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (rec.ProfileNum!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.ProfileNum.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.WasteName!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.WasteName.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (rec.Year.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))

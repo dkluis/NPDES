@@ -168,21 +168,21 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (rec.HLALABID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.HLALABID.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.OBJID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.OBJID.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.SAMPLEID!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.SAMPLEID.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.SAMPBY!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.SAMPBY.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.SAMPTYPE!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.SAMPTYPE.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         if (rec.SAMPDATE.ToString("yyyy-MM-dd").Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.LABNAME!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.LABNAME.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.COMMENT!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.COMMENT.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (rec.RECDATE.ToString(CultureInfo.InvariantCulture).Contains(_searchString))

@@ -10,7 +10,7 @@ public class StateService
 
     public SystemState? SystemState { get; set; }
     public AppState? AppState { get; set; }
-    public string? UserId { get; set; }
+    public string UserId { get; set; }  = string.Empty;
     public bool IsLoggedIn { get; set; }
     public bool IsEnabled { get; set; }
     public bool IsSuperAdmin { get; set; }
@@ -72,7 +72,7 @@ public class StateService
         {
             while (rdr.Read())
             {
-                AppState!.App = rdr["AppID"].ToString();
+                AppState.App = rdr["AppID"].ToString()!;
                 var kv = new List<KeyValuePair<string, string>>(4);
                 AppState.Setting = kv;
             }
@@ -96,7 +96,7 @@ public class StateService
 public class SystemState
 {
     public bool DarkTheme { get; set; }
-    public string? LastPage { get; set; }
+    public string LastPage { get; set; } = string.Empty;
 
     public SystemState()
     {
@@ -107,6 +107,6 @@ public class SystemState
 
 public class AppState
 {
-    public string? App { get; set; }
+    public string App { get; set; } = string.Empty;
     public List<KeyValuePair<string, string>>? Setting { get; set; }
 }

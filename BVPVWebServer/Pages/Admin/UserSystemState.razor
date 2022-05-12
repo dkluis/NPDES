@@ -71,7 +71,7 @@
     private void EnableToggleChange()
     {
         _isDarkThemeEnabled = !_isDarkThemeEnabled;
-        UserService.ChangeDarkTheme(StateService.GetAppInfo(), StateService!.UserId!, _isDarkThemeEnabled);
+        UserService.ChangeDarkTheme(StateService.GetAppInfo(), StateService!.UserId, _isDarkThemeEnabled);
         StateService.ReloadSystemState();
         Snackbar.Add($"Dark Theme enabled is now set to: {_isDarkThemeEnabled}", Severity.Info);
     }

@@ -4,7 +4,7 @@
 @inject StateService StateService
 
 @{
-    if (StateService.UserId == null)
+    if (StateService.UserId == string.Empty)
     {
         StateService.InitUserInfo("Init");
     }

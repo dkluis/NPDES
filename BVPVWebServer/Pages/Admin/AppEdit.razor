@@ -117,7 +117,7 @@
     private void CheckUserPrivileges()
     {
         _noUpdatingAllowed = false;
-        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, _thisApp);
     }
 
 }

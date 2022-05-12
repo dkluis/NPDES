@@ -118,7 +118,7 @@ public class RoleService
 
 public class Role
 {
-    public string? RoleId { get; set; }
+    public string RoleId { get; set; }  = string.Empty;
     public int RoleLevel { get; set; }
     public bool ReadOnly { get; set; }
     public bool Enabled { get; set; }

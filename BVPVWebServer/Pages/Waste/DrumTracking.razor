@@ -159,15 +159,15 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (rec.DrumNumber!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.DrumNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.ProfileNumber!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.ProfileNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.HAZNON!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.HAZNON.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.SourceProcess!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.SourceProcess.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (rec.AccumulationArea!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (rec.AccumulationArea.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (rec.AccumStartDate.ToString("yyyy").Contains(_searchString, StringComparison.OrdinalIgnoreCase))

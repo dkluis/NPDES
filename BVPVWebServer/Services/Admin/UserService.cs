@@ -173,7 +173,7 @@ public class UserService
         return assignedRoles;
     }
 
-    public static bool CanUserUseApp(AppInfo appInfo, string? userid, string app)
+    public static bool CanUserUseApp(AppInfo appInfo, string userid, string app)
     {
         var success = true;
         using var db = new MariaDb(appInfo);
@@ -271,7 +271,7 @@ public class UserService
 
 public class User
 {
-    public string? UserId { get; set; }
+    public string UserId { get; set; }  = string.Empty;
     public bool ValidUser { get; set; }
     public bool ValidPassword { get; set; }
     public bool Enabled { get; set; }
@@ -288,7 +288,7 @@ public class UserElement
         Enabled = true;
     }
 
-    public string? UserId { get; set; }
+    public string UserId { get; set; }
     public string Password { get; set; }
     public string Salt { get; set; }
     public bool Enabled { get; set; }

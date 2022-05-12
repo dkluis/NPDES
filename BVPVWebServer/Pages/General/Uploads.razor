@@ -187,7 +187,7 @@
             return;
         }
 
-        var result = await DownloadService.ProcessDownloadAsync(StateService.GetAppInfo(), StateService.UserId!, _fileToUpload!);
+        var result = await DownloadService.ProcessDownloadAsync(StateService.GetAppInfo(), StateService.UserId, _fileToUpload!);
         if (result.Success)
         {
             Snackbar.Add($"File: {_fileToUpload!.Name} sized: {_fileToUpload.Size / 1000} KB is imported by {StateService.UserId}", Severity.Info);
@@ -214,7 +214,7 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (downloadRec.User!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (downloadRec.User.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
     // ReSharper disable once ConvertIfStatementToReturnStatement
         if (downloadRec.DownloadDateTime.ToString(CultureInfo.InvariantCulture).Contains(_searchString))
@@ -231,6 +231,6 @@
         var directory = "Downloads";
         if (dlRec.ValidateDateTime.Year != 0001 && dlRec.ValidateDateTime.Year != 1990) directory = "Validated";
         if (dlRec.ProcessDateTime.Year != 0001 && dlRec.ProcessDateTime.Year != 1990) directory = "Processed";
-        return FileHandling.CheckFileExist(dlRec.FileName!, directory);
+        return FileHandling.CheckFileExist(dlRec.FileName, directory);
     }
 }

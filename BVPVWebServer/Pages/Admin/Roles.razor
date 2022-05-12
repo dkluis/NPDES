@@ -183,7 +183,7 @@
     private void CheckUserPrivileges()
     {
         _noUpdatingAllowed = false;
-        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId!, _thisApp);
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, _thisApp);
     }
 
     // Table Handling Code
@@ -222,7 +222,7 @@
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
-        if (role.RoleId!.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+        if (role.RoleId.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         int number;
         try
