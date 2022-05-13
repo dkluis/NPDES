@@ -36,12 +36,12 @@
             <MudText Typo="Typo.h4" Align="Align.Center">Container Types</MudText>
 
 
-            <MudTable Items="@_allContainerTypes" Dense="@_dense" Hover="@_hover" ReadOnly="@_rOnly" CanCancelEdit="true" Filter="new Func<ContainerTypeCodeRec, bool>(FilterFunc)"
+            <MudTable Items="@_allContainerTypes" Dense="true" Hover="true" ReadOnly="@_rOnly" CanCancelEdit="true" Filter="new Func<ContainerTypeCodeRec, bool>(FilterFunc)"
                       @bind-SelectedItem="_selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
                       OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@_blockSwitch">
+                      RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="false">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Periodic Elements</MudText>
+                    <MudText Typo="Typo.h6">Container Types</MudText>
                     <MudSpacer/>
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                 </ToolBarContent>
@@ -68,11 +68,6 @@
                 </PagerContent>
             </MudTable>
 
-            <MudSwitch @bind-Checked="@_hover" Color="Color.Primary">Hover</MudSwitch>
-            <MudSwitch @bind-Checked="@_dense" Color="Color.Secondary">Dense</MudSwitch>
-            <MudSwitch @bind-Checked="@_rOnly" Color="Color.Tertiary">Read Only</MudSwitch>
-            <MudSwitch @bind-Checked="@_canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
-            <MudSwitch @bind-Checked="@_blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
             <MudText Inline="true">Selected1: @_selectedItem1.ContainerType</MudText>
 
             <MudExpansionPanels Style="flex: 1;">
@@ -101,6 +96,7 @@
     private bool _isProgressOverlayVisible;
     private string _progressMessage = string.Empty;
     private IEnumerable<ContainerTypeCodeRec> _allContainerTypes = new List<ContainerTypeCodeRec>(32);
+    private bool _rOnly = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,11 +113,7 @@
 
 @code {
     private readonly List<string> _editEvents = new();
-    private bool _dense;
-    private bool _hover = true;
-    private bool _rOnly;
-    private bool _canCancelEdit;
-    private bool _blockSwitch;
+
     private string _searchString = "";
     private ContainerTypeCodeRec _selectedItem1 = new();
     private ContainerTypeCodeRec? _elementBeforeEdit;

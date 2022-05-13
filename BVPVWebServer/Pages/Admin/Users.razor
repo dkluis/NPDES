@@ -62,51 +62,55 @@
                 <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
             }
 
-            <div style="max-width: 400px; margin-left: 26px; margin-top: 20px;">
-                <MudCard Outlined="true" Elevation="4">
-                    <MudCardContent>
-                        <MudText Typo="Typo.h5" Align="Align.Center">Search Users</MudText>
-                        <MudTextField Label="Username" HelperText="Use % for wildcard searches" @bind-Value="_username"/>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillTable">Fill Table</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </div>
+            <MudExpansionPanels Style="flex: 1;">
+                <MudExpansionPanel Style="font-weight: bold" Text="Users Table" IsInitiallyExpanded="true">
+                    <div style="max-width: 400px; margin-top: 20px;">
+                        <MudCard Outlined="true" Elevation="4">
+                            <MudCardContent>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Search Users</MudText>
+                                <MudTextField Label="Username" HelperText="Use % for wildcard searches" @bind-Value="_username"/>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="FillTable">Fill Table</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </div>
 
-            <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" Height="375px"
-                      Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers" RowsPerPage=25>
-                <ToolBarContent>
-                    <MudText Typo="Typo.h6">Users Information</MudText>
-                </ToolBarContent>
-                <ColGroup>
-                    <col style="width: 50px;"/>
-                    <col style="width: 20px;"/>
-                    <col/>
-                    <col/>
-                    <col/>
-                    <col/>
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>
-                        <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserRec, object?>(x => x.UserId)">Username</MudTableSortLabel>
-                    </MudTh>
-                    <MudTh>
-                        <MudTableSortLabel SortBy="new Func<UserRec, object?>(x => x.Enabled)">Enabled</MudTableSortLabel>
-                    </MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
-                    <MudTd DataLabel="Username">
-                        @{ _linkedContext = $"/users/{context.UserId}"; }
-                        <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.UserId</MudLink>
-                    </MudTd>
-                    <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
-                </PagerContent>
-            </MudTable>
+                    <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                              Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers" RowsPerPage=25>
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Users Information</MudText>
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col style="width: 50px;"/>
+                            <col style="width: 20px;"/>
+                            <col/>
+                            <col/>
+                            <col/>
+                            <col/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<UserRec, object?>(x => x.UserId)">Username</MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<UserRec, object?>(x => x.Enabled)">Enabled</MudTableSortLabel>
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            @* ReSharper disable once RedundantSuppressNullableWarningExpression *@
+                            <MudTd DataLabel="Username">
+                                @{ _linkedContext = $"/users/{context.UserId}"; }
+                                <MudLink Style="font-size: small" Href=@_linkedContext Underline="Underline.Always">@context.UserId</MudLink>
+                            </MudTd>
+                            <MudTd DataLabel="Enabled">@context.Enabled</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new[] {25, 50, 100}"/>
+                        </PagerContent>
+                    </MudTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
         }
     }
 }
