@@ -1,4 +1,4 @@
-@page "/users"
+@page "/TemplateMaintenance"
 
 @inject NavigationManager NavMgr
 @inject ProtectedSessionStorage SessionStore
@@ -8,7 +8,7 @@
 
 @inject StateService StateService
 
-<PageTitle>Users</PageTitle>
+<PageTitle>TemplateMaintenance</PageTitle>
 
 @{
     if (!StateService.IsLoggedIn)
@@ -17,21 +17,33 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Users") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, ThisApp) == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
         else
         {
             <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-            <MudText Typo="Typo.h4" Align="Align.Center">User Management</MudText>
+            <MudText Typo="Typo.h4" Align="Align.Center">###############</MudText>
+            
+            <MudOverlay Visible="@_isProgressOverlayVisible" DarkBackground="true" Absolute="true">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary" Align="Align.Center">@_progressMessage</MudText>
+                    </MudItem>
+                    <MudItem>
+                        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
+                    </MudItem>
+                </MudGrid>
+            </MudOverlay>
+            
             if (StateService.IsSuperAdmin || !_noUpdatingAllowed)
             {
                 <MudExpansionPanels Style="flex: 1;">
-                    <MudExpansionPanel Style="font-weight: bold" Text="Add A New User">
+                    <MudExpansionPanel Style="font-weight: bold" Text="Add A New ##############">
                         <div style="max-width: 400px;">
                             <MudCard Outlined="true">
-                                <MudText Typo="Typo.h5" Align="Align.Center">Add User</MudText>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Add #############</MudText>
                                 <EditForm Model="@_addUserForm" OnValidSubmit="OnValidSubmitAdd">
                                     <DataAnnotationsValidator/>
                                     <MudGrid>
@@ -63,11 +75,11 @@
             }
 
             <MudExpansionPanels Style="flex: 1;">
-                <MudExpansionPanel Style="font-weight: bold" Text="Users Table" IsInitiallyExpanded="true">
+                <MudExpansionPanel Style="font-weight: bold" Text="################## Table" IsInitiallyExpanded="true">
                     <div style="max-width: 400px; margin-top: 20px;">
                         <MudCard Outlined="true" Elevation="4">
                             <MudCardContent>
-                                <MudText Typo="Typo.h5" Align="Align.Center">Search Users</MudText>
+                                <MudText Typo="Typo.h5" Align="Align.Center">Search #################</MudText>
                                 <MudTextField Label="Username" HelperText="Use % for wildcard searches" @bind-Value="_username"/>
                             </MudCardContent>
                             <MudCardActions>
@@ -79,7 +91,7 @@
                     <MudTable Items="@_userElements" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableUsers" RowsPerPage=25>
                         <ToolBarContent>
-                            <MudText Typo="Typo.h6">Users Information</MudText>
+                            <MudText Typo="Typo.h6">############### Information</MudText>
                         </ToolBarContent>
                         <ColGroup>
                             <col style="width: 50px;"/>
@@ -117,25 +129,29 @@
 
 @code
 {
-    // For Page specific code
-    private string? _username;
+    private string _username = string.Empty;
 }
 
 @code
 {
-        private const string ThisApp = "Users";
+        private const string ThisApp = "TemplateMaintenance";
     private bool _noUpdatingAllowed;
+    private bool _isProgressOverlayVisible;
+    private string _progressMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        _progressMessage = "(Re)Initializing the App";
+        _isProgressOverlayVisible = true;
         var result = await SessionStore.GetAsync<string>("User");
         if (result.Value is not {Length: > 1 }) NavMgr.NavigateTo("/");
-        await SessionStore.SetAsync("CurrentApp", "Users");
+        await SessionStore.SetAsync("CurrentApp", ThisApp);
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         Snackbar.Configuration.NewestOnTop = true;
         Snackbar.Configuration.VisibleStateDuration = 5000;
         CheckUserPrivileges();
         FillTable();
+        _isProgressOverlayVisible = false;
     }
 
     private void CheckUserPrivileges()
@@ -147,7 +163,7 @@
     private void FillTable()
     {
         if (_username is null or "") _username = "%";
-        _userElements = UserService.GetUsers(StateService.GetAppInfo(), _username!);
+        _userElements = UserService.GetUsers(StateService.GetAppInfo(), "XXXXXXX");
         _username = string.Empty;
     }
 }

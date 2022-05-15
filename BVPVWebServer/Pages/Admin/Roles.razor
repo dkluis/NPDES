@@ -59,7 +59,7 @@
             }
             else
             {
-                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use update function based the assigned role privileges.</MudAlert>
+                <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use the update functions based the assigned role privileges.</MudAlert>
             }
 
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
@@ -170,8 +170,8 @@
 @code
 {
     private bool _noUpdatingAllowed;
-        private const string ThisApp = "Roles";
-
+    private const string ThisApp = "Roles";
+        
     protected override async Task OnInitializedAsync()
     {
         var result = await SessionStore.GetAsync<string>("User");

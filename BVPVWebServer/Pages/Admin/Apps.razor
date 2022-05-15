@@ -7,7 +7,7 @@
 @inject StateService StateService
 @inject NavigationManager NavMgr
 
-<PageTitle>Apps NPDES</PageTitle>
+<PageTitle>Apps Management</PageTitle>
 
 @{
     if (!StateService.IsLoggedIn)
@@ -16,7 +16,7 @@
     }
     else
     {
-        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, "Apps") == false)
+        if (UserService.CanUserUseApp(StateService.GetAppInfo(), StateService.UserId, ThisApp) == false)
         {
             <MudAlert Severity="Severity.Error">User @StateService.UserId cannot use this App based on your Role profile.</MudAlert>
         }
@@ -215,6 +215,8 @@
     
     private bool _isProgressOverlayVisible;
     private string? _progressMessage;
+    private bool _noUpdatingAllowed;
+    private const string ThisApp = "Apps";
 
 
     protected override async Task OnInitializedAsync()
@@ -227,7 +229,14 @@
         FillAppFunctionTable();
         FillAppRoleTable();
         FillAppsWithoutRoles();
+        CheckUserPrivileges();
         _isProgressOverlayVisible = false;
+    }
+    
+    private void CheckUserPrivileges()
+    {
+        _noUpdatingAllowed = false;
+        _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, ThisApp);
     }
 
     void FillAppFunctionTable()

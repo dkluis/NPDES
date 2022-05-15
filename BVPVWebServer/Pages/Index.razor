@@ -16,15 +16,16 @@
 }
 else
 {
+    <PageTitle>ES Login</PageTitle>
     <div style="max-width: 400px; margin-left: 15px; margin-top: 15px">
-        <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="@_loginForm" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator/>
             <MudCard>
                 <MudCardContent>
                     <MudTextField Label="Username"
-                                  @bind-Value="_model.Username" For="@(() => _model.Username)"/>
+                                  @bind-Value="_loginForm.Username" For="@(() => _loginForm.Username)"/>
                     <MudTextField Label="Password" Class="mt-3"
-                                  @bind-Value="_model.Password" For="@(() => _model.Password)" InputType="InputType.Password"/>
+                                  @bind-Value="_loginForm.Password" For="@(() => _loginForm.Password)" InputType="InputType.Password"/>
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
@@ -37,14 +38,14 @@ else
 
 @code {
     
-    private string? _entryPage;
+    private string EntryPage { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        _entryPage = "/Home";
+        EntryPage = "/Home";
         await SessionStore.SetAsync("CurrentApp", "Login");
         var entry = await SessionStore.GetAsync<string>("EntryPage");
-        if (entry.Value is {Length: >= 1}) _entryPage = entry.Value;
+        if (entry.Value is {Length: >= 1}) EntryPage = entry.Value;
         await SessionStore.DeleteAsync("EntryPage");
 
         if (StateService.UserId != "Init")
@@ -63,11 +64,11 @@ else
 
     private async Task DoTheLogin()
     {
-        await SessionStore.SetAsync("User", _model.Username!);
-        StateService.InitSystemState(_model.Username!);
+        await SessionStore.SetAsync("User", _loginForm.Username);
+        StateService.InitSystemState(_loginForm.Username);
         StateService.IsLoggedIn = true;
-        NavMgr.NavigateTo(_entryPage == "" ? "/Home" : _entryPage!);
-        _entryPage = string.Empty;
+        NavMgr.NavigateTo(EntryPage == "" ? "/Home" : EntryPage);
+        EntryPage = string.Empty;
         StateHasChanged();
     }
 
@@ -75,15 +76,15 @@ else
 
 @code {
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    LoginForm _model = new();
+    LoginForm _loginForm = new();
  
     public class LoginForm
     {
         [Required]
-        public string? Username { get; set; }
-        
+        public string Username { get; set; } = string.Empty;
+
         [Required]
-        public string? Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
     }
 
@@ -91,7 +92,7 @@ else
     
     private void OnValidSubmit(EditContext context)
     {
-        _userInfo = UserService.LoadUser(StateService.GetAppInfo(), _model.Username!, _model.Password!, false);
+        _userInfo = UserService.LoadUser(StateService.GetAppInfo(), _loginForm.Username, _loginForm.Password, false);
         if (!_userInfo.ValidUser)
         {
             Snackbar.Add("Username is wrong", Severity.Error);

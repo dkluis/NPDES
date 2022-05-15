@@ -18,9 +18,9 @@
     else
     {
         <MudExpansionPanels Style="flex: 1;" Elevation="4">
-            <MudExpansionPanel Style="font-weight: bold" Text="Toggle Enabled or Delete" IsExpanded="true">
+            <MudExpansionPanel Style="font-weight: bold" Text="User Settings" IsExpanded="true">
                 <MudThemeProvider IsDarkMode="StateService!.SystemState!.DarkTheme"></MudThemeProvider>
-                <MudText Typo="Typo.h5" Align="Align.Center">Updating @PassedUserId's Profile</MudText>
+                <MudText Typo="Typo.h5" Align="Align.Center">@PassedUserId's Profile</MudText>
                 <MudGrid>
                     <MudItem>
                         <MudText Style="margin-top: 13px;" Typo="Typo.h6">Dark Theme is: @(_isDarkThemeEnabled ? "On" : "Off")</MudText>
