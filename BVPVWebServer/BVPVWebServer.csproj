@@ -21,6 +21,7 @@
     <ItemGroup>
       <Folder Include="Pages\Potable" />
       <Folder Include="Services\Potable" />
+      <Folder Include="wwwroot\HelpFiles" />
     </ItemGroup>
 
 </Project>
