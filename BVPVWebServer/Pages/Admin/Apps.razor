@@ -38,7 +38,7 @@
             
             <MudExpansionPanels Style="flex: 1;" Elevation="4">
                 <MudExpansionPanel Style="font-weight: bold" Text="Apps Without a Role Assigned (Orphans)" IsInitiallyExpanded="false">
-                        <MudTable Items="@_appsWithoutRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
+                    <MudTable Items="@_appsWithoutRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableApps" RowsPerPage=25
                               Filter="new Func<AppRec, bool>(FilterFunc1)">
                         <ToolBarContent>
@@ -142,8 +142,10 @@
                         </PagerContent>
                     </MudTable>
                 </MudExpansionPanel>
+            </MudExpansionPanels>
 
-                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Role" IsInitiallyExpanded="true">
+            <MudExpansionPanels Style="flex: 1;" Elevation="4">
+                <MudExpansionPanel Style="font-weight: bold" Text="View Apps by Role" IsExpanded="true">
                     <MudTable Items="@_allAppRoles" Dense="true" Hover="true" FixedHeader="true" Height="375px"
                               Breakpoint="Breakpoint.Sm" @ref="_mudTableAppRoles" RowsPerPage=25
                               Filter="new Func<AppRoleRec, bool>(FilterAppRolesFunc)"
@@ -207,9 +209,9 @@
 {
     
     private MudTable<AppRec>? _mudTableApps;
-    private List<AppRec> _allApps = new(128);
+    private IEnumerable<AppRec>? _allApps;
     private string _linkedContext = string.Empty;
-    private List<AppRoleRec> _allAppRoles = new(32);
+    private IEnumerable<AppRoleRec>? _allAppRoles;
     private List<AppRec> _appsWithoutRoles = new(128);
     private MudTable<AppRoleRec>? _mudTableAppRoles;
     
@@ -239,7 +241,7 @@
         _noUpdatingAllowed = UserService.IsReadOnly(StateService.GetAppInfo(), StateService.UserId, ThisApp);
     }
 
-    void FillAppFunctionTable()
+    private void FillAppFunctionTable()
     {
         _allApps = AppService.GetAllApps(StateService.GetAppInfo());
     }

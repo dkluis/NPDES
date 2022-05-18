@@ -1,6 +1,3 @@
-using Libraries;
-using Microsoft.AspNetCore.Mvc;
-
 namespace BVPVWebServer.Services.General;
 
 public class MarkdownService
@@ -10,10 +7,9 @@ public class MarkdownService
         var fileContent = new List<string>(512);
         var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         var helpFilePath = wwwRootPath + "/HelpFiles/" + fileName;
-        Console.WriteLine(helpFilePath);
         if (!File.Exists(helpFilePath))
         {
-            fileContent.Add("No Help exists (yet)");
+            fileContent.Add("**No Help exists (yet)**");
         }
         else
         {

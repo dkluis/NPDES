@@ -15,7 +15,23 @@
 <MudText Typo="Typo.h4" Align="Align.Center">Home Page</MudText>
 
 <MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
-    <MudText Typo="Typo.body1">Working on Roles to create an example of Maintenance UI</MudText>
+    <MudText Typo="Typo.body1">Working on Templates (Example UIs) for all types of different functions</MudText>
+</MudPaper>
+
+<MudPaper Class="pa-6 ma-8" Outlined="true" Elevation="3">
+                @{
+                    var numLines = 0;
+                    foreach (var line in _helpContent)
+                    {
+                        <MudMarkdown Value="@line"></MudMarkdown>
+                        if (line != "" && line !="<br/>") numLines++;
+                    }
+                    while (numLines < 15)
+                    {
+                        <MudText>ㅤ</MudText>
+                        numLines++;
+                    }
+                }
 </MudPaper>
 
 <MudAlert Severity="Severity.Info">
@@ -26,8 +42,11 @@
 
 @code{
 
+    private List<string> _helpContent = new List<string>();
+    
     protected override async Task OnInitializedAsync()
     {
+        _helpContent = MarkdownService.GetMarkDownFile("Home Announcement.md");
         await SessionStore.SetAsync("CurrentApp", "NPDES Home");
         if (StateService.IsLoggedIn && StateService.UserId != "Init")
         {
